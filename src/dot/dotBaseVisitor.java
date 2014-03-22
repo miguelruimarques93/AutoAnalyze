@@ -82,6 +82,14 @@ public class dotBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements do
 	 * The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.
 	 */
+	@Override public T visitId(@NotNull dotParser.IdContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.
+	 */
 	@Override public T visitSubgraph(@NotNull dotParser.SubgraphContext ctx) { return visitChildren(ctx); }
 
 	/**

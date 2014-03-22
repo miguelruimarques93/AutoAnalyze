@@ -97,6 +97,17 @@ public interface dotListener extends ParseTreeListener {
 	void exitNode_id(@NotNull dotParser.Node_idContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link dotParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void enterId(@NotNull dotParser.IdContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link dotParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void exitId(@NotNull dotParser.IdContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link dotParser#subgraph}.
 	 * @param ctx the parse tree
 	 */

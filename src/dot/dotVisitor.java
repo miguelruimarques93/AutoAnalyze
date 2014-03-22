@@ -68,6 +68,13 @@ public interface dotVisitor<T> extends ParseTreeVisitor<T> {
 	T visitNode_id(@NotNull dotParser.Node_idContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link dotParser#id}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitId(@NotNull dotParser.IdContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link dotParser#subgraph}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
