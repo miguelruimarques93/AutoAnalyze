@@ -4,7 +4,6 @@ import pt.up.fe.comp.dot.grammar.dotBaseVisitor;
 import pt.up.fe.comp.dot.grammar.dotParser.A_listContext;
 import pt.up.fe.comp.dot.grammar.dotParser.Attr_listContext;
 import pt.up.fe.comp.dot.grammar.dotParser.Attr_stmtContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Compass_ptContext;
 import pt.up.fe.comp.dot.grammar.dotParser.EdgeRHSContext;
 import pt.up.fe.comp.dot.grammar.dotParser.Edge_stmtContext;
 import pt.up.fe.comp.dot.grammar.dotParser.EdgeopContext;
@@ -53,12 +52,6 @@ public class MyDotVisitor extends dotBaseVisitor<Object> {
     public Object visitEdgeRHS(EdgeRHSContext ctx) {
         // TODO Auto-generated method stub
         return super.visitEdgeRHS(ctx);
-    }
-
-    @Override
-    public Object visitCompass_pt(Compass_ptContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitCompass_pt(ctx);
     }
 
     @Override
