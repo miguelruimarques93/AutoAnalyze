@@ -1,6 +1,6 @@
 grammar dot;
 
-graph       :   (STRICT)? (GRAPH | DIGRAPH) (ID)? '{' stmt_list '}';
+graph       :   STRICT? (GRAPH | DIGRAPH) id? '{' stmt_list '}';
 stmt_list   :   (stmt ';'?)* ;
 stmt        :   node_stmt
             |   edge_stmt
@@ -8,17 +8,16 @@ stmt        :   node_stmt
             |   id '=' id
             |   subgraph;
 attr_stmt   :   (GRAPH | NODE | EDGE) attr_list;
-attr_list   :   '[' ( a_list )? ']' (attr_list)?;
-a_list      :   id '=' id ( (';' | ',') )? ( a_list )?;
+attr_list   :   ('[' a_list? ']')+;
+a_list      :   (id '=' id ( ';' | ',' )?)+ ;
 edgeop      :   '-' ('-'|'>') ;
-edge_stmt   :   (node_id | subgraph) edgeRHS (attr_list)?;
-edgeRHS     :   edgeop (node_id | subgraph) (edgeRHS)?;
-node_stmt   :   node_id ( attr_list )?;
-node_id     :   id ( port )?;
-port        :   ':' id ( ':' compass_pt )?
-            |   ':' compass_pt;
-subgraph    :   ( SUBGRAPH ( id )? )? '{' stmt_list '}';
-compass_pt  :   ('n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'c' | '_') ;
+edge_stmt   :   (node_id | subgraph) edgeRHS attr_list?;
+edgeRHS     :   (edgeop (node_id | subgraph))+;
+node_stmt   :   node_id attr_list?;
+node_id     :   id port?;
+port        :   ':' id ( ':' id )?;
+subgraph    :   ( SUBGRAPH id? )? '{' stmt_list '}';
+// compass_pt  :   ('n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'c' | '_') ;
 id          :   ID //alphabetic chars, '_', or digits (but can't start with a digit)
             |   NUMERAL // any number (can be negative or floating point)
             |   QUOTED_STRING //any double-quoted string ("...") possibly containing escaped quotes (\")
