@@ -1,5 +1,11 @@
 grammar dot;
 
+@header {
+
+package pt.up.fe.comp.dot.parser;
+
+}
+
 graph       :   STRICT? (GRAPH | DIGRAPH) id? '{' stmt_list '}';
 stmt_list   :   (stmt ';'?)* ;
 stmt        :   node_stmt

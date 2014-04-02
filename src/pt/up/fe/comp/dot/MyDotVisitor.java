@@ -1,20 +1,20 @@
 package pt.up.fe.comp.dot;
 
-import pt.up.fe.comp.dot.grammar.dotBaseVisitor;
-import pt.up.fe.comp.dot.grammar.dotParser.A_listContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Attr_listContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Attr_stmtContext;
-import pt.up.fe.comp.dot.grammar.dotParser.EdgeRHSContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Edge_stmtContext;
-import pt.up.fe.comp.dot.grammar.dotParser.EdgeopContext;
-import pt.up.fe.comp.dot.grammar.dotParser.GraphContext;
-import pt.up.fe.comp.dot.grammar.dotParser.IdContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Node_idContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Node_stmtContext;
-import pt.up.fe.comp.dot.grammar.dotParser.PortContext;
-import pt.up.fe.comp.dot.grammar.dotParser.StmtContext;
-import pt.up.fe.comp.dot.grammar.dotParser.Stmt_listContext;
-import pt.up.fe.comp.dot.grammar.dotParser.SubgraphContext;
+import pt.up.fe.comp.dot.parser.dotBaseVisitor;
+import pt.up.fe.comp.dot.parser.dotParser.A_listContext;
+import pt.up.fe.comp.dot.parser.dotParser.Attr_listContext;
+import pt.up.fe.comp.dot.parser.dotParser.Attr_stmtContext;
+import pt.up.fe.comp.dot.parser.dotParser.EdgeRHSContext;
+import pt.up.fe.comp.dot.parser.dotParser.Edge_stmtContext;
+import pt.up.fe.comp.dot.parser.dotParser.EdgeopContext;
+import pt.up.fe.comp.dot.parser.dotParser.GraphContext;
+import pt.up.fe.comp.dot.parser.dotParser.IdContext;
+import pt.up.fe.comp.dot.parser.dotParser.Node_idContext;
+import pt.up.fe.comp.dot.parser.dotParser.Node_stmtContext;
+import pt.up.fe.comp.dot.parser.dotParser.PortContext;
+import pt.up.fe.comp.dot.parser.dotParser.StmtContext;
+import pt.up.fe.comp.dot.parser.dotParser.Stmt_listContext;
+import pt.up.fe.comp.dot.parser.dotParser.SubgraphContext;
 
 public class MyDotVisitor extends dotBaseVisitor<Object> {
 
