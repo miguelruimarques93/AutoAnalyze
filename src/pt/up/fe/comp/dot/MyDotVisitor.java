@@ -1,104 +1,76 @@
 package pt.up.fe.comp.dot;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
+import pt.up.fe.comp.dot.ir.DotGraph;
 import pt.up.fe.comp.dot.parser.dotBaseVisitor;
-import pt.up.fe.comp.dot.parser.dotParser.A_listContext;
-import pt.up.fe.comp.dot.parser.dotParser.Attr_listContext;
-import pt.up.fe.comp.dot.parser.dotParser.Attr_stmtContext;
-import pt.up.fe.comp.dot.parser.dotParser.EdgeRHSContext;
-import pt.up.fe.comp.dot.parser.dotParser.Edge_stmtContext;
-import pt.up.fe.comp.dot.parser.dotParser.EdgeopContext;
-import pt.up.fe.comp.dot.parser.dotParser.GraphContext;
-import pt.up.fe.comp.dot.parser.dotParser.IdContext;
-import pt.up.fe.comp.dot.parser.dotParser.Node_idContext;
-import pt.up.fe.comp.dot.parser.dotParser.Node_stmtContext;
-import pt.up.fe.comp.dot.parser.dotParser.PortContext;
-import pt.up.fe.comp.dot.parser.dotParser.StmtContext;
-import pt.up.fe.comp.dot.parser.dotParser.Stmt_listContext;
-import pt.up.fe.comp.dot.parser.dotParser.SubgraphContext;
+import pt.up.fe.comp.dot.parser.dotLexer;
+import pt.up.fe.comp.dot.parser.dotParser;
 
-public class MyDotVisitor extends dotBaseVisitor<Object> {
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MyDotVisitor extends dotBaseVisitor<DotGraph> {
+
+    private class StringDotVisitor extends dotBaseVisitor<String> {
+        @Override
+        public String visitNode_id(@NotNull dotParser.Node_idContext ctx) {
+            return ctx.id().getText();
+        }
+    }
+    private StringDotVisitor _stringVisitor = new StringDotVisitor();
+    private DotGraph _graph = new DotGraph();
 
     @Override
-    public Object visitAttr_stmt(Attr_stmtContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitAttr_stmt(ctx);
+    public DotGraph visitGraph(@NotNull dotParser.GraphContext ctx) {
+        _graph.strict = ctx.STRICT() == null;
+        _graph.bidirectional = ctx.DIGRAPH() != null;
+        _graph.name = ctx.id().getText();
+        return visit(ctx.stmt_list());
     }
 
     @Override
-    public Object visitPort(PortContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitPort(ctx);
+    public DotGraph visitEdge_stmt(@NotNull dotParser.Edge_stmtContext ctx) {
+        String lhs_id = _stringVisitor.visit(ctx.lhs);
+        String rhs_id = _stringVisitor.visit(ctx.rhs);
+        List<DotGraph.Edge> edgeList = _graph.nodes.get(lhs_id);
+        if (edgeList == null) {
+            _graph.nodes.put(lhs_id, new ArrayList<DotGraph.Edge>());
+            edgeList = _graph.nodes.get(lhs_id);
+        }
+        DotGraph.Edge edge = new DotGraph.Edge();
+        edge.destination = rhs_id;
+        edgeList.add(edge);
+        return _graph;
     }
 
     @Override
-    public Object visitEdgeop(EdgeopContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitEdgeop(ctx);
+    public DotGraph visitStmt_list(@NotNull dotParser.Stmt_listContext ctx) {
+        List<dotParser.StmtContext> stmts = ctx.stmt();
+        for (dotParser.StmtContext stmt : stmts) {
+            visit(stmt);
+        }
+        return _graph;
     }
 
-    @Override
-    public Object visitStmt_list(Stmt_listContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitStmt_list(ctx);
-    }
+    public static void main(String[] args) throws IOException {
+        String inputFile = "dot_dfa_examples/fsm.gv";
+        if ( args.length>0 ) inputFile = args[0];
+        InputStream is = System.in;
+        if ( inputFile!=null ) is = new FileInputStream(inputFile);
+        ANTLRInputStream input = new ANTLRInputStream(is);
+        dotLexer lexer = new dotLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        dotParser parser = new dotParser(tokens);
+        ParseTree tree = parser.graph(); // parse
 
-    @Override
-    public Object visitStmt(StmtContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitStmt(ctx);
-    }
-
-    @Override
-    public Object visitEdgeRHS(EdgeRHSContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitEdgeRHS(ctx);
-    }
-
-    @Override
-    public Object visitNode_id(Node_idContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitNode_id(ctx);
-    }
-
-    @Override
-    public Object visitId(IdContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitId(ctx);
-    }
-
-    @Override
-    public Object visitSubgraph(SubgraphContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitSubgraph(ctx);
-    }
-
-    @Override
-    public Object visitGraph(GraphContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitGraph(ctx);
-    }
-
-    @Override
-    public Object visitA_list(A_listContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitA_list(ctx);
-    }
-
-    @Override
-    public Object visitAttr_list(Attr_listContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitAttr_list(ctx);
-    }
-
-    @Override
-    public Object visitEdge_stmt(Edge_stmtContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitEdge_stmt(ctx);
-    }
-
-    @Override
-    public Object visitNode_stmt(Node_stmtContext ctx) {
-        // TODO Auto-generated method stub
-        return super.visitNode_stmt(ctx);
+        MyDotVisitor eval = new MyDotVisitor();
+        DotGraph graph = eval.visit(tree);
+        System.out.println(graph);
     }
 }

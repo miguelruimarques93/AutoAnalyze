@@ -1,16 +1,17 @@
 package pt.up.fe.comp.dot.ir;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DotGraph {
-    public class Edge {
+    public static class Edge {
         public String destination;
-        Map<String, String> attributes = new HashMap<String, String>();
-        
+        Map<String, String> attributes = new HashMap<>();
+
+        @Override
+        public String toString() {
+            return destination;
+        }
+
         @Override
         public boolean equals(Object rhs) {
             if (rhs instanceof Edge) {
@@ -20,7 +21,24 @@ public class DotGraph {
             return false;
         }
     }
-    
-    public Set<String> finalStates = new HashSet<String>();
-    public Map<String, List<Edge>> nodes = new HashMap<String, List<Edge>>();
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Name: %s\nStrict: %s\nBidirectional: %s\n", this.name, this.strict, this.bidirectional));
+
+        for (Map.Entry<String, List<Edge>> node : nodes.entrySet()) {
+            sb.append(node.getKey() + " -> ");
+            sb.append(node.getValue().toString());
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    public boolean strict = false;
+    public boolean bidirectional = false;
+    public String name;
+    public Set<String> finalStates = new HashSet<>();
+    public Map<String, List<Edge>> nodes = new HashMap<>();
 }
