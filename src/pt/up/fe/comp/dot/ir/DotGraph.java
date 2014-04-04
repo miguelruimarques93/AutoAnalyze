@@ -5,11 +5,12 @@ import java.util.*;
 public class DotGraph {
     public static class Edge {
         public String destination;
-        Map<String, String> attributes = new HashMap<>();
+        public Map<String, String> attributes = new HashMap<>();
+        public boolean directed;
 
         @Override
         public String toString() {
-            return destination;
+            return (directed ? "directed " : "") + destination + " " + attributes.toString();
         }
 
         @Override

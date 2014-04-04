@@ -6,28 +6,32 @@ package pt.up.fe.comp.dot.parser;
 
 }
 
-graph       :   STRICT? (GRAPH | DIGRAPH) id? '{' stmt_list '}';
+graph       :   STRICT? directed=(GRAPH | DIGRAPH) id? '{' stmt_list '}';
 stmt_list   :   (stmt ';'?)* ;
 stmt        :   node_stmt
             |   edge_stmt
             |   attr_stmt
             |   id '=' id
-            |   subgraph;
+            |   subgraph
+            ;
+
 attr_stmt   :   (GRAPH | NODE | EDGE) attr_list;
 attr_list   :   ('[' a_list? ']')+;
-a_list      :   (id '=' id ( ';' | ',' )?)+ ;
-edgeop      :   '-' ('-'|'>') ;
-edge_stmt   :   (lhs=node_id | subgraph) (edgeop (rhs=node_id | subgraph))+ attr_list?;
-// edgeRHS     :   (edgeop (node_id | subgraph))+;
+a_list      :   (lhs=id '=' rhs=id ( ';' | ',' )?)+ ;
+// edgeop      :    op=(DIEDGE_OP | EDGE_OP);
+// edge_stmt   :   lhs=node_id (edgeop rhs=node_id)+ attr_list?;
+edge_stmt   :   lhs=node_id op=(DIEDGE_OP | EDGE_OP) rhs=node_id attributes=attr_list?;
 node_stmt   :   node_id attr_list?;
 node_id     :   id port?;
 port        :   ':' id ( ':' id )?;
 subgraph    :   ( SUBGRAPH id? )? '{' stmt_list '}';
-// compass_pt  :   ('n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'c' | '_') ;
 id          :   ID //alphabetic chars, '_', or digits (but can't start with a digit)
             |   NUMERAL // any number (can be negative or floating point)
             |   QUOTED_STRING //any double-quoted string ("...") possibly containing escaped quotes (\")
             |   HTML_STRING ; //html string (must be valid XML)
+
+DIEDGE_OP       :   '->' ;
+EDGE_OP         :   '--' ;
 
 STRICT          :   [Ss][Tt][Rr][Ii][Cc][Tt] ;
 GRAPH           :   [Gg][Rr][Aa][Pp][Hh] ;
