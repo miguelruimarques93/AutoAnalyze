@@ -37,6 +37,41 @@ public class DotGraph {
         return sb.toString();
     }
 
+    public void addNode(String node) {
+        if (! nodes.containsKey(node))
+            nodes.put(node, new ArrayList<Edge>());
+    }
+
+    public Set<String> getNodes() {
+        return nodes.keySet();
+    }
+
+    public boolean hasNode(String node) {
+        return nodes.containsKey(node);
+    }
+
+    public Edge addNewEdge(String node) {
+        List<Edge> nodeEdges = nodes.get(node);
+        if (nodeEdges == null)
+            throw new NoSuchElementException();
+
+        Edge result = new Edge();
+        nodeEdges.add(result);
+
+        return result;
+    }
+
+    public List<Edge> getNodeEdges(String node) {
+        List<Edge> result = nodes.get(node);
+        if (result == null)
+            throw new NoSuchElementException();
+        return result;
+    }
+
+    public Set<String> getAllNodes() {
+        return nodes.keySet();
+    }
+
     public boolean strict = false;
     public boolean bidirectional = false;
     public String name;

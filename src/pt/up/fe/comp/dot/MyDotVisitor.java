@@ -12,7 +12,6 @@ import pt.up.fe.comp.dot.parser.dotParser;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class MyDotVisitor extends dotBaseVisitor<DotGraph> {
     }
 
     private StringDotVisitor _stringVisitor = new StringDotVisitor();
-    private AttributesDotVisitor _stringListVisitor = new AttributesDotVisitor();
+    private AttributesDotVisitor _attributesVisitor = new AttributesDotVisitor();
     private DotGraph _graph = new DotGraph();
 
     @Override
@@ -69,18 +68,18 @@ public class MyDotVisitor extends dotBaseVisitor<DotGraph> {
     public DotGraph visitEdge_stmt(@NotNull dotParser.Edge_stmtContext ctx) {
         String lhs_id = _stringVisitor.visit(ctx.lhs);
         String rhs_id = _stringVisitor.visit(ctx.rhs);
-        Map<String, String> attributes = _stringListVisitor.visit(ctx.attributes);
+        Map<String, String> attributes = _attributesVisitor.visit(ctx.attributes);
 
-        List<DotGraph.Edge> edgeList = _graph.nodes.get(lhs_id);
-        if (edgeList == null) {
-            _graph.nodes.put(lhs_id, new ArrayList<DotGraph.Edge>());
-            edgeList = _graph.nodes.get(lhs_id);
-        }
-        DotGraph.Edge edge = new DotGraph.Edge();
+        if (! _graph.hasNode(lhs_id))
+            _graph.addNode(lhs_id);
+
+        if (! _graph.hasNode(rhs_id))
+            _graph.addNode(rhs_id);
+
+        DotGraph.Edge edge = _graph.addNewEdge(lhs_id);
         edge.destination = rhs_id;
         edge.attributes.putAll(attributes);
         edge.directed = ctx.op.getType() == dotLexer.DIEDGE_OP;
-        edgeList.add(edge);
 
         return _graph;
     }
