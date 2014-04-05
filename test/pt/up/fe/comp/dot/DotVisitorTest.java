@@ -17,7 +17,7 @@ import static junit.framework.TestCase.assertTrue;
 /**
  * Created by miguel on 05/04/2014.
  */
-public class MyDotVisitorTest {
+public class DotVisitorTest {
     private static DotGraph graph;
 
     @BeforeClass
@@ -50,7 +50,7 @@ public class MyDotVisitorTest {
         dotParser parser = new dotParser(tokens);
         ParseTree tree = parser.graph(); // parse
 
-        MyDotVisitor eval = new MyDotVisitor();
+        DotVisitor eval = new DotVisitor();
         graph = eval.visit(tree);
     }
 

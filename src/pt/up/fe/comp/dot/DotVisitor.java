@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MyDotVisitor extends dotBaseVisitor<DotGraph> {
+public class DotVisitor extends dotBaseVisitor<DotGraph> {
 
     private class StringDotVisitor extends dotBaseVisitor<String> {
         @Override
@@ -104,7 +104,7 @@ public class MyDotVisitor extends dotBaseVisitor<DotGraph> {
         dotParser parser = new dotParser(tokens);
         ParseTree tree = parser.graph(); // parse
 
-        MyDotVisitor eval = new MyDotVisitor();
+        DotVisitor eval = new DotVisitor();
         DotGraph graph = eval.visit(tree);
         System.out.println(graph);
     }
