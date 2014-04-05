@@ -14,9 +14,6 @@ import java.util.*;
 import static junit.framework.TestCase.fail;
 import static junit.framework.TestCase.assertTrue;
 
-/**
- * Created by miguel on 05/04/2014.
- */
 public class DotVisitorTest {
     private static DotGraph graph;
 
@@ -62,8 +59,27 @@ public class DotVisitorTest {
     }
 
     @Test
+    public void nodesAttributesTest() {
+    	assertTrue(graph.getNodeAttributes("LR_0").get("shape").equals("doublecircle"));
+    	assertTrue(graph.getNodeAttributes("LR_1").get("shape").equals("circle"));
+    	assertTrue(graph.getNodeAttributes("LR_2").get("shape").equals("circle"));
+    	assertTrue(graph.getNodeAttributes("LR_3").get("shape").equals("doublecircle"));
+    	assertTrue(graph.getNodeAttributes("LR_4").get("shape").equals("doublecircle"));
+    	assertTrue(graph.getNodeAttributes("LR_5").get("shape").equals("circle"));
+    	assertTrue(graph.getNodeAttributes("LR_6").get("shape").equals("circle"));
+    	assertTrue(graph.getNodeAttributes("LR_7").get("shape").equals("circle"));
+    	assertTrue(graph.getNodeAttributes("LR_8").get("shape").equals("doublecircle"));
+    }
+
+    @Test
+    public void attributesTest() {
+    	assertTrue(graph.getAttribute("rankdir").equals("LR"));
+    	assertTrue(graph.getAttribute("size").equals("\"8,5\""));
+    }
+
+    @Test
     public void edgesTest() {
-        Map<String, List<String>> expectedEdges = new HashMap<String, List<String>>(){
+        Map<String, List<String>> expectedEdges = new HashMap<String, List<String>>() {
             private static final long serialVersionUID = 1L;
         {
             put("LR_0", Arrays.asList("LR_2", "LR_1"));
@@ -79,14 +95,14 @@ public class DotVisitorTest {
 
         Set<String> nodes = graph.getAllNodes();
 
-        for(String node: nodes) {
+        for (String node: nodes) {
             List<String> expectedDestinationIds = expectedEdges.get(node);
             if (expectedDestinationIds == null) fail();
 
             List<DotGraph.Edge> actualEdges = graph.getNodeEdges(node);
             assertTrue(actualEdges.size() == expectedDestinationIds.size());
-            for (DotGraph.Edge edge: actualEdges) assertTrue(expectedDestinationIds.contains(edge.destination));
+            for (DotGraph.Edge edge: actualEdges)
+            	assertTrue(expectedDestinationIds.contains(edge.destination));
         }
-
     }
 }

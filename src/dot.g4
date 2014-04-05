@@ -7,15 +7,16 @@ package pt.up.fe.comp.dot.parser;
 }
 
 graph       :   STRICT? directed=(GRAPH | DIGRAPH) id? '{' stmt_list '}';
-stmt_list   :   (stmt ';'?)* ;
+stmt_list   :   (stmt ';'?)*;
 stmt        :   node_stmt
             |   edge_stmt
             |   attr_stmt
-            |   id '=' id
+            |   attr1_stmt
             |   subgraph
             ;
 
-attr_stmt   :   (GRAPH | NODE | EDGE) attr_list;
+attr1_stmt  :   lhs=id '=' rhs=id;
+attr_stmt   :   (GRAPH | NODE | EDGE) attributes=attr_list;
 attr_list   :   ('[' a_list? ']')+;
 a_list      :   (lhs=id '=' rhs=id ( ';' | ',' )?)+ ;
 // edgeop      :    op=(DIEDGE_OP | EDGE_OP);

@@ -54,6 +54,7 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
 
     private StringDotVisitor _stringVisitor = new StringDotVisitor();
     private AttributesDotVisitor _attributesVisitor = new AttributesDotVisitor();
+    private Map<String, String> _activeAttributes = null;
     private DotGraph _graph = new DotGraph();
 
     @Override
@@ -65,16 +66,52 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
     }
 
     @Override
+    public DotGraph visitAttr_stmt(@NotNull dotParser.Attr_stmtContext ctx) {
+    	if (ctx.NODE() != null)
+    		_activeAttributes = _attributesVisitor.visit(ctx.attributes);
+    	return _graph;
+    }
+    
+    @Override
+    public DotGraph visitNode_stmt(@NotNull dotParser.Node_stmtContext ctx) {
+    	String node_id = _stringVisitor.visit(ctx.node_id());
+    	
+    	if (!_graph.hasNode(node_id)) {
+    		_graph.addNode(node_id);
+    		if (_activeAttributes != null)
+        		_graph.addNodeAttributes(node_id, _activeAttributes);
+    	}
+    	
+    	return _graph;
+    }
+    
+    @Override
+    public DotGraph visitAttr1_stmt(@NotNull dotParser.Attr1_stmtContext ctx) {
+    	String lhs = ctx.lhs.getText();
+    	String rhs = ctx.rhs.getText();
+
+    	_graph.addAttribute(lhs, rhs);
+
+    	return _graph;
+    }
+
+    @Override
     public DotGraph visitEdge_stmt(@NotNull dotParser.Edge_stmtContext ctx) {
         String lhs_id = _stringVisitor.visit(ctx.lhs);
         String rhs_id = _stringVisitor.visit(ctx.rhs);
         Map<String, String> attributes = _attributesVisitor.visit(ctx.attributes);
 
-        if (! _graph.hasNode(lhs_id))
-            _graph.addNode(lhs_id);
+        if (! _graph.hasNode(lhs_id)) {
+        	_graph.addNode(lhs_id);
+        	if (_activeAttributes != null)
+        		_graph.addNodeAttributes(lhs_id, _activeAttributes);
+        }
 
-        if (! _graph.hasNode(rhs_id))
+        if (! _graph.hasNode(rhs_id)) {
             _graph.addNode(rhs_id);
+            if (_activeAttributes != null)
+        		_graph.addNodeAttributes(rhs_id, _activeAttributes);
+        }
 
         DotGraph.Edge edge = _graph.addNewEdge(lhs_id);
         edge.destination = rhs_id;

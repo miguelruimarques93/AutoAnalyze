@@ -27,19 +27,33 @@ public class DotGraph {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Name: %s\nStrict: %s\nBidirectional: %s\n", this.name, this.strict, this.bidirectional));
-
+        sb.append(this.attributes.toString() + "\n");
         for (Map.Entry<String, List<Edge>> node : nodes.entrySet()) {
-            sb.append(node.getKey() + " -> ");
-            sb.append(node.getValue().toString());
-            sb.append("\n");
+        	sb.append(String.format("  %s %s -> %s\n",
+        			node.getKey(), nodesAttributes.get(node.getKey()).toString(),
+        			node.getValue().toString()));
         }
 
         return sb.toString();
     }
 
     public void addNode(String node) {
-        if (! nodes.containsKey(node))
+        if (!nodes.containsKey(node))
             nodes.put(node, new ArrayList<Edge>());
+        
+        if (!nodesAttributes.containsKey(node))
+        	nodesAttributes.put(node, new HashMap<String, String>());
+    }
+    
+    public void addNodeAttributes(String node, Map<String, String> attributes) {
+    	if (nodesAttributes.containsKey(node))
+    		nodesAttributes.get(node).putAll(attributes);
+    	else
+    		nodesAttributes.put(node, attributes);
+    }
+    
+    public void addAttribute(String attr, String value) {
+    	attributes.put(attr, value);
     }
 
     public Set<String> getNodes() {
@@ -48,6 +62,14 @@ public class DotGraph {
 
     public boolean hasNode(String node) {
         return nodes.containsKey(node);
+    }
+    
+    public Map<String, String> getNodeAttributes(String node) {
+    	return nodesAttributes.get(node);
+    }
+    
+    public String getAttribute(String attr) {
+    	return attributes.get(attr);
     }
 
     public Edge addNewEdge(String node) {
@@ -75,6 +97,7 @@ public class DotGraph {
     public boolean strict = false;
     public boolean bidirectional = false;
     public String name;
-    public Set<String> finalStates = new HashSet<>();
     public Map<String, List<Edge>> nodes = new HashMap<>();
+    public Map<String, Map<String, String>> nodesAttributes = new HashMap<String, Map<String,String>>();
+    public Map<String, String> attributes = new HashMap<String, String>();
 }
