@@ -1,10 +1,10 @@
 grammar aa;
 
-@header {
-
-package pt.up.fe.comp.aa.parser;
-
-}
+//@header {
+//
+//package pt.up.fe.comp.aa.parser;
+//
+//}
 
 stmt_list       : stmt*
                 ;

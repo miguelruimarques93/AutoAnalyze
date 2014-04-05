@@ -1,10 +1,10 @@
 grammar dot;
 
-@header {
-
-package pt.up.fe.comp.dot.parser;
-
-}
+//@header {
+//
+//package pt.up.fe.comp.dot.parser;
+//
+//}
 
 graph       :   STRICT? directed=(GRAPH | DIGRAPH) id? '{' stmt_list '}';
 stmt_list   :   (stmt ';'?)* ;
