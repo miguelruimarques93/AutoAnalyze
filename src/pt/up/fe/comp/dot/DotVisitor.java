@@ -99,7 +99,7 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
     public DotGraph visitEdge_stmt(@NotNull dotParser.Edge_stmtContext ctx) {
         String lhs_id = _stringVisitor.visit(ctx.lhs);
         String rhs_id = _stringVisitor.visit(ctx.rhs);
-        Map<String, String> attributes = _attributesVisitor.visit(ctx.attributes);
+        Map<String, String> attributes = ctx.attributes == null ? null : _attributesVisitor.visit(ctx.attributes);
 
         if (! _graph.hasNode(lhs_id)) {
         	_graph.addNode(lhs_id);
@@ -115,7 +115,8 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
 
         DotGraph.Edge edge = _graph.addNewEdge(lhs_id);
         edge.destination = rhs_id;
-        edge.attributes.putAll(attributes);
+        if(attributes != null)
+            edge.attributes.putAll(attributes);
         edge.directed = ctx.op.getType() == dotLexer.DIEDGE_OP;
 
         return _graph;
