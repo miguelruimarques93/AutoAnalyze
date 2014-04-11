@@ -32,11 +32,11 @@ public class FSA {
      * 
      * If the Character (input) is null it symbolizes an empty transition
      * 
-     * @see https://github.com/antlr/antlr4/blob/master/runtime/Java/src/org/antlr/v4/runtime/misc/Pair.java
+     * @see "https://github.com/antlr/antlr4/blob/master/runtime/Java/src/org/antlr/v4/runtime/misc/Pair.java"
      */
     public static class Edge {
         public Edge(Character input, String destination){
-            transition = new Pair<Character, String>(input, destination);
+            transition = new Pair<>(input, destination);
         }
         public Character label(){
             return transition.a;
@@ -78,7 +78,7 @@ public class FSA {
 
     public void addNode(String nodeName) throws DuplicateElementException {
         if (!nodes.containsKey(nodeName))
-            nodes.put(new String(nodeName), new LinkedHashSet<Edge>());
+            nodes.put(nodeName, new LinkedHashSet<Edge>());
         else
             throw new DuplicateElementException(nodeName);
     }
@@ -87,7 +87,7 @@ public class FSA {
         if(!nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName); //custom exception created to force code using this method to catch exceptions
 
-        Edge newEdge = new Edge(input, new String(destination));
+        Edge newEdge = new Edge(input, destination);
         Set<Edge> nodeEdges = nodes.get(nodeName);
 
         if(nodeEdges.contains(newEdge)){
@@ -177,12 +177,12 @@ public class FSA {
         boolean wasDeterministic = deterministic;
         deterministic = true; //avoids checking after every edge removal for determinism in case it was an NFA
 
-        for(Edge edge : nodes.get(nodeName)){
+        for(Edge edge : nodes.get(nodeName))
             try {
-                removeEdge(nodeName,edge.label(),edge.destination());
+                removeEdge(nodeName, edge.label(), edge.destination());
             } catch (NoSuchEdgeException e) {
+                //Shh
             }
-        }
 
         removeEdgesWithDestination(nodeName);
 
@@ -202,8 +202,8 @@ public class FSA {
                 if(edge.destination().equals(nodeName)){
                     try {
                         removeEdge(node.getKey(),edge.label(), nodeName);
-                    } catch (NoSuchNodeException e) {
-                    } catch (NoSuchEdgeException e) {
+                    } catch (NoSuchNodeException | NoSuchEdgeException e) {
+                        //shh1
                     }
                 }
             }
@@ -277,6 +277,6 @@ public class FSA {
     private String initialState;
     private Set<String> finalStates = new HashSet<String>();
     private Map<String, Set<Edge>> nodes = new LinkedHashMap<String, Set<Edge>>(); //for efficient iteration
-    private String name = new String(); //may eventually be necessary to generate implementation of the automata (and name it)
+    private String name = ""; //may eventually be necessary to generate implementation of the automata (and name it)
     private boolean deterministic = true;
 }
