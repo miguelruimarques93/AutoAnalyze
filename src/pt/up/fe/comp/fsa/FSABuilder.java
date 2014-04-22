@@ -21,6 +21,7 @@ public class FSABuilder {
             return null;
         }
         
+        
         fsa.setFinalStates(getFinalStates(ir));
         
         for (String state : ir.getNodes()) {

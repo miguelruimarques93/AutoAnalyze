@@ -142,10 +142,14 @@ public class FSA {
 
         String currentNode = nodeName;
 
-        String nextNode = input.length() == 1 ? destination : nodeName+"_1";
-        //TODO find a better way to obtain a certainly non existing name
-        while (_nodes.containsKey(nextNode)) 
-            nextNode += "_1";
+        String nextNode = null;
+        if(input.length() == 1)
+            nextNode = destination;
+        else{
+            nextNode = nodeName+"_1";
+            while (_nodes.containsKey(nextNode)) 
+                nextNode += "_1";
+        }
 
         for (int i=0; i < input.length(); i++){
             if (i < input.length()-1)
