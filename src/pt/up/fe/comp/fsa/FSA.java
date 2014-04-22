@@ -135,7 +135,7 @@ public class FSA {
         if (!_nodes.containsKey(destination))
             throw new NoSuchNodeException(destination);
 
-        if (input.length() == 0){
+        if (input == null || input.length() == 0){
             addEdge(nodeName, null, destination);
             return;
         }
