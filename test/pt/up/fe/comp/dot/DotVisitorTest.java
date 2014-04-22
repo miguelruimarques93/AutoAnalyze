@@ -54,7 +54,7 @@ public class DotVisitorTest {
     @Test
     public void nodesTest() {
         List<String> expectedNodes = Arrays.asList("LR_0", "LR_1", "LR_2", "LR_3", "LR_4", "LR_5", "LR_6", "LR_7", "LR_8");
-        Collection<String> actualNodes = graph.getAllNodes();
+        Collection<String> actualNodes = graph.getNodes();
         assertTrue(actualNodes.containsAll(expectedNodes) && actualNodes.size() == expectedNodes.size());
     }
 
@@ -93,7 +93,7 @@ public class DotVisitorTest {
             put("LR_8", Arrays.asList("LR_6", "LR_5"));
         }};
 
-        Set<String> nodes = graph.getAllNodes();
+        Set<String> nodes = graph.getNodes();
 
         for (String node: nodes) {
             List<String> expectedDestinationIds = expectedEdges.get(node);

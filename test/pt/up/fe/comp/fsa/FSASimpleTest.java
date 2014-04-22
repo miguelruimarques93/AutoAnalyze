@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -15,7 +16,11 @@ public class FSASimpleTest {
 
     @Before
     public void init() {
-        automaton = new FSA();
+        try {
+            automaton = new FSA("lol", "lol", new HashSet<String>());
+        } catch (DuplicateElementException e) {
+            fail();
+        }
     }
 
     @Test

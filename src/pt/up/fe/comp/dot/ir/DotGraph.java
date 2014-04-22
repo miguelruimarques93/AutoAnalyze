@@ -90,14 +90,11 @@ public class DotGraph {
         return result;
     }
 
-    public Set<String> getAllNodes() {
-        return nodes.keySet();
-    }
 
     public boolean strict = false;
     public boolean bidirectional = false;
     public String name;
-    public Map<String, List<Edge>> nodes = new HashMap<>();
+    public Map<String, List<Edge>> nodes = new LinkedHashMap<>();
     public Map<String, Map<String, String>> nodesAttributes = new HashMap<String, Map<String,String>>();
     public Map<String, String> attributes = new HashMap<String, String>();
 }
