@@ -1,13 +1,8 @@
 package pt.up.fe.comp.fsa;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.antlr.v4.runtime.misc.Pair;
 
+import java.util.*;
 
 /**
  * This class defines a Finite State Automata, containing all necessary information to describe one, namely:
@@ -61,6 +56,8 @@ public class FSA {
         public int hashCode(){
             return ((transition.a == null ? "nill" : transition.a)+"->"+transition.b).hashCode();
         }
+        @Override
+        public String toString() { return transition.a + " -> " + transition.b; }
 
         private Pair<Character, String> transition;
     }
@@ -68,7 +65,9 @@ public class FSA {
     public FSA(String name, String initialState, Set<String> stateNames) throws DuplicateElementException {
         _name = name;
         _initialState = initialState;
-        
+
+        addNode(_initialState);
+
         for (String state : stateNames)
             addNode(state);
         
@@ -142,7 +141,7 @@ public class FSA {
 
         String currentNode = nodeName;
 
-        String nextNode = null;
+        String nextNode;
         if(input.length() == 1)
             nextNode = destination;
         else{
@@ -183,7 +182,6 @@ public class FSA {
         if (!isDeterministic()) //by removing the edge, the FSA may have been made deterministic
             checkDeterminism();
     }
-
 
     public void removeNode(String nodeName) throws NoSuchNodeException{
         if (!_nodes.containsKey(nodeName))
@@ -284,8 +282,81 @@ public class FSA {
         this._finalStates = finalStates;
     }
 
+    public void addFinalState(String st) { _finalStates.add(st); }
+
     public boolean isDeterministic() {
         return _deterministic;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Initial State: ").append(_initialState).append("\n");
+        sb.append("Final States: ").append(_finalStates.toString()).append("\n");
+        sb.append("Edges: ").append(_nodes.toString()).append("\n");
+
+        return sb.toString();
+    }
+
+    public void makeDeterministic() {
+        if (this.isDeterministic())
+            return;
+
+        Set<String> initialSet = new HashSet<>();
+        initialSet.add(_initialState);
+
+        Queue<Set<String>> workQueue = new LinkedList<>();
+        Map<Set<String>, String> newStates = new HashMap<>();
+        Set<Set<String>> processed = new HashSet<>();
+        Set<String> newFinalStates = new HashSet<>();
+        Map<String, Set<Edge>> newNodes = new LinkedHashMap<>();
+
+        newStates.put(initialSet, "q0");
+
+        workQueue.add(initialSet);
+        while (!workQueue.isEmpty()) {
+            Set<String> stateSet = workQueue.poll();
+            String nState = newStates.get(stateSet);
+
+            for (String state: stateSet) {
+                if (_finalStates.contains(state)) {
+                    newFinalStates.add(nState);
+                    break;
+                }
+            }
+
+            Set<Edge> oldEdges = new HashSet<>();
+            for (String state: stateSet)
+                oldEdges.addAll(_nodes.get(state));
+
+            Map<Character, Set<String>> transitions = new HashMap<>();
+            for (Edge e : oldEdges) {
+                if (!transitions.containsKey(e.transition.a))
+                    transitions.put(e.transition.a, new HashSet<String>());
+
+                transitions.get(e.transition.a).add(e.transition.b);
+            }
+
+            Set<Edge> newEdges = new HashSet<>();
+            for (Map.Entry<Character, Set<String>> entry: transitions.entrySet()) {
+                if (!processed.contains(entry.getValue())) {
+                    processed.add(entry.getValue());
+                    workQueue.add(entry.getValue());
+                    newStates.put(entry.getValue(), "q" + Integer.toString(newStates.size()));
+                }
+                newEdges.add(new Edge(entry.getKey(), newStates.get(entry.getValue())));
+            }
+
+            if (!newNodes.containsKey(nState))
+                newNodes.put(nState, new HashSet<Edge>());
+            newNodes.get(nState).addAll(newEdges);
+        }
+
+        _initialState = "q0";
+        _finalStates = newFinalStates;
+        _nodes = newNodes;
+        _deterministic = true;
     }
 
     private Set<Character> _alphabet = new HashSet<Character>();
