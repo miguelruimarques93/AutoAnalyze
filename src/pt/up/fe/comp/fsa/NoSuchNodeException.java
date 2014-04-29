@@ -1,6 +1,6 @@
 package pt.up.fe.comp.fsa;
 
-public class NoSuchNodeException extends Exception {
+public class NoSuchNodeException extends FSAException {
     public NoSuchNodeException(String message) {
         super(message);
     }

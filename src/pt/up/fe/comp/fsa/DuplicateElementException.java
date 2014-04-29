@@ -1,6 +1,6 @@
 package pt.up.fe.comp.fsa;
 
-public class DuplicateElementException extends Exception {
+public class DuplicateElementException extends FSAException {
     public DuplicateElementException(String message) {
         super(message);
     }

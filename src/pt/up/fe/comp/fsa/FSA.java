@@ -1,44 +1,49 @@
 package pt.up.fe.comp.fsa;
 
 import org.antlr.v4.runtime.misc.Pair;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.math.BigInteger;
 import java.util.*;
 
 /**
  * This class defines a Finite State Automata, containing all necessary information to describe one, namely:
- *  
- *   - The alphabet;
- *   
- *   - The set of states (can NOT be empty);
- *   
- *   - The initial state;
- *   
- *   - The set of final states (can be empty);
- *   
- *   - The set of edges / transition function.
- *   
- *   
+ * <p/>
+ * - The alphabet;
+ * <p/>
+ * - The set of states (can NOT be empty);
+ * <p/>
+ * - The initial state;
+ * <p/>
+ * - The set of final states (can be empty);
+ * <p/>
+ * - The set of edges / transition function.
+ * <p/>
+ * <p/>
  * It also contains several methods to allow for the manipulation of the automata and a boolean to indicate if it is
- *  deterministic or not.
+ * deterministic or not.
  */
 public class FSA {
     /**
      * This class is essentially a wrapper for a Pair<Character, String> already defined in the ANTLR4 libraries.
-     * 
+     * <p/>
      * If the Character (input) is null it symbolizes an empty transition
-     * 
+     *
      * @see "https://github.com/antlr/antlr4/blob/master/runtime/Java/src/org/antlr/v4/runtime/misc/Pair.java"
      */
     public static class Edge {
-        public Edge(Character input, String destination){
+        public Edge(Character input, String destination) {
             transition = new Pair<>(input, destination);
         }
-        public Character label(){
+
+        public Character label() {
             return transition.a;
         }
-        public String destination(){
+
+        public String destination() {
             return transition.b;
         }
+
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof Edge) {
@@ -47,17 +52,21 @@ public class FSA {
                     return other.label() == null && other.destination().equals(destination());
                 else if (other.label() == null)
                     return false;
-                
+
                 return other.label().equals(label()) && other.destination().equals(destination());
             }
             return false;
         }
+
         @Override
-        public int hashCode(){
-            return ((transition.a == null ? "nill" : transition.a)+"->"+transition.b).hashCode();
+        public int hashCode() {
+            return ((transition.a == null ? "nill" : transition.a) + "->" + transition.b).hashCode();
         }
+
         @Override
-        public String toString() { return transition.a + " -> " + transition.b; }
+        public String toString() {
+            return transition.a + " -> " + transition.b;
+        }
 
         private Pair<Character, String> transition;
     }
@@ -70,7 +79,7 @@ public class FSA {
 
         for (String state : stateNames)
             addNode(state);
-        
+
     }
 
     public Set<String> getNodes() {
@@ -90,27 +99,27 @@ public class FSA {
             throw new DuplicateElementException(nodeName);
     }
 
-    public void addEdge(String nodeName, Character input, String destination) throws NoSuchNodeException, DuplicateElementException{
+    public void addEdge(String nodeName, Character input, String destination) throws NoSuchNodeException, DuplicateElementException {
         if (!_nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName); //custom exception created to force code using this method to catch exceptions
 
         if (!_nodes.containsKey(destination))
-            throw new NoSuchNodeException(destination);
-        
-        
+            addNode(destination);
+
+
         Edge newEdge = new Edge(input, destination);
         Set<Edge> nodeEdges = _nodes.get(nodeName);
 
-        if (nodeEdges.contains(newEdge)){
-            throw new DuplicateElementException(nodeName+" + "+(input == null? "nill" : input)+" -> "+destination);
+        if (nodeEdges.contains(newEdge)) {
+            throw new DuplicateElementException(nodeName + " + " + (input == null ? "nill" : input) + " -> " + destination);
         }
 
         //if FSA was deterministic, check if this has been compromised
-        if (isDeterministic()){
-            if (newEdge.label()==null)
+        if (isDeterministic()) {
+            if (newEdge.label() == null)
                 _deterministic = false;
-            else{
-                for (Edge edge : nodeEdges){
+            else {
+                for (Edge edge : nodeEdges) {
                     if (edge.label().equals(newEdge.label()))
                         _deterministic = false;
                 }
@@ -118,8 +127,12 @@ public class FSA {
         }
 
         //if the given input is not part of the alphabet, extend it
-        if (!_alphabet.contains(input))
-            _alphabet.add(input);
+        if (!_alphabet.containsKey(input))
+            _alphabet.put(input, 1);
+        else {
+            Integer numU = _alphabet.get(input);
+            _alphabet.put(input, numU + 1);
+        }
 
         nodeEdges.add(newEdge);
     }
@@ -128,13 +141,13 @@ public class FSA {
      * Same as addEdge but allows for a chain of inputs and creates intermediate states
      * TODO allow for regular expressions
      */
-    public void addEdges(String nodeName, String input, String destination) throws NoSuchNodeException, DuplicateElementException{       
+    public void addEdges(String nodeName, String input, String destination) throws NoSuchNodeException, DuplicateElementException {
         if (!_nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName);
         if (!_nodes.containsKey(destination))
             throw new NoSuchNodeException(destination);
 
-        if (input == null || input.length() == 0){
+        if (input == null || input.length() == 0) {
             addEdge(nodeName, null, destination);
             return;
         }
@@ -142,48 +155,56 @@ public class FSA {
         String currentNode = nodeName;
 
         String nextNode;
-        if(input.length() == 1)
+        if (input.length() == 1)
             nextNode = destination;
-        else{
-            nextNode = nodeName+"_1";
-            while (_nodes.containsKey(nextNode)) 
+        else {
+            nextNode = nodeName + "_1";
+            while (_nodes.containsKey(nextNode))
                 nextNode += "_1";
         }
 
-        for (int i=0; i < input.length(); i++){
-            if (i < input.length()-1)
+        for (int i = 0; i < input.length(); i++) {
+            if (i < input.length() - 1)
                 addNode(nextNode);
 
             addEdge(currentNode, input.charAt(i), nextNode);
             currentNode = nextNode;
 
-            if (i < input.length() - 2){
-                nextNode = nodeName+"_"+Integer.toString(i+2); //starts at "_1"
-                while(_nodes.containsKey(nextNode)) //TODO find a better way to obtain a certainly non existing name
-                    nextNode += Integer.toString(i+2);
-            }
-            else
+            if (i < input.length() - 2) {
+                nextNode = nodeName + "_" + Integer.toString(i + 2); //starts at "_1"
+                while (_nodes.containsKey(nextNode)) //TODO find a better way to obtain a certainly non existing name
+                    nextNode += Integer.toString(i + 2);
+            } else
                 nextNode = destination;
 
         }
     }
 
-    public void removeEdge(String nodeName, Character input, String destination) throws NoSuchNodeException, NoSuchEdgeException{
+    public void removeEdge(String nodeName, Character input, String destination) throws NoSuchNodeException, NoSuchEdgeException {
         if (!_nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName);
 
         Set<Edge> nodeEdges = _nodes.get(nodeName);
         Edge oldEdge = new Edge(input, destination);
         if (!nodeEdges.contains(oldEdge))
-            throw new NoSuchEdgeException(nodeName+" + "+(input == null? "nill" : input)+" -> "+destination);
+            throw new NoSuchEdgeException(nodeName + " + " + (input == null ? "nill" : input) + " -> " + destination);
 
         nodeEdges.remove(oldEdge);
+
+        //if the given input is not part of the alphabet, extend it
+        if (_alphabet.containsKey(input)) {
+            Integer numU = _alphabet.get(input) - 1;
+            if (numU > 0)
+                _alphabet.put(input, numU);
+            else
+                _alphabet.remove(input);
+        }
 
         if (!isDeterministic()) //by removing the edge, the FSA may have been made deterministic
             checkDeterminism();
     }
 
-    public void removeNode(String nodeName) throws NoSuchNodeException{
+    public void removeNode(String nodeName) throws NoSuchNodeException {
         if (!_nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName);
 
@@ -210,11 +231,11 @@ public class FSA {
         boolean wasDeterministic = _deterministic;
         _deterministic = true; //avoids checking after every edge removal for determinism in case it was an NFA
 
-        for (Map.Entry<String,Set<Edge>> node : _nodes.entrySet()){
-            for (Edge edge : node.getValue()){
-                if (edge.destination().equals(nodeName)){
+        for (Map.Entry<String, Set<Edge>> node : _nodes.entrySet()) {
+            for (Edge edge : node.getValue()) {
+                if (edge.destination().equals(nodeName)) {
                     try {
-                        removeEdge(node.getKey(),edge.label(), nodeName);
+                        removeEdge(node.getKey(), edge.label(), nodeName);
                     } catch (NoSuchNodeException | NoSuchEdgeException e) {
                         //shh1
                     }
@@ -229,8 +250,8 @@ public class FSA {
 
     private void checkDeterminism() {
         _deterministic = true;
-        for (String node : _nodes.keySet()){
-            if (nonDeterministicNode(node)){
+        for (String node : _nodes.keySet()) {
+            if (nonDeterministicNode(node)) {
                 _deterministic = false;
                 return;
             }
@@ -239,11 +260,11 @@ public class FSA {
 
     private boolean nonDeterministicNode(String nodeName) {
         Set<Edge> nodeEdges = _nodes.get(nodeName);
-        for (Edge edge : nodeEdges){
+        for (Edge edge : nodeEdges) {
             if (edge.label() == null)
                 return true;
             int counter = 0;
-            for (Edge edge2 : nodeEdges){
+            for (Edge edge2 : nodeEdges) {
                 if (edge.label().equals(edge2.label()))
                     counter++;
             }
@@ -257,20 +278,19 @@ public class FSA {
     public String getName() {
         return _name;
     }
+
     public void setName(String name) {
         this._name = name;
     }
 
     public Set<Character> getAlphabet() {
-        return _alphabet;
-    }
-    public void setAlphabet(Set<Character> alphabet) {
-        this._alphabet = alphabet;
+        return _alphabet.keySet();
     }
 
     public String getInitialState() {
         return _initialState;
     }
+
     public void setInitialState(String initialState) {
         this._initialState = initialState;
     }
@@ -278,11 +298,14 @@ public class FSA {
     public Set<String> getFinalStates() {
         return _finalStates;
     }
+
     public void setFinalStates(Set<String> finalStates) {
         this._finalStates = finalStates;
     }
 
-    public void addFinalState(String st) { _finalStates.add(st); }
+    public void addFinalState(String st) {
+        _finalStates.add(st);
+    }
 
     public boolean isDeterministic() {
         return _deterministic;
@@ -319,7 +342,7 @@ public class FSA {
             Set<String> stateSet = workQueue.poll();
             String nState = newStates.get(stateSet);
 
-            for (String state: stateSet) {
+            for (String state : stateSet) {
                 if (_finalStates.contains(state)) {
                     newFinalStates.add(nState);
                     break;
@@ -327,7 +350,7 @@ public class FSA {
             }
 
             Set<Edge> oldEdges = new HashSet<>();
-            for (String state: stateSet)
+            for (String state : stateSet)
                 oldEdges.addAll(_nodes.get(state));
 
             Map<Character, Set<String>> transitions = new HashMap<>();
@@ -339,7 +362,7 @@ public class FSA {
             }
 
             Set<Edge> newEdges = new HashSet<>();
-            for (Map.Entry<Character, Set<String>> entry: transitions.entrySet()) {
+            for (Map.Entry<Character, Set<String>> entry : transitions.entrySet()) {
                 if (!processed.contains(entry.getValue())) {
                     processed.add(entry.getValue());
                     workQueue.add(entry.getValue());
@@ -359,10 +382,76 @@ public class FSA {
         _deterministic = true;
     }
 
-    private Set<Character> _alphabet = new HashSet<Character>();
+    public boolean isTotal() {
+        Set<Character> alphabet = getAlphabet();
+
+        for (Map.Entry<String, Set<Edge>> node: _nodes.entrySet()) {
+            Set<Edge> nodeEdges = node.getValue();
+            Set<Character> edgesCharacters = new HashSet<>();
+
+            for (Edge e: nodeEdges)
+                edgesCharacters.add(e.label());
+
+            Set<Character> nonExistent = new HashSet<>(alphabet);
+            nonExistent.removeAll(edgesCharacters);
+
+            if (!nonExistent.isEmpty())
+                return false;
+        }
+
+        return true;
+    }
+
+    public void makeTotal() {
+        String errorState = "_error";
+        Set<Character> alphabet = getAlphabet();
+        Map<String, Set<Character>> toAdd = new HashMap<>();
+
+        for (Map.Entry<String, Set<Edge>> node: _nodes.entrySet()) {
+            Set<Edge> nodeEdges = node.getValue();
+            Set<Character> edgesCharacters = new HashSet<>();
+
+            for (Edge e: nodeEdges)
+                edgesCharacters.add(e.label());
+
+            Set<Character> nonExistent = new HashSet<>(alphabet);
+            nonExistent.removeAll(edgesCharacters);
+
+            if (!nonExistent.isEmpty())
+                toAdd.put(node.getKey(), nonExistent);
+        }
+
+        if (!toAdd.isEmpty()) {
+            try {
+                addNode(errorState);
+            } catch (DuplicateElementException ex) { }
+
+            toAdd.put("_error", alphabet);
+
+            for (Map.Entry<String, Set<Character>> node : toAdd.entrySet()) {
+                String nodeLabel = node.getKey();
+                for (Character c: node.getValue()) {
+                    try {
+                        addEdge(nodeLabel, c, errorState);
+                    } catch (FSAException e) { }
+                }
+            }
+        }
+
+    }
+
+    public void complement() {
+        makeDeterministic();
+        makeTotal();
+        Set<String> newFinalStates = new HashSet<>(_nodes.keySet());
+        newFinalStates.removeAll(_finalStates);
+        _finalStates = newFinalStates;
+    }
+
+    private Map<Character, Integer> _alphabet = new HashMap<>();
     private String _initialState;
-    private Set<String> _finalStates = new HashSet<String>();
-    private Map<String, Set<Edge>> _nodes = new LinkedHashMap<String, Set<Edge>>(); //for efficient iteration
+    private Set<String> _finalStates = new HashSet<>();
+    private Map<String, Set<Edge>> _nodes = new LinkedHashMap<>(); //for efficient iteration
     private String _name = ""; //may eventually be necessary to generate implementation of the automata (and name it)
     private boolean _deterministic = true;
 }
