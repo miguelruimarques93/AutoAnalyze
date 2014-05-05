@@ -1,9 +1,10 @@
 package pt.up.fe.comp.fsa;
 
 import org.antlr.v4.runtime.misc.Pair;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.math.BigInteger;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -75,11 +76,11 @@ public class FSA {
         _name = name;
         _initialState = initialState;
 
-        addNode(_initialState);
-
         for (String state : stateNames)
             addNode(state);
 
+        if (!_nodes.containsKey(_initialState))
+            addNode(_initialState);
     }
 
     public Set<String> getNodes() {
@@ -446,6 +447,44 @@ public class FSA {
         Set<String> newFinalStates = new HashSet<>(_nodes.keySet());
         newFinalStates.removeAll(_finalStates);
         _finalStates = newFinalStates;
+    }
+
+    public String toDot() {
+        StringBuilder writer = new StringBuilder();
+
+        writer.append("digraph "); writer.append(getName()); writer.append(" {\n");
+        writer.append("\trankdir=LR;\n");
+
+        Set<String> fs = getFinalStates();
+        if (!fs.isEmpty()) {
+            writer.append("\tnode [shape = doublecircle];");
+            for (String finalNode : fs) {
+                writer.append(" "); writer.append(finalNode);
+            }
+            writer.append(";\n");
+        }
+
+        Set<String> nds = getNodes();
+        if(!nds.isEmpty()){
+            writer.append("\tnode [shape = circle];\n");
+            for (String node : nds) {
+                try {
+                    for (Edge edge : getNodeEdges(node)) {
+                        writer.append("\t"); writer.append(node); writer.append(" -> "); writer.append(edge.destination());
+                        if (edge.label() != null)
+                            writer.append(" [ label = "); writer.append(edge.label()); writer.append(" ]");
+                        writer.append(";\n");
+                    }
+                } catch (NoSuchNodeException e) {
+                    System.err.print(e);
+                    return null;
+                }
+            }
+        }
+
+        writer.append("}");
+
+        return writer.toString();
     }
 
     private Map<Character, Integer> _alphabet = new HashMap<>();

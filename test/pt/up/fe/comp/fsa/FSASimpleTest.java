@@ -17,7 +17,7 @@ public class FSASimpleTest {
     @Before
     public void init() {
         try {
-            automaton = new FSA("lol", "lol", new HashSet<String>());
+            automaton = new FSA("lol", "init", new HashSet<String>());
         } catch (DuplicateElementException e) {
             fail();
         }
@@ -106,7 +106,8 @@ public class FSASimpleTest {
             automaton.removeEdge("q1", 'a', "q2");
             automaton.addEdges("q1", "abc","q2");
             assertTrue(automaton.getNodeEdges("q1").size() == 1);
-            assertTrue(automaton.getNodes().size() == 4);//q1 -> X a -> Y b -> q2 (c)
+            System.out.println(automaton.toString());
+            assertTrue(automaton.getNodes().size() == 5);//q1 -> X a -> Y b -> q2 (c)
             assertTrue(automaton.isDeterministic());
             assertTrue(automaton.getNodeEdges("q1").contains(new FSA.Edge('a',"q1_1")));
             assertTrue(automaton.getNodeEdges("q1_1").contains(new FSA.Edge('b',"q1_2")));
