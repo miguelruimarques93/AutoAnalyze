@@ -2,9 +2,6 @@ package pt.up.fe.comp.fsa;
 
 import org.antlr.v4.runtime.misc.Pair;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -202,7 +199,7 @@ public class FSA {
         }
 
         if (!isDeterministic()) //by removing the edge, the FSA may have been made deterministic
-            checkDeterminism();
+            needsDeterminismUpdate = true;
     }
 
     public void removeNode(String nodeName) throws NoSuchNodeException {
@@ -225,7 +222,7 @@ public class FSA {
 
         _deterministic = wasDeterministic;
         if (!_deterministic)
-            checkDeterminism();
+            needsDeterminismUpdate = true;
     }
 
     private void removeEdgesWithDestination(String nodeName) {
@@ -246,7 +243,7 @@ public class FSA {
 
         _deterministic = wasDeterministic;
         if (!_deterministic)
-            checkDeterminism();
+            needsDeterminismUpdate = true;
     }
 
     private void checkDeterminism() {
@@ -309,6 +306,10 @@ public class FSA {
     }
 
     public boolean isDeterministic() {
+        if (needsDeterminismUpdate){
+            needsDeterminismUpdate = false;
+            checkDeterminism();
+        }
         return _deterministic;
     }
 
@@ -487,6 +488,7 @@ public class FSA {
         return writer.toString();
     }
 
+    private boolean needsDeterminismUpdate = false;
     private Map<Character, Integer> _alphabet = new HashMap<>();
     private String _initialState;
     private Set<String> _finalStates = new HashSet<>();
