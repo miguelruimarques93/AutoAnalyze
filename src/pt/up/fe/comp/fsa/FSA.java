@@ -198,7 +198,7 @@ public class FSA {
                 _alphabet.remove(input);
         }
 
-        if (!isDeterministic()) //by removing the edge, the FSA may have been made deterministic
+        if (!_deterministic) //don't use isDeterministic to prevent check from occurring if another edge had been removed
             needsDeterminismUpdate = true;
     }
 
@@ -311,6 +311,22 @@ public class FSA {
             checkDeterminism();
         }
         return _deterministic;
+    }
+
+    private boolean nodeHasIncomingEdges(String nodename) {
+
+        for (String node : getNodes()) {
+            try {
+                for (Edge edge : getNodeEdges(node)) {
+                    if (edge.destination().equals(nodename))
+                        return true;
+                }
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -470,14 +486,19 @@ public class FSA {
             writer.append("\tnode [shape = circle];\n");
             for (String node : nds) {
                 try {
+                    if (getNodeEdges(node).isEmpty() && !nodeHasIncomingEdges(node)) {//prevent useless and unreachable nodes from disappearing. for that, use removeUnreachable/Useless
+                        writer.append("\t"); writer.append(node); writer.append(";\n");
+                    }
+
                     for (Edge edge : getNodeEdges(node)) {
                         writer.append("\t"); writer.append(node); writer.append(" -> "); writer.append(edge.destination());
-                        if (edge.label() != null)
+                        if (edge.label() != null) {
                             writer.append(" [ label = "); writer.append(edge.label()); writer.append(" ]");
+                        }
                         writer.append(";\n");
                     }
                 } catch (NoSuchNodeException e) {
-                    System.err.print(e);
+                    System.err.println(e);
                     return null;
                 }
             }
