@@ -13,11 +13,11 @@ public class FSABuilder {
         if (initialState == null)
             return null;
         
-        FSA fsa = null;
+        FSA fsa;
         try {
             fsa = new FSA(ir.name, initialState, ir.getNodes());
         } catch (DuplicateElementException e) {
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
         
@@ -29,10 +29,10 @@ public class FSABuilder {
                 try {
                     fsa.addEdges(state, edge.attributes.get("label"), edge.destination);
                 } catch (NoSuchNodeException e) {
-                    System.out.println(e);
+                    e.printStackTrace();
                     return null;
                 } catch (DuplicateElementException e) {
-                    System.out.println(e);
+                    e.printStackTrace();
                     return null;
                 }
             }
@@ -42,7 +42,7 @@ public class FSABuilder {
     }
     
     private static Set<String> getFinalStates(DotGraph ir) {
-        Set<String> finalStates = new HashSet<String>();
+        Set<String> finalStates = new HashSet<>();
         
         for (String state : ir.getNodes()) {
             Map<String, String> attr = ir.getNodeAttributes(state);
@@ -57,6 +57,9 @@ public class FSABuilder {
     }
     
     private static String getInitialState(DotGraph ir) {
+        if (ir.attributes.containsKey("initialstate"))
+            return ir.attributes.get("initialstate");
+
         for (String state : ir.getNodes())
             return state;
         return null;

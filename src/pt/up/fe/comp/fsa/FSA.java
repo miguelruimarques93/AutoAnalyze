@@ -472,6 +472,8 @@ public class FSA {
         writer.append("digraph "); writer.append(getName()); writer.append(" {\n");
         writer.append("\trankdir=LR;\n");
 
+        writer.append("\tinitialstate="); writer.append(_initialState); writer.append(";\n");
+
         Set<String> fs = getFinalStates();
         if (!fs.isEmpty()) {
             writer.append("\tnode [shape = doublecircle];");
