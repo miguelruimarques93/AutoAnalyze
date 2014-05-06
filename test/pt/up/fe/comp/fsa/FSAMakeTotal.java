@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.util.HashSet;
 
-import static junit.framework.TestCase.fail;
 
 public class FSAMakeTotal {
     private FSA automaton;

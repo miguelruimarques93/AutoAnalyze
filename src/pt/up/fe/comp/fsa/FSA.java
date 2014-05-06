@@ -289,7 +289,9 @@ public class FSA {
         return _initialState;
     }
 
-    public void setInitialState(String initialState) {
+    public void setInitialState(String initialState) throws NoSuchNodeException {
+        if (!_nodes.containsKey(initialState))
+            throw new NoSuchNodeException(initialState);
         this._initialState = initialState;
     }
 
@@ -500,7 +502,7 @@ public class FSA {
                         writer.append(";\n");
                     }
                 } catch (NoSuchNodeException e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                     return null;
                 }
             }

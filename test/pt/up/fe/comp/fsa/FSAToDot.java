@@ -15,7 +15,6 @@ import pt.up.fe.comp.dot.parser.dotParser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 

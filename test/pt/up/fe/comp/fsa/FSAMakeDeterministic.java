@@ -1,6 +1,5 @@
 package pt.up.fe.comp.fsa;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -31,9 +30,7 @@ public class FSAMakeDeterministic {
 
             fail("DFA Equivalence not implemented yet.");
 
-        } catch (DuplicateElementException e) {
-            e.printStackTrace();
-        } catch (NoSuchNodeException e) {
+        } catch (FSAException e) {
             e.printStackTrace();
         }
     }
@@ -62,9 +59,7 @@ public class FSAMakeDeterministic {
 
             fail("DFA Equivalence not implemented yet.");
 
-        } catch (DuplicateElementException e) {
-            e.printStackTrace();
-        } catch (NoSuchNodeException e) {
+        } catch (FSAException e) {
             e.printStackTrace();
         }
     }

@@ -60,8 +60,8 @@ public class FSABuilder {
         if (ir.attributes.containsKey("initialstate"))
             return ir.attributes.get("initialstate");
 
-        for (String state : ir.getNodes())
-            return state;
+        if (!ir.getNodes().isEmpty())
+            return ir.getNodes().iterator().next();
         return null;
     }
 }

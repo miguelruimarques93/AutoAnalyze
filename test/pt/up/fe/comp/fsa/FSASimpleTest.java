@@ -113,13 +113,9 @@ public class FSASimpleTest {
             assertTrue(automaton.getNodeEdges("q1_1").contains(new FSA.Edge('b',"q1_2")));
             assertTrue(automaton.getNodeEdges("q1_2").contains(new FSA.Edge('c',"q2")));
             
-        } catch (NoSuchNodeException e) {
-            fail();
-        } catch (DuplicateElementException e) {
-            fail();
-        } catch (NoSuchEdgeException e) {
+        } catch (FSAException e) {
             fail();
         }
-        
+
     }
 }
