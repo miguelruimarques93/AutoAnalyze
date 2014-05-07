@@ -199,7 +199,7 @@ public class FSA {
         }
 
         if (!_deterministic) //don't use isDeterministic to prevent check from occurring if another edge had been removed
-            needsDeterminismUpdate = true;
+            _needsDeterminismUpdate = true;
     }
 
     public void removeNode(String nodeName) throws NoSuchNodeException {
@@ -222,7 +222,7 @@ public class FSA {
 
         _deterministic = wasDeterministic;
         if (!_deterministic)
-            needsDeterminismUpdate = true;
+            _needsDeterminismUpdate = true;
     }
 
     private void removeEdgesWithDestination(String nodeName) {
@@ -243,7 +243,7 @@ public class FSA {
 
         _deterministic = wasDeterministic;
         if (!_deterministic)
-            needsDeterminismUpdate = true;
+            _needsDeterminismUpdate = true;
     }
 
     private void checkDeterminism() {
@@ -308,8 +308,8 @@ public class FSA {
     }
 
     public boolean isDeterministic() {
-        if (needsDeterminismUpdate){
-            needsDeterminismUpdate = false;
+        if (_needsDeterminismUpdate){
+            _needsDeterminismUpdate = false;
             checkDeterminism();
         }
         return _deterministic;
@@ -513,11 +513,11 @@ public class FSA {
         return writer.toString();
     }
 
-    private boolean needsDeterminismUpdate = false;
+    private boolean _needsDeterminismUpdate = false;
     private Map<Character, Integer> _alphabet = new HashMap<>();
     private String _initialState;
     private Set<String> _finalStates = new HashSet<>();
     private Map<String, Set<Edge>> _nodes = new LinkedHashMap<>(); //for efficient iteration
-    private String _name = ""; //may eventually be necessary to generate implementation of the automata (and name it)
+    private String _name = "";
     private boolean _deterministic = true;
 }
