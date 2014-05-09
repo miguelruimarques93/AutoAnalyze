@@ -353,6 +353,26 @@ public class FSA {
         return false;
     }
 
+    /**
+     * Returns false if there are any null transitions from other nodes to this node which are not in its closure
+     *  (aka, if node's closure is a subset of another node's closure)
+     */
+    private boolean checkIncomingNullTransitions(String nodename, Set<String> nodeEClosure) {
+
+        for (String node : getNodes()) {
+            try {
+                for (Edge edge : getNodeEdges(node)) {
+                    if (edge.label() == null && edge.destination().equals(nodename) && !nodeEClosure.contains(node))
+                        return false;
+                }
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -364,9 +384,90 @@ public class FSA {
         return sb.toString();
     }
 
+    public LinkedHashSet<String> getNodeEmptyTransitionClosure(String nodename) {
+        LinkedHashSet<String> nodes = new LinkedHashSet<>();
+        LinkedList<String> toExpand = new LinkedList<>();
+        nodes.add(nodename);
+        toExpand.add(nodename);
+
+        while(!toExpand.isEmpty()) {
+            String curNode = toExpand.removeFirst();
+            try {
+                for (Edge edge : getNodeEdges(curNode)) {
+                    if (edge.label() == null && !nodes.contains(edge.destination())) {
+                        nodes.add(edge.destination());
+                        toExpand.add(edge.destination());
+                    }
+                }
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return nodes;
+    }
+
+    public void collapseEmptyTransitions() {
+        LinkedList<LinkedHashSet<String>> mergedStates = new LinkedList<>();
+        LinkedList<String> processedNodes = new LinkedList<>();
+
+        for (String node : getNodes()) {
+            LinkedHashSet<String> cls = getNodeEmptyTransitionClosure(node);
+            if (checkIncomingNullTransitions(node, cls) && !processedNodes.contains(node)) {
+                processedNodes.addAll(cls);
+                mergedStates.add(cls);
+            }
+        }
+
+        Set<String> finalStates = new HashSet<>();
+        String initialState = null;
+        Map<String, Set<Edge>> nodes = new LinkedHashMap<>();
+
+        int counter = 0;
+        for (Set<String> merge : mergedStates){
+            String newName = "q"+Integer.toString(counter);
+            nodes.put(newName, new LinkedHashSet<Edge>());
+            if (merge.contains(_initialState))
+                initialState = newName;
+            for (String fs : _finalStates) {
+                if (merge.contains(fs)) {
+                    finalStates.add(newName);
+                    break;
+                }
+            }
+
+            for (String nodeInMerge : merge) {
+                try {
+                    for (Edge edge : getNodeEdges(nodeInMerge)){
+                        if (edge.label() != null) {
+                            for (int i = 0; i < mergedStates.size(); i++) {
+                                if (mergedStates.get(i).contains(edge.destination())) {
+                                    nodes.get(newName).add(new Edge(edge.label(), "q" + Integer.toString(i)));
+                                }
+                            }
+                        }
+
+                    }
+                } catch (NoSuchNodeException e) {
+                    e.printStackTrace();
+                }
+            }
+            counter++;
+        }
+
+        _nodes = nodes;
+        _finalStates = finalStates;
+        _initialState = initialState;
+        _needsDeterminismUpdate = true;
+    }
+
     public void makeDeterministic() {
+        if (!this.isDeterministic())
+            collapseEmptyTransitions();
+        //determinism may be changed
         if (this.isDeterministic())
             return;
+
 
         Set<String> initialSet = new HashSet<>();
         initialSet.add(_initialState);

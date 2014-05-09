@@ -5,6 +5,7 @@ import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -58,6 +59,44 @@ public class FSASimpleTest {
     @Test(expected = NoSuchNodeException.class)
     public void getNodeEdgesThrowsTest() throws NoSuchNodeException {
         automaton.getNodeEdges("q1");
+    }
+
+    @Test
+    public void nodeClosureTest() {
+        try {
+            FSA newAut = new FSA("aut","q0", new LinkedHashSet<String>());
+            newAut.addEdge("q0", null, "q1");
+            newAut.addEdge("q1", null, "q2");
+            newAut.addEdge("q2", 'a', "q3");
+
+            Set<String> q0Closure = newAut.getNodeEmptyTransitionClosure("q0");
+            assertTrue(q0Closure.contains("q0"));
+            assertTrue(q0Closure.contains("q1"));
+            assertTrue(q0Closure.contains("q2"));
+            assertTrue(!q0Closure.contains("q3"));
+
+            Set<String> q1Closure = newAut.getNodeEmptyTransitionClosure("q1");
+            assertTrue(!q1Closure.contains("q0"));
+            assertTrue(q1Closure.contains("q1"));
+            assertTrue(q1Closure.contains("q2"));
+            assertTrue(!q1Closure.contains("q3"));
+
+            Set<String> q2Closure = newAut.getNodeEmptyTransitionClosure("q2");
+            assertTrue(!q2Closure.contains("q0"));
+            assertTrue(!q2Closure.contains("q1"));
+            assertTrue(q2Closure.contains("q2"));
+            assertTrue(!q2Closure.contains("q3"));
+
+            Set<String> q3Closure = newAut.getNodeEmptyTransitionClosure("q3");
+            assertTrue(!q3Closure.contains("q0"));
+            assertTrue(!q3Closure.contains("q1"));
+            assertTrue(!q3Closure.contains("q2"));
+            assertTrue(q3Closure.contains("q3"));
+
+        } catch (FSAException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
