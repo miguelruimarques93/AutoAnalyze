@@ -39,9 +39,16 @@ public class FSAToDot {
 
         FSA automaton = FSABuilder.buildFrom(graph);
 
-        String dotOutput = automaton.toDot();
 
-        ANTLRInputStream newInput = new ANTLRInputStream(dotOutput);
+        automaton.writeDot("dot_dfa_examples/testToDot.gv");
+
+        ANTLRInputStream newInput = null;
+        try {
+            newInput = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/testToDot.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
         dotLexer newLex = new dotLexer(newInput);
         CommonTokenStream newTokens = new CommonTokenStream(newLex);
         dotParser newParser = new dotParser(newTokens);

@@ -2,6 +2,8 @@ package pt.up.fe.comp.fsa;
 
 import org.antlr.v4.runtime.misc.Pair;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -468,49 +470,54 @@ public class FSA {
         _finalStates = newFinalStates;
     }
 
-    public String toDot() {
-        StringBuilder writer = new StringBuilder();
+    public void writeDot(String destFileName) {
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(destFileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
 
-        writer.append("digraph "); writer.append(getName()); writer.append(" {\n");
-        writer.append("\trankdir=LR;\n");
+        writer.println("digraph " + getName() + " {");
+        writer.println("\trankdir=LR;");
 
-        writer.append("\tinitialstate="); writer.append(_initialState); writer.append(";\n");
+        writer.println("\tinitialstate=" + _initialState + ";");
 
         Set<String> fs = getFinalStates();
         if (!fs.isEmpty()) {
-            writer.append("\tnode [shape = doublecircle];");
+            writer.print("\tnode [shape = doublecircle];");
             for (String finalNode : fs) {
-                writer.append(" "); writer.append(finalNode);
+                writer.print(" " + finalNode);
             }
-            writer.append(";\n");
+            writer.println(";");
         }
 
         Set<String> nds = getNodes();
         if(!nds.isEmpty()){
-            writer.append("\tnode [shape = circle];\n");
+            writer.println("\tnode [shape = circle];");
             for (String node : nds) {
                 try {
                     if (getNodeEdges(node).isEmpty() && !nodeHasIncomingEdges(node)) {//prevent useless and unreachable nodes from disappearing. for that, use removeUnreachable/Useless
-                        writer.append("\t"); writer.append(node); writer.append(";\n");
+                        writer.println("\t" + node + ";");
                     }
 
                     for (Edge edge : getNodeEdges(node)) {
-                        writer.append("\t"); writer.append(node); writer.append(" -> "); writer.append(edge.destination());
+                        writer.print("\t" + node + " -> " + edge.destination());
                         if (edge.label() != null) {
-                            writer.append(" [ label = "); writer.append(edge.label()); writer.append(" ]");
+                            writer.print(" [ label = " + edge.label() + " ]");
                         }
-                        writer.append(";\n");
+                        writer.println(";");
                     }
                 } catch (NoSuchNodeException e) {
                     e.printStackTrace();
-                    return null;
+                    return;
                 }
             }
         }
 
-        writer.append("}");
-
-        return writer.toString();
+        writer.println("}");
+        writer.close();
     }
 
     private boolean _needsDeterminismUpdate = false;
