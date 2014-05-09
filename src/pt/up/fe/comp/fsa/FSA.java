@@ -2,6 +2,7 @@ package pt.up.fe.comp.fsa;
 
 import org.antlr.v4.runtime.misc.Pair;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -519,6 +520,71 @@ public class FSA {
         writer.println("}");
         writer.close();
     }
+
+    public void writeHaskell(String destFileName) {
+        if (!isDeterministic()) {
+            //TODO create copy of automaton and make it deterministic, generate code for that automaton
+            System.err.println("Need to make automaton deterministic before generating Haskell code");
+            return;
+        }
+
+        File f = new File(destFileName);
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        int initialState = -1;
+        LinkedList<Integer> finalStates = new LinkedList();
+
+        //module name must start with capital letter
+        writer.println("module Aut_"
+                + f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length())
+                + "(accept) where\n\ndelta :: Int -> Char -> Int");
+        LinkedList<String> nodes = new LinkedList<>(getNodes());
+        for (int i = 0; i < nodes.size(); i++) {
+            if (initialState == -1 && nodes.get(i).equals(_initialState))
+                initialState = i;
+            if (_finalStates.contains(nodes.get(i)))
+                finalStates.add(i);
+
+            try {
+                Set<Edge> edges = getNodeEdges(nodes.get(i));
+                if (edges != null && !edges.isEmpty()) {
+                    writer.print("delta " + Integer.toString(i) + " c\t");
+                    for (Edge edge : edges) {
+                        writer.print("|c=='"+edge.label()+"' = "+nodes.indexOf(edge.destination()));
+                    }
+                    writer.println();
+                }
+
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+        writer.println("delta _ _ = -1");
+        writer.println();
+        writer.println("initialState::Int\ninitialState = "+Integer.toString(initialState));
+        writer.println();
+        writer.println("finalStates::[Int]");
+        writer.print("finalStates = [");
+        for (int i=0; i < finalStates.size(); i++) {
+            writer.print(finalStates.get(i));
+            if (i < finalStates.size()-1)
+                writer.print(",");
+        }
+        writer.println("]");
+        writer.println();
+
+        writer.println("accept::String -> Bool");
+        writer.println("accept str = foldl delta initialState str `elem` finalStates");
+
+        writer.close();
+    }
+
 
     private boolean _needsDeterminismUpdate = false;
     private Map<Character, Integer> _alphabet = new HashMap<>();
