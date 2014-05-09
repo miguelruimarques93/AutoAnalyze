@@ -364,6 +364,28 @@ public class FSA {
         return sb.toString();
     }
 
+    public Set<String> getNodeClosure(String nodename) {
+        LinkedHashSet<String> nodes = new LinkedHashSet<>();
+        LinkedList<String> toExpand = new LinkedList<>();
+        nodes.add(nodename);
+        toExpand.add(nodename);
+
+        while(!toExpand.isEmpty()) {
+            String curNode = toExpand.removeFirst();
+            try {
+                for (Edge edge : getNodeEdges(curNode)) {
+                    if (edge.label() == null && !nodes.contains(edge.destination())) {
+                        nodes.add(edge.destination());
+                        toExpand.add(edge.destination());
+                    }
+                }
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return nodes;
+    }
     public void makeDeterministic() {
         if (this.isDeterministic())
             return;
