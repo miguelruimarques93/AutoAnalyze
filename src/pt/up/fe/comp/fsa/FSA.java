@@ -375,13 +375,7 @@ public class FSA {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("Initial State: ").append(_initialState).append("\n");
-        sb.append("Final States: ").append(_finalStates.toString()).append("\n");
-        sb.append("Edges: ").append(_nodes.toString()).append("\n");
-
-        return sb.toString();
+        return "Initial State: " + _initialState + "\n" + "Final States: " + _finalStates.toString() + "\n" + "Edges: " + _nodes.toString() + "\n";
     }
 
     public LinkedHashSet<String> getNodeEmptyTransitionClosure(String nodename) {

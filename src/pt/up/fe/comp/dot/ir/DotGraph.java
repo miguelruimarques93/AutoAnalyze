@@ -27,7 +27,7 @@ public class DotGraph {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Name: %s\nStrict: %s\nBidirectional: %s\n", this.name, this.strict, this.bidirectional));
-        sb.append(this.attributes.toString() + "\n");
+        sb.append(this.attributes.toString()).append("\n");
         for (Map.Entry<String, List<Edge>> node : nodes.entrySet()) {
         	sb.append(String.format("  %s %s -> %s\n",
         			node.getKey(), nodesAttributes.get(node.getKey()).toString(),
@@ -95,6 +95,6 @@ public class DotGraph {
     public boolean bidirectional = false;
     public String name;
     public Map<String, List<Edge>> nodes = new LinkedHashMap<>();
-    public Map<String, Map<String, String>> nodesAttributes = new HashMap<String, Map<String,String>>();
-    public Map<String, String> attributes = new HashMap<String, String>();
+    public Map<String, Map<String, String>> nodesAttributes = new HashMap<>();
+    public Map<String, String> attributes = new HashMap<>();
 }
