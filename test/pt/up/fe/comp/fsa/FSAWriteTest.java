@@ -77,7 +77,7 @@ public class FSAWriteTest {
     public void testToHaskell() {
         ANTLRInputStream input = null;
         try {
-            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/fsm.gv"));
+            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/COMP_HW1.gv"));
         } catch (IOException e) {
             e.printStackTrace();
             fail();
@@ -93,7 +93,7 @@ public class FSAWriteTest {
         FSA automaton = FSABuilder.buildFrom(graph);
 
 
-        automaton.writeHaskell("example.hs");
+        automaton.writeHaskell("COMP_HW1.hs");
         System.out.println("To test this you must run the Haskell code");
     }
 
