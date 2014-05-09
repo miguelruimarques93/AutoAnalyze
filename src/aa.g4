@@ -14,69 +14,48 @@ attribution     : attribution_lhs EQUAL attribution_rhs
                 ;
 attribution_lhs : IDENTIFIER
                 ;
-attribution_rhs : operation
-                | IDENTIFIER
+attribution_rhs : IDENTIFIER
+                | operation
                 | STRING
                 ;
-operation       : operator arg_list
+operation       : operator=IDENTIFIER arg_list
                 ;
 
 IF              : 'if';
 ELSE            : 'else';
 
-control_expr    : IF OPEN_PR predicate CLOSE_PR OPEN_BR trueCase=stmt_list CLOSE_BR (ELSE OPEN_BR falseCase=stmt_list CLOSE_BR)?
+control_expr    : IF OPEN_PR predicate=operation CLOSE_PR OPEN_BR trueCase=stmt_list CLOSE_BR (NL? ELSE OPEN_BR falseCase=stmt_list CLOSE_BR)?
                 ;
-arg_list        : (IDENTIFIER | STRING | OPEN_PR operation CLOSE_PR)*
+arg_list        : arg*
                 ;
-predicate       : p_operator arg_list
-                ;
-p_operator      : EQUIVALENT
-                | EQUALS
-                | INCLUDED
-                ; //possibly include NOT, AND and OR
-operator        : p_operator
-                | UNION
-                | INTERSECTION
-                | CARTESIAN_PRODUCT
-                | DIFFERENCE
-                | CLOSURE
-                | COMPLEMENT
-                | MINIMIZE
-                | TO_DFA
-                | ENFA_TO_NFA
-                | TOTALIZE
-                | REMOVE_UNREACHABLE
-                | REMOVE_USELESS
-                | WRITE_DOT
-                | WRITE_REGEX
-                | SHOW              //for graphic visualization of automata
-                | PRINT
-                | WRITE_CODE
+arg             : IDENTIFIER
+                | STRING
+                | OPEN_PR operation CLOSE_PR
                 ;
 
 
-UNION               : 'union';
-INTERSECTION        : 'intersect';
-CARTESIAN_PRODUCT   : 'cartesian';
-DIFFERENCE          : 'diff';
-CLOSURE             : 'closure';
-COMPLEMENT          : 'complement';
-MINIMIZE            : 'min';
-TO_DFA              : 'to_dfa';
-INCLUDED            : 'in';
-EQUIVALENT          : 'equi';
-EQUALS              : 'equals';
-ENFA_TO_NFA         : 'remove_e'; //TODO rename
-TOTALIZE            : 'totalize';
-REMOVE_UNREACHABLE  : 'remove_unreachable';
-REMOVE_USELESS      : 'remove_useless';
-WRITE_DOT           : 'write_dot';
-WRITE_REGEX         : 'write_regex';
-WRITE_CODE          : 'write_code';
-SHOW                : 'show';
-PRINT               : 'print';
+// UNION               : 'union';
+// INTERSECTION        : 'intersect';
+// CARTESIAN_PRODUCT   : 'cartesian';
+// DIFFERENCE          : 'diff';
+// CLOSURE             : 'closure';
+// COMPLEMENT          : 'complement';
+// MINIMIZE            : 'min';
+// TO_DFA              : 'to_dfa';
+// INCLUDED            : 'in';
+// EQUIVALENT          : 'equi';
+// EQUALS              : 'equals';
+// ENFA_TO_NFA         : 'remove_e'; //TODO rename
+// TOTALIZE            : 'totalize';
+// REMOVE_UNREACHABLE  : 'remove_unreachable';
+// REMOVE_USELESS      : 'remove_useless';
+// WRITE_DOT           : 'write_dot';
+// WRITE_REGEX         : 'write_regex';
+// WRITE_CODE          : 'write_code';
+// SHOW                : 'show';
+// PRINT               : 'print';
 
-IDENTIFIER      : [_a-zA-Z][_a-zA-Z0-9'-']*;
+IDENTIFIER      : [_a-zA-Z][_a-zA-Z0-9-]*;
 STRING          : '"' .+? '"';
 OPEN_PR         : '(';
 CLOSE_PR        : ')';
