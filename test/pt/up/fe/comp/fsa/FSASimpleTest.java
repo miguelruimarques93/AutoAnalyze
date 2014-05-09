@@ -69,25 +69,25 @@ public class FSASimpleTest {
             newAut.addEdge("q1", null, "q2");
             newAut.addEdge("q2", 'a', "q3");
 
-            Set<String> q0Closure = newAut.getNodeClosure("q0");
+            Set<String> q0Closure = newAut.getNodeEmptyTransitionClosure("q0");
             assertTrue(q0Closure.contains("q0"));
             assertTrue(q0Closure.contains("q1"));
             assertTrue(q0Closure.contains("q2"));
             assertTrue(!q0Closure.contains("q3"));
 
-            Set<String> q1Closure = newAut.getNodeClosure("q1");
+            Set<String> q1Closure = newAut.getNodeEmptyTransitionClosure("q1");
             assertTrue(!q1Closure.contains("q0"));
             assertTrue(q1Closure.contains("q1"));
             assertTrue(q1Closure.contains("q2"));
             assertTrue(!q1Closure.contains("q3"));
 
-            Set<String> q2Closure = newAut.getNodeClosure("q2");
+            Set<String> q2Closure = newAut.getNodeEmptyTransitionClosure("q2");
             assertTrue(!q2Closure.contains("q0"));
             assertTrue(!q2Closure.contains("q1"));
             assertTrue(q2Closure.contains("q2"));
             assertTrue(!q2Closure.contains("q3"));
 
-            Set<String> q3Closure = newAut.getNodeClosure("q3");
+            Set<String> q3Closure = newAut.getNodeEmptyTransitionClosure("q3");
             assertTrue(!q3Closure.contains("q0"));
             assertTrue(!q3Closure.contains("q1"));
             assertTrue(!q3Closure.contains("q2"));
