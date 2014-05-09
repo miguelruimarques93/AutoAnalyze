@@ -1,0 +1,15 @@
+digraph Comp_HW1 {
+	rankdir=LR;
+	initialstate=Q0;
+	node [shape = doublecircle]; Q2 Q4 Q5 Q6;
+	node [shape = circle];
+	Q0 -> Q1 [ label = e ];
+	Q0 -> Q3 [ label = a ];
+	Q1 -> Q2 [ label = f ];
+	Q3 -> Q3 [ label = a ];
+	Q3 -> Q4 [ label = b ];
+	Q4 -> Q5 [ label = b ];
+	Q4 -> Q6 [ label = c ];
+	Q5 -> Q5 [ label = b ];
+	Q6 -> Q6 [ label = c ];
+}

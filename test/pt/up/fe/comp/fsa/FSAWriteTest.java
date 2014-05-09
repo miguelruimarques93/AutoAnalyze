@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class FSAToDot {
+public class FSAWriteTest {
 
     @Test
     public void testToDot() {
@@ -39,9 +39,16 @@ public class FSAToDot {
 
         FSA automaton = FSABuilder.buildFrom(graph);
 
-        String dotOutput = automaton.toDot();
 
-        ANTLRInputStream newInput = new ANTLRInputStream(dotOutput);
+        automaton.writeDot("dot_dfa_examples/testToDot.gv");
+
+        ANTLRInputStream newInput = null;
+        try {
+            newInput = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/testToDot.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
         dotLexer newLex = new dotLexer(newInput);
         CommonTokenStream newTokens = new CommonTokenStream(newLex);
         dotParser newParser = new dotParser(newTokens);
@@ -64,6 +71,30 @@ public class FSAToDot {
             }
         }
 
+    }
+
+    @Test
+    public void testToHaskell() {
+        ANTLRInputStream input = null;
+        try {
+            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/COMP_HW1.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+        dotLexer lex = new dotLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        dotParser parser = new dotParser(tokens);
+        ParseTree tree = parser.graph();
+
+        DotVisitor eva = new DotVisitor();
+        DotGraph graph = eva.visit(tree);
+
+        FSA automaton = FSABuilder.buildFrom(graph);
+
+
+        automaton.writeHaskell("COMP_HW1.hs");
+        System.out.println("To test this you must run the Haskell code");
     }
 
     private static <T> boolean compareSets(Set<T> s1, Set<T> s2){
