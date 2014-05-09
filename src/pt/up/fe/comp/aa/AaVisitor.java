@@ -27,7 +27,9 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             if (ctx.IDENTIFIER() != null) {
                 return _symbols.get(ctx.IDENTIFIER().toString());
             } else if (ctx.STRING() != null) {
-                return ctx.STRING().toString();
+                String str = ctx.STRING().getText();
+                str = str.substring(1, str.length() - 1);
+                return str;
             } else if (ctx.operation() != null) {
                 return AaVisitor.this.visit(ctx.operation());
             }
@@ -141,7 +143,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
     public static void main(String[] args) throws IOException {
 
-        String fileName = "dot_dfa_examples/ex1.aa";
+        String fileName = "dot_dfa_examples/ex2.aa";
 
         ANTLRInputStream input = new ANTLRFileStream(fileName);
         aaLexer lexer = new aaLexer(input);

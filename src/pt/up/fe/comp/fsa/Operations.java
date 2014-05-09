@@ -1,5 +1,8 @@
 package pt.up.fe.comp.fsa;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class Operations {
     public static FSA union(FSA lhs, FSA rhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -32,7 +35,9 @@ public class Operations {
     }
 
     public static FSA to_dfa(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        FSA result = new FSA(lhs);
+        result.makeDeterministic();
+        return result;
     }
 
     public static Boolean in(FSA lhs, FSA rhs) {
@@ -48,11 +53,15 @@ public class Operations {
     }
 
     public static FSA remove_e(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        FSA result = new FSA(lhs);
+        result.collapseEmptyTransitions();
+        return result;
     }
 
     public static FSA totalize(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        FSA result = new FSA(lhs);
+        result.makeTotal();
+        return result;
     }
 
     public static FSA remove_unreachable(FSA lhs) {
@@ -64,15 +73,21 @@ public class Operations {
     }
 
     public static Object write_dot(FSA lhs, String fileName) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        lhs.writeDot(fileName);
+        return null;
     }
 
     public static Object write_regex(FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static Object write_code(FSA lhs, String language, String fileName) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException {
+        try {
+            Method m = FSA.class.getMethod("write" + language, String.class);
+            return m.invoke(lhs, fileName);
+        } catch (NoSuchMethodException e) {
+            throw new UnsupportedOperationException("No output to language '" + language + "' defined.");
+        }
     }
 
     public static Object show(FSA lhs) {
