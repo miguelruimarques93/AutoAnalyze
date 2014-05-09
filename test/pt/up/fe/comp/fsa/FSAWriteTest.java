@@ -94,6 +94,33 @@ public class FSAWriteTest {
 
 
         automaton.writeHaskell("COMP_HW1.hs");
+        System.out.println(automaton);
+        System.out.println("To test this you must run the Haskell code");
+    }
+
+    @Test
+    public void testToHaskellNonDeterministic() {
+        ANTLRInputStream input = null;
+        try {
+            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/COMP_HW1_NFA.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+        dotLexer lex = new dotLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        dotParser parser = new dotParser(tokens);
+        ParseTree tree = parser.graph();
+
+        DotVisitor eva = new DotVisitor();
+        DotGraph graph = eva.visit(tree);
+
+        FSA automaton = FSABuilder.buildFrom(graph);
+
+
+        automaton.writeHaskell("COMP_HW1_NFA.hs");
+        automaton.makeDeterministic();
+        System.out.println(automaton);
         System.out.println("To test this you must run the Haskell code");
     }
 

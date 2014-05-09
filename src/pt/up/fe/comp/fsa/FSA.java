@@ -83,6 +83,25 @@ public class FSA {
             addNode(_initialState);
     }
 
+    public FSA(FSA fsa) {
+        _name = fsa.getName();
+        _initialState = fsa.getInitialState();
+        _finalStates = new HashSet<>(fsa.getFinalStates());
+        _alphabet = new HashMap<>(fsa._alphabet);
+
+        for (String node : fsa.getNodes()) {
+            _nodes.put(node, new LinkedHashSet<Edge>());
+            try {
+                for (Edge edge : fsa.getNodeEdges(node))
+                    _nodes.get(node).add(new Edge(edge.label(), edge.destination()));
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        _deterministic = fsa.isDeterministic();
+    }
+
     public Set<String> getNodes() {
         return _nodes.keySet();
     }
@@ -523,8 +542,11 @@ public class FSA {
 
     public void writeHaskell(String destFileName) {
         if (!isDeterministic()) {
-            //TODO create copy of automaton and make it deterministic, generate code for that automaton
-            System.err.println("Need to make automaton deterministic before generating Haskell code");
+            FSA aut = new FSA(this);
+            aut.makeDeterministic();
+            System.out.println(aut);
+            //aut.minimize(); //TODO
+            aut.writeHaskell(destFileName);
             return;
         }
 
@@ -546,9 +568,9 @@ public class FSA {
                 + "(accept) where\n\ndelta :: Int -> Char -> Int");
         LinkedList<String> nodes = new LinkedList<>(getNodes());
         for (int i = 0; i < nodes.size(); i++) {
-            if (initialState == -1 && nodes.get(i).equals(_initialState))
+            if (initialState == -1 && nodes.get(i).equals(getInitialState()))
                 initialState = i;
-            if (_finalStates.contains(nodes.get(i)))
+            if (getFinalStates().contains(nodes.get(i)))
                 finalStates.add(i);
 
             try {
