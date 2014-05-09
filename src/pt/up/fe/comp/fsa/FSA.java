@@ -1,9 +1,7 @@
 package pt.up.fe.comp.fsa;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.antlr.v4.runtime.misc.Pair;
 
-import javax.activity.InvalidActivityException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -419,12 +417,6 @@ public class FSA {
                 processedNodes.addAll(cls);
                 mergedStates.add(cls);
             }
-        }
-
-
-        for (String node : getNodes()) {
-            if (!processedNodes.contains(node))
-               throw new RuntimeException("I messed up");
         }
 
         Set<String> finalStates = new HashSet<>();
