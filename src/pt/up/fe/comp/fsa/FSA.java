@@ -353,26 +353,6 @@ public class FSA {
         return false;
     }
 
-    /**
-     * Returns false if there are any null transitions from other nodes to this node which are not in its closure
-     *  (aka, if node's closure is a subset of another node's closure)
-     */
-    private boolean checkIncomingNullTransitions(String nodename, Set<String> nodeEClosure) {
-
-        for (String node : getNodes()) {
-            try {
-                for (Edge edge : getNodeEdges(node)) {
-                    if (edge.label() == null && edge.destination().equals(nodename) && !nodeEClosure.contains(node))
-                        return false;
-                }
-            } catch (NoSuchNodeException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return true;
-    }
-
     @Override
     public String toString() {
         return "Initial State: " + _initialState + "\n" + "Final States: " + _finalStates.toString() + "\n" + "Edges: " + _nodes.toString() + "\n";
@@ -401,63 +381,46 @@ public class FSA {
         return nodes;
     }
 
-    public void collapseEmptyTransitions() {
-        LinkedList<LinkedHashSet<String>> mergedStates = new LinkedList<>();
-        LinkedList<String> processedNodes = new LinkedList<>();
+    public void removeEmptyTransitions() {
+        for (String node : getNodes()) {
+            Set<String> nodeEClosure = getNodeEmptyTransitionClosure(node);
+            if (!_finalStates.contains(node)) {
+                for (String n : nodeEClosure) {
+                    if (_finalStates.contains(n)) {
+                        _finalStates.add(node);
+                        break;
+                    }
+                }
+            }
+
+            for (String n : nodeEClosure) {
+                for (Edge e : _nodes.get(n)) {
+                    if (!_nodes.get(node).contains(e))
+                        _nodes.get(node).add(e);
+                }
+            }
+        }
+
+        Map<String, Set<Edge>> newNodes = new LinkedHashMap<>();
 
         for (String node : getNodes()) {
-            LinkedHashSet<String> cls = getNodeEmptyTransitionClosure(node);
-            if (checkIncomingNullTransitions(node, cls) && !processedNodes.contains(node)) {
-                processedNodes.addAll(cls);
-                mergedStates.add(cls);
+            Set<Edge> oldEdges = _nodes.get(node);
+            Set<Edge> newEdges = new LinkedHashSet<>();
+            for (Edge old : oldEdges) {
+                if (old.label() != null)
+                    newEdges.add(old);
             }
+
+            newNodes.put(node,newEdges);
         }
 
-        Set<String> finalStates = new HashSet<>();
-        String initialState = null;
-        Map<String, Set<Edge>> nodes = new LinkedHashMap<>();
-
-        int counter = 0;
-        for (Set<String> merge : mergedStates){
-            String newName = "q"+Integer.toString(counter);
-            nodes.put(newName, new LinkedHashSet<Edge>());
-            if (merge.contains(_initialState))
-                initialState = newName;
-            for (String fs : _finalStates) {
-                if (merge.contains(fs)) {
-                    finalStates.add(newName);
-                    break;
-                }
-            }
-
-            for (String nodeInMerge : merge) {
-                try {
-                    for (Edge edge : getNodeEdges(nodeInMerge)){
-                        if (edge.label() != null) {
-                            for (int i = 0; i < mergedStates.size(); i++) {
-                                if (mergedStates.get(i).contains(edge.destination())) {
-                                    nodes.get(newName).add(new Edge(edge.label(), "q" + Integer.toString(i)));
-                                }
-                            }
-                        }
-
-                    }
-                } catch (NoSuchNodeException e) {
-                    e.printStackTrace();
-                }
-            }
-            counter++;
-        }
-
-        _nodes = nodes;
-        _finalStates = finalStates;
-        _initialState = initialState;
+        _nodes = newNodes;
         _needsDeterminismUpdate = true;
     }
 
     public void makeDeterministic() {
         if (!this.isDeterministic())
-            collapseEmptyTransitions();
+            removeEmptyTransitions();
         //determinism may be changed
         if (this.isDeterministic())
             return;

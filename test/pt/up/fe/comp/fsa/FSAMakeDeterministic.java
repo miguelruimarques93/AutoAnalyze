@@ -3,6 +3,7 @@ package pt.up.fe.comp.fsa;
 import org.junit.Test;
 import static junit.framework.TestCase.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
@@ -14,30 +15,37 @@ public class FSAMakeDeterministic {
     @Test
     public  void TestCollapseEmptyTransitions() {
         try {
-            FSA newAut = new FSA("aut","q0", new LinkedHashSet<String>());
-            newAut.addEdge("q0", null, "q1");
-            newAut.addEdge("q1", null, "q2");
-            newAut.addEdge("q1", null, "q0"); //e-loop
-            newAut.addEdge("q2", 'a', "q3");
-            newAut.addNode("q4");
-            newAut.addFinalState("q3");
+            FSA newAut = new FSA("aut","P", new LinkedHashSet<String>());
+            newAut.addEdge("P", null, "Q");
+            newAut.addEdge("P", null, "R");
+            newAut.addEdge("Q", 'a', "Q1"); //e-loop
+            newAut.addEdge("Q1", 'a', "Q");
+            newAut.addEdge("R", 'a', "R1");
+            newAut.addEdge("R1", 'a', "R2");
+            newAut.addEdge("R2", 'a', "R");
 
-            newAut.collapseEmptyTransitions();
+            newAut.addFinalState("Q");
+            newAut.addFinalState("R");
+
+            newAut.removeEmptyTransitions();
 
             System.out.println(newAut);
 
-            assertTrue(newAut.getNodes().contains("q0"));
-            assertTrue(newAut.getNodes().contains("q1"));
-            assertTrue(newAut.getNodes().contains("q2"));
-            assertTrue(newAut.getNodes().size() == 3);
-            assertTrue(newAut.getNodeEdges("q0").size() == 1);
-            assertTrue(newAut.getNodeEdges("q0").contains(new FSA.Edge('a',"q1")));
-            assertTrue(newAut.getFinalStates().contains("q1"));
-            assertTrue(newAut.getFinalStates().size() == 1);
-            assertTrue(newAut.getInitialState().equals("q0"));
+            assertTrue(newAut.getNodes().containsAll(Arrays.asList("P","Q","R","Q1","R1","R2")));
+            assertTrue(newAut.getNodes().size() == 6);
+
+            assertTrue(newAut.getFinalStates().containsAll(Arrays.asList("P","Q","R")));
+            assertTrue(newAut.getFinalStates().size() == 3);
+
+            assertTrue(newAut.getNodeEdges("P").contains(new FSA.Edge('a',"Q1")));
+            assertTrue(newAut.getNodeEdges("P").contains(new FSA.Edge('a',"R1")));
+            assertTrue(newAut.getNodeEdges("P").size() == 2);
+
+            assertTrue(newAut.getInitialState().equals("P"));
 
         } catch (FSAException e) {
             e.printStackTrace();
+            fail();
         }
     }
 

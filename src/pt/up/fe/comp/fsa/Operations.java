@@ -54,7 +54,7 @@ public class Operations {
 
     public static FSA remove_e(FSA lhs) {
         FSA result = new FSA(lhs);
-        result.collapseEmptyTransitions();
+        result.removeEmptyTransitions();
         return result;
     }
 
