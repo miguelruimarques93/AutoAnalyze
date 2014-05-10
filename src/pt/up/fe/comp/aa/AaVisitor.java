@@ -8,11 +8,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import pt.up.fe.comp.aa.parser.aaBaseVisitor;
 import pt.up.fe.comp.aa.parser.aaLexer;
 import pt.up.fe.comp.aa.parser.aaParser;
+import pt.up.fe.comp.fsa.FSA;
 import pt.up.fe.comp.fsa.FSALoader;
 import pt.up.fe.comp.fsa.Operations;
 import pt.up.fe.comp.utils.SymbolTable;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -116,23 +118,39 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         Class[] paramTypes = op.getParameterTypes();
         List<Object> params = new ArrayList<>();
         aaParser.Arg_listContext argumentListContext = ctx.arg_list();
+        List<aaParser.ArgContext> args = argumentListContext.arg();
 
-        if (argumentListContext.arg().size() != paramTypes.length) {
+
+        if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
             throw new Error("No operator '" + operation + "' with " + Integer.toString(paramTypes.length));
         }
+        {
+            int i = 0, j = 0;
+            for (; i < paramTypes.length && j < args.size(); ++i, ++j) {
+                Object param = _argVisitor.visit(args.get(j));
+                if (paramTypes[i].isArray()) {
+                    Class paramType = paramTypes[i].getComponentType();
+                    List<Object> array = new ArrayList<>();
+                    while (param != null && j < args.size() && paramType.isInstance(param)) {
+                        array.add(param);
+                        ++j;
+                        if (j == args.size()) break;
+                        param = _argVisitor.visit(args.get(j));
+                    }
+                    param = array.toArray((Object[]) Array.newInstance(paramType, array.size()));
+                } else if (!paramTypes[i].isInstance(param))
+                    throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + param.getClass().getSimpleName());
 
-        for (int i = 0; i < paramTypes.length; ++i) {
-            Object param = _argVisitor.visit(argumentListContext.arg(i));
-            if (!paramTypes[i].isInstance(param))
-                throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i)+ " of type " + param.getClass().getSimpleName());
+                params.add(param);
+            }
 
-            params.add(param);
+            if (i < paramTypes.length || j < args.size())
+                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
         }
-
         try {
             return op.invoke(null, params.toArray(new Object[params.size()]));
         } catch (IllegalArgumentException e) {
-            throw new Error("wrong number of arguments on line " + ctx.getStart().getLine());
+            throw new Error(e.getMessage() + " on line " + ctx.getStart().getLine());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             throw new Error();
@@ -142,7 +160,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
     }
 
     public static void main(String[] args) throws IOException {
-
         String fileName = "dot_dfa_examples/ex2.aa";
 
         ANTLRInputStream input = new ANTLRFileStream(fileName);
@@ -154,5 +171,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         AaVisitor eval = new AaVisitor();
 
         eval.visit(tree);
+
     }
 }

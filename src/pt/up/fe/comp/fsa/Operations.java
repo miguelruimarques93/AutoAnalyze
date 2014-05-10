@@ -4,19 +4,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Operations {
-    public static FSA union(FSA lhs, FSA rhs) {
+    public static FSA union(FSA... args) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static FSA intersect(FSA lhs, FSA rhs) {
+    public static FSA intersect(FSA... args) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static FSA cartesian(FSA lhs, FSA rhs) {
+    public static FSA cartesian(FSA... args) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static FSA diff(FSA lhs, FSA rhs) {
+    public static FSA diff(FSA... args) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
