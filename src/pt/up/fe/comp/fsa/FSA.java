@@ -292,9 +292,9 @@ public class FSA {
         return _name;
     }
 
-    public void setName(String name) {
+    /*public void setName(String name) {
         this._name = name;
-    }
+    }*/
 
     public Set<Character> getAlphabet() {
         return _alphabet.keySet();
@@ -304,11 +304,11 @@ public class FSA {
         return _initialState;
     }
 
-    public void setInitialState(String initialState) throws NoSuchNodeException {
+    /*public void setInitialState(String initialState) throws NoSuchNodeException {
         if (!_nodes.containsKey(initialState))
             throw new NoSuchNodeException(initialState);
         this._initialState = initialState;
-    }
+    }*/
 
     public Set<String> getFinalStates() {
         return _finalStates;
@@ -551,7 +551,9 @@ public class FSA {
         if (!toAdd.isEmpty()) {
             try {
                 addNode(errorState);
-            } catch (DuplicateElementException ex) { }
+            } catch (DuplicateElementException ex) {
+                ex.printStackTrace();
+            }
 
             toAdd.put("_error", alphabet);
 
@@ -560,7 +562,9 @@ public class FSA {
                 for (Character c: node.getValue()) {
                     try {
                         addEdge(nodeLabel, c, errorState);
-                    } catch (FSAException e) { }
+                    } catch (FSAException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -645,7 +649,7 @@ public class FSA {
         }
 
         int initialState = -1;
-        LinkedList<Integer> finalStates = new LinkedList();
+        LinkedList<Integer> finalStates = new LinkedList<>();
 
         //module name must start with capital letter
         writer.println("module Aut_"
