@@ -231,13 +231,6 @@ public class FSA {
         boolean wasDeterministic = _deterministic;
         _deterministic = true; //avoids checking after every edge removal for determinism in case it was an NFA
 
-        for (Edge edge : _nodes.get(nodeName))
-            try {
-                removeEdge(nodeName, edge.label(), edge.destination());
-            } catch (NoSuchEdgeException e) {
-                //Shh
-            }
-
         removeEdgesWithDestination(nodeName);
 
         _nodes.remove(nodeName);
@@ -411,7 +404,7 @@ public class FSA {
                     newEdges.add(old);
             }
 
-            newNodes.put(node,newEdges);
+            newNodes.put(node, newEdges);
         }
 
         _nodes = newNodes;
@@ -480,6 +473,40 @@ public class FSA {
         _finalStates = newFinalStates;
         _nodes = newNodes;
         _deterministic = true;
+    }
+
+    public void removeUnreachableStates() {
+        HashSet<String> reachableStates = new HashSet<>();
+        reachableStates.add(_initialState);
+
+        boolean done;
+        do {
+            HashSet<String> temp = new HashSet<>();
+            for (String q : reachableStates) {
+                for (Edge e : _nodes.get(q)) {
+                    if (!reachableStates.contains(e.destination()) && !temp.contains(e.destination()))
+                        temp.add(e.destination());
+                }
+            }
+
+            for (String q : temp)
+                reachableStates.add(q);
+            done = temp.isEmpty();
+        } while(!done);
+
+        LinkedList<String> toRemove = new LinkedList<>();
+        for (String node : getNodes()) {
+            if (!reachableStates.contains(node))
+                toRemove.add(node);
+        }
+
+        for (String nr : toRemove) {
+            try {
+                removeNode(nr);
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean isTotal() {

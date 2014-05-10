@@ -18,7 +18,7 @@ public class FSAMakeDeterministic {
             FSA newAut = new FSA("aut","P", new LinkedHashSet<String>());
             newAut.addEdge("P", null, "Q");
             newAut.addEdge("P", null, "R");
-            newAut.addEdge("Q", 'a', "Q1"); //e-loop
+            newAut.addEdge("Q", 'a', "Q1");
             newAut.addEdge("Q1", 'a', "Q");
             newAut.addEdge("R", 'a', "R1");
             newAut.addEdge("R1", 'a', "R2");
