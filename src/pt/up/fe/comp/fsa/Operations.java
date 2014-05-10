@@ -65,7 +65,9 @@ public class Operations {
     }
 
     public static FSA remove_unreachable(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        FSA result = new FSA(lhs);
+        result.removeUnreachableStates();
+        return result;
     }
 
     public static FSA remove_useless(FSA lhs) {
