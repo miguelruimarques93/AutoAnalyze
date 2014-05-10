@@ -71,7 +71,9 @@ public class Operations {
     }
 
     public static FSA remove_useless(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        FSA result = new FSA(lhs);
+        result.removeUselessStates();
+        return result;
     }
 
     public static Object write_dot(FSA lhs, String fileName) {

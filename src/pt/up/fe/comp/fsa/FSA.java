@@ -244,16 +244,17 @@ public class FSA {
         boolean wasDeterministic = _deterministic;
         _deterministic = true; //avoids checking after every edge removal for determinism in case it was an NFA
 
+
         for (Map.Entry<String, Set<Edge>> node : _nodes.entrySet()) {
+            Set<Edge> toRemove = new LinkedHashSet<>();
             for (Edge edge : node.getValue()) {
                 if (edge.destination().equals(nodeName)) {
-                    try {
-                        removeEdge(node.getKey(), edge.label(), nodeName);
-                    } catch (NoSuchNodeException | NoSuchEdgeException e) {
-                        //shh1
-                    }
+                    toRemove.add(edge);
                 }
             }
+
+            for (Edge edge : toRemove)
+                node.getValue().remove(edge);
         }
 
         _deterministic = wasDeterministic;
@@ -489,8 +490,7 @@ public class FSA {
                 }
             }
 
-            for (String q : temp)
-                reachableStates.add(q);
+            reachableStates.addAll(temp);
             done = temp.isEmpty();
         } while(!done);
 
@@ -506,6 +506,51 @@ public class FSA {
             } catch (NoSuchNodeException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private HashSet<String> getNewNodesWithTransitionsTo(Set<String> nodenames) {
+        HashSet<String> nodes = new HashSet<>();
+
+        for (String node: getNodes()) {
+            for (Edge e : _nodes.get(node)) {
+                if (nodenames.contains(e.destination()) && !nodenames.contains(node)) {
+                    nodes.add(node);
+                    break;
+                }
+            }
+        }
+        return nodes;
+    }
+
+    public void removeUselessStates() {
+        HashSet<String> usefulStates = new HashSet<>(_finalStates);
+        boolean done;
+        do {
+            HashSet<String> newStates = getNewNodesWithTransitionsTo(usefulStates);
+            usefulStates.addAll(newStates);
+            done = newStates.isEmpty();
+        } while(!done);
+
+        LinkedList<String> toRemove = new LinkedList<>();
+        for (String node : getNodes()) {
+            if (!usefulStates.contains(node))
+                toRemove.add(node);
+        }
+
+        for (String nr : toRemove) {
+            try {
+                removeNode(nr);
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //If the initial state has been removed, add a new state with no related transitions and set it to be the initial state.
+        //1- remove the initial node anyway to remove all transitions to/from it
+        //2- then just add a node with the same name
+        if (toRemove.contains(_initialState)) {
+            _nodes.put(_initialState, new LinkedHashSet<Edge>());
         }
     }
 
