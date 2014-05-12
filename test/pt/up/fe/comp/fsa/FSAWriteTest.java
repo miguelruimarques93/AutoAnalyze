@@ -93,7 +93,7 @@ public class FSAWriteTest {
         FSA automaton = FSABuilder.buildFrom(graph);
 
 
-        automaton.write_haskell("COMP_HW1.hs");
+        automaton.write_haskell("dot_dfa_examples/COMP_HW1.hs");
         System.out.println(automaton);
         System.out.println("To test this you must run the Haskell code");
     }
@@ -118,7 +118,7 @@ public class FSAWriteTest {
         FSA automaton = FSABuilder.buildFrom(graph);
 
 
-        automaton.write_haskell("COMP_HW1_NFA.hs");
+        automaton.write_haskell("dot_dfa_examples/COMP_HW1_NFA.hs");
         automaton.makeDeterministic();
         System.out.println(automaton);
         System.out.println("To test this you must run the Haskell code");
@@ -144,7 +144,7 @@ public class FSAWriteTest {
         FSA automaton = FSABuilder.buildFrom(graph);
 
 
-        automaton.write_prolog("COMP_HW1.pl");
+        automaton.write_prolog("dot_dfa_examples/COMP_HW1.pl");
         System.out.println(automaton);
         System.out.println("To test this you must run the Prolog code");
     }
