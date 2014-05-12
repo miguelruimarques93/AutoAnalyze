@@ -674,6 +674,70 @@ public class FSA {
         writer.close();
     }
 
+    public void write_prolog(String destFileName) {
+        File f = new File(destFileName);
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String modulename = f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length());
+
+        String m_code_name = "code_"+modulename+"_";
+        String m_trans_name = "transition_"+modulename;
+        String m_ini_name = "initial_state_"+modulename;
+        String m_final_name = "final_state_"+modulename;
+        String m_accept_name = "accept_"+modulename;
+
+        for (Character c : _alphabet.keySet())
+            writer.print(m_code_name+c+"(C):- \""+c+"\" = [C]. ");
+
+        writer.println();
+        writer.println();
+
+        int initialState = -1;
+        LinkedList<Integer> finalStates = new LinkedList<>();
+
+        LinkedList<String> nodes = new LinkedList<>(getNodes());
+        for (int i = 0; i < nodes.size(); i++) {
+            if (initialState == -1 && nodes.get(i).equals(getInitialState()))
+                initialState = i;
+            if (getFinalStates().contains(nodes.get(i)))
+                finalStates.add(i);
+
+            try {
+                Set<Edge> edges = getNodeEdges(nodes.get(i));
+                if (edges != null && !edges.isEmpty()) {
+                    for (Edge edge : edges) {
+                        writer.println(m_trans_name+"(q"+Integer.toString(i)+", C, q"+nodes.indexOf(edge.destination())+"):- "+m_code_name+edge.label()+"(C).");
+                    }
+                    writer.println();
+                }
+
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+        writer.println();
+        writer.println(m_ini_name+"(q"+Integer.toString(initialState)+").");
+        writer.println();
+        for (int i=0; i < finalStates.size(); i++)
+            writer.print(m_final_name+"(q"+finalStates.get(i)+"). ");
+
+        writer.println();
+        writer.println(m_accept_name+"(String):-\n" +
+                "        "+m_ini_name+"(State), "+m_accept_name+"(String,State).\n" +
+                "\n" +
+                m_accept_name+"([],State):- "+m_final_name+"(State). %state must be a final state after all of the input has been tested\n" +
+                m_accept_name+"([C|Cs],State):-\n" +
+                "        "+m_trans_name+"(State,C,NextState), "+m_accept_name+"(Cs,NextState).");
+
+        writer.close();
+    }
+
     public void write_haskell(String destFileName) {
         if (!isDeterministic()) {
             FSA aut = new FSA(this);
@@ -738,7 +802,6 @@ public class FSA {
 
         writer.close();
     }
-
 
     private boolean _needsDeterminismUpdate = false;
     private Map<Character, Integer> _alphabet = new HashMap<>();
