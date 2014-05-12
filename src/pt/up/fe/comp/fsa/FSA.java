@@ -674,13 +674,11 @@ public class FSA {
         writer.close();
     }
 
-    public void writeHaskell(String destFileName) {
+    public void write_haskell(String destFileName) {
         if (!isDeterministic()) {
             FSA aut = new FSA(this);
             aut.makeDeterministic();
-            System.out.println(aut);
-            //aut.minimize(); //TODO
-            aut.writeHaskell(destFileName);
+            aut.write_haskell(destFileName);
             return;
         }
 

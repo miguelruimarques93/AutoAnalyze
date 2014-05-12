@@ -87,7 +87,7 @@ public class Operations {
 
     public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException {
         try {
-            Method m = FSA.class.getMethod("write" + language, String.class);
+            Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class);
             return m.invoke(lhs, fileName);
         } catch (NoSuchMethodException e) {
             throw new UnsupportedOperationException("No output to language '" + language + "' defined.");

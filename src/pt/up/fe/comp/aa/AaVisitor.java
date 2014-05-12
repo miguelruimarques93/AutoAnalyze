@@ -160,7 +160,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
     }
 
     public static void main(String[] args) throws IOException {
-        String fileName = "dot_dfa_examples/ex2.aa";
+        String fileName = "dot_dfa_examples/COMP_HW1.aa";
 
         ANTLRInputStream input = new ANTLRFileStream(fileName);
         aaLexer lexer = new aaLexer(input);
