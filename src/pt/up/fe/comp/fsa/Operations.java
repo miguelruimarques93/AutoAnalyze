@@ -34,7 +34,9 @@ public class Operations {
     }
 
     public static FSA min(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        FSA result = new FSA(lhs);
+        result.minimize();
+        return result;
     }
 
     public static FSA to_dfa(FSA lhs) {
