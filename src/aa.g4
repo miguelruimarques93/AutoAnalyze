@@ -6,9 +6,9 @@ package pt.up.fe.comp.aa.parser;
 
 }
 
-stmt_list       : (stmt (SEMICOLON | NL))* stmt?
+stmt_list       : stmt*
                 ;
-stmt            : (attribution | operation | control_expr)
+stmt            : (((attribution | operation) SEMICOLON) | control_expr)
                 ;
 attribution     : attribution_lhs EQUAL attribution_rhs
                 ;
@@ -24,7 +24,7 @@ operation       : operator=IDENTIFIER arg_list
 IF              : 'if';
 ELSE            : 'else';
 
-control_expr    : IF OPEN_PR predicate=operation CLOSE_PR OPEN_BR trueCase=stmt_list CLOSE_BR (NL? ELSE OPEN_BR falseCase=stmt_list CLOSE_BR)?
+control_expr    : IF OPEN_PR predicate=operation CLOSE_PR OPEN_BR trueCase=stmt_list CLOSE_BR (ELSE OPEN_BR falseCase=stmt_list CLOSE_BR)?
                 ;
 arg_list        : arg*
                 ;
@@ -63,7 +63,6 @@ OPEN_BR         : '{';
 CLOSE_BR        : '}';
 EQUAL           : '=';
 SEMICOLON       : ';';
-NL              : '\n';
 
 WS              : [ \t\r\n]+ -> skip;
 COMMENT         :   '/*' .*? '*/'       -> skip;

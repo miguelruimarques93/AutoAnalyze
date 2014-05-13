@@ -1,0 +1,9 @@
+a = "dot_dfa_examples/COMP_HW1.gv";
+
+if (not (accepts a "ef")) {
+    write_code "Haskell" a "dot_dfa_examples/success.hs";
+}
+else {
+    write_code "Prolog" a "dot_dfa_examples/fail.pl";
+}
+

@@ -4,12 +4,22 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import junit.framework.Assert;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
+import pt.up.fe.comp.dot.DotVisitor;
+import pt.up.fe.comp.dot.ir.DotGraph;
+import pt.up.fe.comp.dot.parser.dotLexer;
+import pt.up.fe.comp.dot.parser.dotParser;
 
 
 public class FSASimpleTest {
@@ -156,5 +166,40 @@ public class FSASimpleTest {
             fail();
         }
 
+    }
+
+    @Test
+    public void testAcceptance() {
+        ANTLRInputStream input = null;
+        try {
+            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/COMP_HW1_NFA.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+        dotLexer lex = new dotLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        dotParser parser = new dotParser(tokens);
+        ParseTree tree = parser.graph();
+
+        DotVisitor eva = new DotVisitor();
+        DotGraph graph = eva.visit(tree);
+
+        FSA automaton = FSABuilder.buildFrom(graph);
+
+        assertTrue(automaton.accepts("ef"));
+        assertTrue(automaton.accepts("abc"));
+        assertTrue(automaton.accepts("aaabccccc"));
+        assertTrue(automaton.accepts("aaabbbbbb"));
+        assertTrue(automaton.accepts("abbbb"));
+        assertTrue(automaton.accepts("bbbb"));
+
+        assertFalse(automaton.accepts(""));
+        assertFalse(automaton.accepts("e"));
+        assertFalse(automaton.accepts("eff"));
+        assertFalse(automaton.accepts("abbc"));
+        assertFalse(automaton.accepts("bcccc"));
+        assertFalse(automaton.accepts("sfgddd"));
+        assertFalse(automaton.accepts("aaacccc"));
     }
 }

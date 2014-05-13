@@ -1,11 +1,11 @@
-a = "dot_dfa_examples/COMP_HW1.gv"
-b = "dot_dfa_examples/dfa.gv"
-c = complement a
-d = union a (diff b c)
+a = "dot_dfa_examples/COMP_HW1.gv";
+b = "dot_dfa_examples/dfa.gv";
+c = complement a;
+d = union a (diff b c);
 if (equals c d) {
-    write_dot d "d.gv"
+    write_dot d "d.gv";
 }
 else {
-    write_code Haskell c "c.hs"
+    write_code Haskell c "c.hs";
 }
 

@@ -348,6 +348,31 @@ public class FSA {
         return false;
     }
 
+    public boolean accepts(String input) {
+        if (_finalStates.isEmpty())
+            return false;
+
+        LinkedHashSet<String> curNodes = new LinkedHashSet<>(getNodeEmptyTransitionClosure(getInitialState()));
+
+        for (Character c : input.toCharArray()) {
+            LinkedHashSet<String> newNodes = new LinkedHashSet<>();
+            for (String node : curNodes) {
+                for (Edge edge : _nodes.get(node)) {
+                    if (edge.label() == c)
+                        newNodes.addAll(getNodeEmptyTransitionClosure(edge.destination()));
+                }
+            }
+            curNodes = newNodes;
+        }
+
+        for (String node : curNodes) {
+            if (_finalStates.contains(node))
+                return true;
+        }
+
+        return false;
+    }
+
     @Override
     public String toString() {
         return "Initial State: " + _initialState + "\n" + "Final States: " + _finalStates.toString() + "\n" + "Edges: " + _nodes.toString() + "\n";

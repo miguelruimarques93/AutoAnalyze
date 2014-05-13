@@ -55,6 +55,10 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
+    public static Boolean accepts(FSA lhs, String rhs) {
+        return lhs.accepts(rhs);
+    }
+
     public static FSA remove_e(FSA lhs) {
         FSA result = new FSA(lhs);
         result.removeEmptyTransitions();
@@ -96,7 +100,7 @@ public class Operations {
             String moduleName = f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length());
             PrintStream stream = new PrintStream(f);
 
-            Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class);
+            Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class, PrintStream.class);
             return m.invoke(lhs, moduleName, stream);
         } catch (NoSuchMethodException e) {
             throw new UnsupportedOperationException("No output to language '" + language + "' defined.");
@@ -109,5 +113,9 @@ public class Operations {
 
     public static Object print(FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    }
+
+    public static Boolean not(Boolean val) {
+        return !val;
     }
 }
