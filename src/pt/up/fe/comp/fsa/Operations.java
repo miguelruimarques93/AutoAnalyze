@@ -1,5 +1,8 @@
 package pt.up.fe.comp.fsa;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -76,8 +79,10 @@ public class Operations {
         return result;
     }
 
-    public static Object write_dot(FSA lhs, String fileName) {
-        lhs.writeDot(fileName);
+    public static Object write_dot(FSA lhs, String fileName) throws FileNotFoundException {
+        PrintStream stream = new PrintStream(fileName);
+
+        lhs.writeDot(stream);
         return null;
     }
 
@@ -85,10 +90,14 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException {
+    public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException, FileNotFoundException {
         try {
+            File f = new File(fileName);
+            String moduleName = f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length());
+            PrintStream stream = new PrintStream(f);
+
             Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class);
-            return m.invoke(lhs, fileName);
+            return m.invoke(lhs, moduleName, stream);
         } catch (NoSuchMethodException e) {
             throw new UnsupportedOperationException("No output to language '" + language + "' defined.");
         }

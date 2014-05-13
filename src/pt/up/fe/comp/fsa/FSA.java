@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.misc.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -624,14 +625,9 @@ public class FSA {
         _finalStates = newFinalStates;
     }
 
-    public void writeDot(String destFileName) {
-        PrintWriter writer;
-        try {
-            writer = new PrintWriter(destFileName);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
+    public void writeDot(PrintStream stream) {
+        PrintWriter writer = new PrintWriter(stream);
+
 
         writer.println("digraph " + getName() + " {");
         writer.println("\trankdir=LR;");
@@ -674,23 +670,14 @@ public class FSA {
         writer.close();
     }
 
-    public void write_prolog(String destFileName) {
-        File f = new File(destFileName);
-        PrintWriter writer;
-        try {
-            writer = new PrintWriter(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
+    public void write_prolog(String moduleName, PrintStream stream) {
+        PrintWriter writer = new PrintWriter(stream);
 
-        String modulename = f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length());
-
-        String m_code_name = "code_"+modulename+"_";
-        String m_trans_name = "transition_"+modulename;
-        String m_ini_name = "initial_state_"+modulename;
-        String m_final_name = "final_state_"+modulename;
-        String m_accept_name = "accept_"+modulename;
+        String m_code_name = "code_"+moduleName+"_";
+        String m_trans_name = "transition_"+moduleName;
+        String m_ini_name = "initial_state_"+moduleName;
+        String m_final_name = "final_state_"+moduleName;
+        String m_accept_name = "accept_"+moduleName;
 
         for (Character c : _alphabet.keySet())
             writer.print(m_code_name+c+"(C):- \""+c+"\" = [C]. ");
@@ -738,29 +725,22 @@ public class FSA {
         writer.close();
     }
 
-    public void write_haskell(String destFileName) {
+    public void write_haskell(String moduleName, PrintStream stream) {
         if (!isDeterministic()) {
             FSA aut = new FSA(this);
             aut.makeDeterministic();
-            aut.write_haskell(destFileName);
+            aut.write_haskell(moduleName, stream);
             return;
         }
 
-        File f = new File(destFileName);
-        PrintWriter writer;
-        try {
-            writer = new PrintWriter(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
+        PrintWriter writer = new PrintWriter(stream);
 
         int initialState = -1;
         LinkedList<Integer> finalStates = new LinkedList<>();
 
         //module name must start with capital letter
         writer.println("module Aut_"
-                + f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length())
+                + moduleName
                 + "(accept) where\n\ndelta :: Int -> Char -> Int");
         LinkedList<String> nodes = new LinkedList<>(getNodes());
         for (int i = 0; i < nodes.size(); i++) {
