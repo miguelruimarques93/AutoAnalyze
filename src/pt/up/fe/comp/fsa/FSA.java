@@ -2,8 +2,6 @@ package pt.up.fe.comp.fsa;
 
 import org.antlr.v4.runtime.misc.Pair;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.*;
@@ -236,6 +234,9 @@ public class FSA {
 
         _nodes.remove(nodeName);
 
+        if (_finalStates.contains(nodeName))
+            _finalStates.remove(nodeName);
+
         _deterministic = wasDeterministic;
         if (!_deterministic)
             _needsDeterminismUpdate = true;
@@ -321,6 +322,8 @@ public class FSA {
     }
 
     public void addFinalState(String st) {
+        if (!_nodes.containsKey(st))
+            _nodes.put(st, new LinkedHashSet<Edge>());
         _finalStates.add(st);
     }
 
@@ -650,6 +653,95 @@ public class FSA {
         _finalStates = newFinalStates;
     }
 
+    public void minimize() {
+        /*The following algorithm generates a total FSA equivalent to the one we start off
+           with but with the least possible number of states.
+          Note, however, that useless and unreachable states would first have to be removed for the algorithm to work.
+          Also, the finite state automaton must be deterministic.*/
+        makeDeterministic();
+        removeUselessStates();
+        removeUnreachableStates();
+        makeTotal();
+
+        HashMap<String, Integer> nodeToNumber = new HashMap<>();
+        HashMap<Integer, String> numberToNode = new HashMap<>();
+        int counter = 0;
+        for (String node : getNodes()) {
+            nodeToNumber.put(node, counter);
+            numberToNode.put(counter, node);
+            ++counter;
+        }
+
+        boolean[][] matrix = new boolean[nodeToNumber.size()][nodeToNumber.size()];
+
+        //Compute D(0)
+        for (int i=0; i < matrix.length; i++) {
+            for (int j=0; j < i; j++) {
+                matrix[i][j] = (_finalStates.contains(numberToNode.get(i)) && !_finalStates.contains(numberToNode.get(j))) ||
+                        (!_finalStates.contains(numberToNode.get(i)) && _finalStates.contains(numberToNode.get(j)));
+            }
+        }
+
+        boolean changed = true;
+        while(changed) {
+            changed = false;
+            for (int i=0; i < matrix.length; i++) {
+                for (int j=0; j < i; j++) { //symmetrical matrix
+                    if (matrix[i][j]) continue;
+
+                    for (char c : _alphabet.keySet()) {
+                        String iNode = null;
+                        String jNode = null;
+                        for (Edge e : _nodes.get(numberToNode.get(i))) {
+                            if (e.label() == c) {
+                                iNode = e.destination();
+                                break;
+                            }
+                        }
+                        for (Edge e : _nodes.get(numberToNode.get(j))) {
+                            if (e.label() == c) {
+                                jNode = e.destination();
+                                break;
+                            }
+                        }
+
+                        if (matrix[nodeToNumber.get(iNode)][nodeToNumber.get(jNode)]) {
+                            matrix[i][j] = true;
+                            changed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i=matrix.length-1; i > -1; i--) { //start from largest nodes and merge progressively
+            boolean toRemove = false;
+            for (int j=i-1; j > -1; j--) {
+                if (matrix[i][j]) continue;
+                toRemove = true;
+                for (String node : _nodes.keySet()) {
+                    Set<Edge> oldE = new LinkedHashSet<>(_nodes.get(node));
+                    for (Edge e : oldE) {
+                        if (e.destination().equals(numberToNode.get(i)))
+                            _nodes.get(node).add(new Edge(e.label(), numberToNode.get(j)));
+                    }
+                }
+                for (Edge e : _nodes.get(numberToNode.get(i)))
+                    _nodes.get(numberToNode.get(j)).add(e);
+
+            }
+            if(toRemove) {
+                try {
+                    removeNode(numberToNode.get(i));
+                } catch (NoSuchNodeException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        removeUselessStates();
+    }
+
     public void writeDot(PrintStream stream) {
         PrintWriter writer = new PrintWriter(stream);
 
@@ -736,8 +828,7 @@ public class FSA {
         writer.println();
         writer.println(m_ini_name+"(q"+Integer.toString(initialState)+").");
         writer.println();
-        for (int i=0; i < finalStates.size(); i++)
-            writer.print(m_final_name+"(q"+finalStates.get(i)+"). ");
+        for (Integer finalState : finalStates) writer.print(m_final_name + "(q" + finalState + "). ");
 
         writer.println();
         writer.println(m_accept_name+"(String):-\n" +
