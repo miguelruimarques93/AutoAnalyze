@@ -210,7 +210,6 @@ public class FSA {
 
         nodeEdges.remove(oldEdge);
 
-        //if the given input is not part of the alphabet, extend it
         if (_alphabet.containsKey(input)) {
             Integer numU = _alphabet.get(input) - 1;
             if (numU > 0)
@@ -437,6 +436,8 @@ public class FSA {
             newNodes.put(node, newEdges);
         }
 
+        if(_alphabet.containsKey(null))
+            _alphabet.remove(null);
         _nodes = newNodes;
         _needsDeterminismUpdate = true;
     }
