@@ -646,6 +646,14 @@ public class FSA {
 
     }
 
+    public boolean doesNotAcceptAnything() {
+        FSA copy = new FSA(this);
+        copy.makeDeterministic();
+        copy.removeUnreachableStates();
+
+        return copy.getFinalStates().isEmpty();
+    }
+
     public void complement() {
         makeDeterministic();
         makeTotal();
