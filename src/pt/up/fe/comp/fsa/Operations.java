@@ -88,6 +88,26 @@ public class Operations {
     }
 
     /**
+     * Determines whether an automaton's accepts every string in it's alphabet AND the empty set
+     *
+     * @param lhs automaton to test
+     * @return returns true if lhs accepts the kleene star closure of it's alphabet
+     */
+    public static Boolean accepts_alphabet_star_closure(FSA lhs) {
+        return lhs.acceptsAlphabetKleeneStar();
+    }
+
+    /**
+     * Determines whether an automaton's accepts every string in it's alphabet
+     *
+     * @param lhs automaton to test
+     * @return returns true if lhs accepts the kleene plus closure of it's alphabet
+     */
+    public static Boolean accepts_alphabet_plus_closure(FSA lhs) {
+        return lhs.acceptsAlphabetKleeneStar();
+    }
+
+    /**
      * Determines whether an automaton accepts a given string.
      *
      * @param lhs automaton to test

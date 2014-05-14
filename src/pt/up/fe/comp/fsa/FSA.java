@@ -646,6 +646,31 @@ public class FSA {
 
     }
 
+    public boolean acceptsAlphabetKleeneStar() {
+        FSA copy = new FSA(this);
+        copy.complement();
+        return copy.doesNotAcceptAnything();
+    }
+
+    public boolean acceptsAlphabetKleenePlus() {
+        FSA copy = new FSA(this);
+        copy.complement();
+        copy.minimize();
+        String copyInit = copy.getInitialState();
+        if (copy.getFinalStates().isEmpty())
+            return true;
+        else if (copy.getFinalStates().size() == 1 && copy.getFinalStates().contains(copyInit)) {
+            try {
+                Set<Edge> initEdges = copy.getNodeEdges(copyInit);
+                return (initEdges.isEmpty() || (initEdges.size() == 1 && initEdges.contains(new Edge(null, copyInit))));
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
     public boolean doesNotAcceptAnything() {
         FSA copy = new FSA(this);
         copy.makeDeterministic();
