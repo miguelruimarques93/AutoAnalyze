@@ -3,7 +3,6 @@ package pt.up.fe.comp.fsa;
 import org.antlr.v4.runtime.misc.Pair;
 
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -685,11 +684,12 @@ public class FSA {
         if (copy.getNodes().size() != 1 || copy.getFinalStates().size() != 1)
             return false;
 
-        Set<Edge> nodeEdges = null;
+        Set<Edge> nodeEdges;
         try {
             nodeEdges = copy.getNodeEdges(copy.getInitialState());
         } catch (NoSuchNodeException e) {
             e.printStackTrace();
+            return false;
         }
         return (nodeEdges.isEmpty() || (nodeEdges.size()==1 && nodeEdges.contains(new Edge(null, copy.getInitialState()))));
     }
@@ -991,7 +991,7 @@ public class FSA {
         writer.println(indent(level++)  + "{");
         writer.println(indent(level)    + "static class Program");
         writer.println(indent(level++)  + "{");
-        writer.println(indent(level)    + "static void Main()");
+        writer.println(indent(level)    + "static public bool Accept(string str)");
         writer.println(indent(level++)  + "{");
         writer.println(indent(level)    + "var edge = new[,]");
         writer.println(indent(level++)  + "{");
@@ -1031,15 +1031,20 @@ public class FSA {
         writer.println(indent(--level)  + "}");
         writer.println(indent(--level)  + "});");
         writer.println();
-        writer.println(indent(level)    + "var str = Console.ReadLine();");
-        writer.println();
         writer.println(indent(level)    + "if (str != null)");
         writer.println(indent(level++)  + "{");
         writer.print(indent(level)      + "var state = str.Aggregate(");
         writer.print(initialState);
         writer.println(", (current, c) => edge[current, map(c)]);");
-        writer.println(indent(level)    + "Console.WriteLine(final[state] ? \"accept\" : \"reject\");");
+        writer.println(indent(level)    + "return final[state];");
         writer.println(indent(--level)  + "}");
+        writer.println(indent(level)    + "return false;");
+        writer.println(indent(--level)  + "}");
+        writer.println(indent(level)    + "static void Main()");
+        writer.println(indent(level++)  + "{");
+        writer.println(indent(level)    + "var str = Console.ReadLine();");
+        writer.println(indent(level)    + "Console.WriteLine(str);");
+        writer.println(indent(level)    + "Console.WriteLine(Accept(str) ? \"accept\" : \"reject\");");
         writer.println(indent(--level)  + "}");
         writer.println(indent(--level)  + "}");
         writer.println(indent(--level)  + "}");
