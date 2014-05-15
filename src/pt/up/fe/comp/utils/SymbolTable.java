@@ -20,6 +20,10 @@ public class SymbolTable<T> {
         _scopes.peek().addSymbol(name, type, init);
     }
 
+    public boolean contains(String name) {
+        return get(name) != null;
+    }
+
     public T get(String name) {
         T value;
         for (Scope<T> scp: _scopes) {

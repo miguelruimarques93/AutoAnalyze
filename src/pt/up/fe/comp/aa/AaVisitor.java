@@ -1,6 +1,6 @@
 package pt.up.fe.comp.aa;
 
-import javafx.util.Pair;
+import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -70,7 +70,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         } else if (ctx.STRING() != null) {
             return String.class;
         } else if (ctx.operation() != null) {
-            return metaVisitOperation(ctx.operation()).getKey();
+            return metaVisitOperation(ctx.operation()).a;
         }
 
         assert(false);
@@ -139,9 +139,12 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         Class type = null;
         if (rhs.operation() != null) {
             Pair<Class, Producer<Object>> classProducerPair = metaVisitOperation(rhs.operation());
-            _symbols.addSymbol(name, classProducerPair.getKey(), classProducerPair.getValue());
+            _symbols.addSymbol(name, classProducerPair.a, classProducerPair.b);
         } else if (rhs.IDENTIFIER() != null) {
             final String id = rhs.IDENTIFIER().getText();
+
+            if (!_symbols.contains(id))
+                throw new Error("Identifier " + id + " is not declared in the current scope.");
             _symbols.addSymbol(name, _symbols.getType(rhs.IDENTIFIER().getText()), new Producer<Object>() {
                 @Override
                 public Object produce() {
@@ -253,7 +256,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
     }
 
     public static void main(String[] args) throws IOException {
-        String fileName = "dot_dfa_examples/ex3.aa";
+        String fileName = "dot_dfa_examples/COMP_HW1.aa";
 
         ANTLRInputStream input = new ANTLRFileStream(fileName);
         aaLexer lexer = new aaLexer(input);
