@@ -33,28 +33,6 @@ arg             : IDENTIFIER
                 | OPEN_PR operation CLOSE_PR
                 ;
 
-
-// UNION               : 'union';
-// INTERSECTION        : 'intersect';
-// CARTESIAN_PRODUCT   : 'cartesian';
-// DIFFERENCE          : 'diff';
-// CLOSURE             : 'closure';
-// COMPLEMENT          : 'complement';
-// MINIMIZE            : 'min';
-// TO_DFA              : 'to_dfa';
-// INCLUDED            : 'in';
-// EQUIVALENT          : 'equi';
-// EQUALS              : 'equals';
-// ENFA_TO_NFA         : 'remove_e'; //TODO rename
-// TOTALIZE            : 'totalize';
-// REMOVE_UNREACHABLE  : 'remove_unreachable';
-// REMOVE_USELESS      : 'remove_useless';
-// WRITE_DOT           : 'write_dot';
-// WRITE_REGEX         : 'write_regex';
-// WRITE_CODE          : 'write_code';
-// SHOW                : 'show';
-// PRINT               : 'print';
-
 IDENTIFIER      : [_a-zA-Z][_a-zA-Z0-9-]*;
 STRING          : '"' .+? '"';
 OPEN_PR         : '(';
