@@ -56,6 +56,40 @@ public class FSAAcceptance {
     }
 
     @Test
+    public void TestOnlyEmptyString() {
+        try {
+            FSA newAut = new FSA("aut", "I", new LinkedHashSet<String>());
+            newAut.addEdge("I",'a',"S");
+            newAut.addEdge("S", 'a', "A");
+            newAut.addEdge("A", 'a', "S");
+            newAut.addEdge("A", 'b', "B");
+            newAut.addEdge("B", 'b', "A");
+            newAut.addNode("C");
+            newAut.addEdge("C", 'a', "A");
+            newAut.addEdge("C", 'b', "B");
+
+            newAut.addFinalState("I");
+
+
+            assertTrue(newAut.onlyAcceptsEmptyString());
+
+            newAut.addFinalState("C");
+            assertTrue(newAut.onlyAcceptsEmptyString());
+
+            FSA copy = new FSA(newAut);
+            copy.addEdge("S",null,"I");
+
+            newAut.addFinalState("B");
+            assertFalse(copy.onlyAcceptsEmptyString());
+            assertFalse(newAut.onlyAcceptsEmptyString());
+
+        } catch (FSAException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
     public void TestEmptyLanguage() {
         try {
             FSA newAut = new FSA("aut", "S", new LinkedHashSet<String>());

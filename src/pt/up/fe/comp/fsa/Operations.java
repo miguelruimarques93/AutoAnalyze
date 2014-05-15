@@ -78,6 +78,16 @@ public class Operations {
     }
 
     /**
+     * Determines whether an automaton's accepted language only contains the empty string.
+     *
+     * @param lhs automaton to test
+     * @return returns true if lhs only accepts the empty string, false otherwise
+     */
+    public static Boolean only_accepts_empty_string(FSA lhs) {
+        return lhs.onlyAcceptsEmptyString();
+    }
+
+    /**
      * Determines whether an automaton's accepted language is the empty set.
      *
      * @param lhs automaton to test

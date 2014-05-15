@@ -679,6 +679,21 @@ public class FSA {
         return copy.getFinalStates().isEmpty();
     }
 
+    public boolean onlyAcceptsEmptyString() {
+        FSA copy = new FSA(this);
+        copy.minimize();
+        if (copy.getNodes().size() != 1 || copy.getFinalStates().size() != 1)
+            return false;
+
+        Set<Edge> nodeEdges = null;
+        try {
+            nodeEdges = copy.getNodeEdges(copy.getInitialState());
+        } catch (NoSuchNodeException e) {
+            e.printStackTrace();
+        }
+        return (nodeEdges.isEmpty() || (nodeEdges.size()==1 && nodeEdges.contains(new Edge(null, copy.getInitialState()))));
+    }
+
     public void complement() {
         makeDeterministic();
         makeTotal();
