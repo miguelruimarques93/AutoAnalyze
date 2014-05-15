@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class Operations {
     public static FSA union(FSA... args) {
@@ -185,7 +183,7 @@ public class Operations {
     }
 
     /**
-     * Generates dot output for a given automaton.
+     * Generates and writes dot output for a given automaton.
      *
      * @param lhs automaton to write as dot
      * @param fileName path where to write the output
@@ -198,6 +196,12 @@ public class Operations {
         return null;
     }
 
+    /**
+     * Generates and prints dot output for a given automaton to System.out.
+     *
+     * @param lhs automaton to write as dot
+     * @return always returns null
+     */
     public static Object print_dot(FSA lhs) {
         lhs.writeDot(System.out);
         return null;
@@ -212,7 +216,7 @@ public class Operations {
     }
 
     /**
-     * Generates code output for the implementation of a given automaton in the specified language.
+     * Generates and writes code output for the implementation of a given automaton in the specified language.
      *  The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
      *
      * @param language language in which to generate the code
@@ -241,6 +245,17 @@ public class Operations {
         }
     }
 
+    /**
+     * Generates and prints code output for the implementation of a given automaton in the specified language to System.out.
+     *  The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
+     *
+     * @param language language in which to generate the code
+     * @param lhs automaton for which to generate code implementation
+     * @return returns an invocation for the write method associated with the specified language
+     * @throws InvocationTargetException if the underlying method throws an exception
+     * @throws IllegalAccessException if this Method object is enforcing Java language access control and the underlying method is inaccessible
+     * @throws UnsupportedOperationException if there is no method to generate the implementation in the specified language
+     */
     public static Object print_code(String language, FSA lhs) throws InvocationTargetException, IllegalAccessException {
         try {
             language = string_encode(language);
@@ -257,14 +272,25 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
+    /**
+     * Prints a new line character to System.out.
+     */
     public static void nl() {
         System.out.println();
     }
 
+    /**
+     * Prints an object to System.out.
+     * @param lhs object to print
+     */
     public static void print(Object lhs) {
         System.out.print(lhs);
     }
 
+    /**
+     * Prints an object to System.out, followed by a newline.
+     * @param lhs object to print
+     */
     public static void println(Object lhs) {
         System.out.println(lhs);
     }

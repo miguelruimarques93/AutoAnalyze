@@ -44,7 +44,6 @@ namespace Aut_COMP_HW1_NFA
 		static void Main()
 		{
 			var str = Console.ReadLine();
-			Console.WriteLine(str);
 			Console.WriteLine(Accept(str) ? "accept" : "reject");
 		}
 	}
