@@ -936,15 +936,13 @@ public class FSA {
         writer.println("accept str = foldl delta initialState str `elem` finalStates");
     }
 
-    public void write_csharp(String moduleName, PrintStream stream) {
+    public void write_csharp(String moduleName, PrintStream writer) {
         if (!isDeterministic()) {
             FSA aut = new FSA(this);
             aut.makeDeterministic();
-            aut.write_csharp(moduleName, stream);
+            aut.write_csharp(moduleName, writer);
             return;
         }
-
-        PrintWriter writer = new PrintWriter(stream);
 
         ArrayList<Character> alphabet = new ArrayList<>(getAlphabet());
         ArrayList<Boolean> finalStates = new ArrayList<>();
@@ -1045,8 +1043,6 @@ public class FSA {
         writer.println(indent(--level)  + "}");
         writer.println(indent(--level)  + "}");
         writer.println(indent(--level)  + "}");
-
-        writer.close();
     }
 
     private String indent(int level) {

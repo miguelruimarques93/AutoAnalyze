@@ -207,6 +207,10 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
+    private static String string_encode(String str) {
+        return str.replace("#", "sharp").replace("++", "pp");
+    }
+
     /**
      * Generates code output for the implementation of a given automaton in the specified language.
      *  The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
@@ -222,8 +226,7 @@ public class Operations {
      */
     public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException, FileNotFoundException {
         try {
-            language.replace("#", "sharp");
-            language.replace("++", "pp");
+            language = string_encode(language);
 
             File f = new File(fileName);
             String moduleName = f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length());
@@ -240,6 +243,8 @@ public class Operations {
 
     public static Object print_code(String language, FSA lhs) throws InvocationTargetException, IllegalAccessException {
         try {
+            language = string_encode(language);
+
             Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class, PrintStream.class);
             return m.invoke(lhs, "Automaton", System.out);
         } catch (NoSuchMethodException e) {
