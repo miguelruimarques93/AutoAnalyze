@@ -14,30 +14,35 @@ public class Operations {
      * @param args array of automata to unite
      * @return returns a new eNFA that is the union of all the supplied automata.
      */
-    public static FSA union(FSA... args) {
-        if (args.length < 2)
-            throw new Error ("Union must have at least 2 arguments.");
-
-        FSA result = new FSA(args[0]);
-        for (int i=1; i < args.length; i++) {
-            result = result.union(args[i]);
+    public static FSA union(FSA arg1, FSA arg2, FSA... args) {
+        FSA result = new FSA(arg1.union(arg2));
+        for (FSA automaton: args) {
+            result = result.union(automaton);
         }
         return result;
     }
 
-    public static FSA intersect(FSA... args) {
+    public static FSA intersect(FSA arg1, FSA arg2, FSA... args) {
+        FSA result = new FSA(arg1.intersect(arg2));
+        for (FSA automaton: args) {
+            result = result.intersect(automaton);
+        }
+        return result;
+    }
+
+    public static FSA cartesian(FSA arg1, FSA arg2, FSA... args) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static FSA cartesian(FSA... args) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    public static FSA diff(FSA arg1, FSA arg2, FSA... args) {
+        FSA result = new FSA(arg1.diff(arg2));
+        for (FSA automaton: args) {
+            result = result.diff(automaton);
+        }
+        return result;
     }
 
-    public static FSA diff(FSA... args) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }
-
-    public static FSA closure(FSA lhs) {
+    public static FSA closure(FSA arg1, FSA arg2, FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 

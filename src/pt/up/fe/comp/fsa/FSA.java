@@ -23,6 +23,7 @@ import java.util.*;
  * deterministic or not.
  */
 public class FSA {
+
     /**
      * This class is essentially a wrapper for a Pair<Character, String> already defined in the ANTLR4 libraries.
      * <p/>
@@ -422,6 +423,27 @@ public class FSA {
             return null;
         }
     }
+
+    // TODO: Unite alphabets and extend alphabets of both fsas
+    public FSA intersect(FSA other) {
+        FSA temp1 = new FSA(this);
+        FSA temp2 = new FSA(other);
+
+        temp1.complement();
+        temp2.complement();
+
+        FSA united = temp1.union(temp2); united.complement();
+
+        return united;
+    }
+
+    public FSA diff(FSA other) {
+        FSA temp = new FSA(other);
+        temp.complement();
+
+        return this.intersect(temp);
+    }
+
 
     @Override
     public String toString() {
