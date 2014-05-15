@@ -40,6 +40,8 @@ public class FSAWriteTest {
         DotGraph graph = eva.visit(tree);
 
         FSA automaton = FSABuilder.buildFrom(graph);
+        automaton.addToAlphabet('"');
+        automaton.addToAlphabet((Character)null);
 
         PrintStream stream;
         try {
@@ -69,6 +71,9 @@ public class FSAWriteTest {
 
         assertTrue(compareSets(automaton.getFinalStates(), newAut.getFinalStates()));
         assertTrue(compareSets(automaton.getNodes(),newAut.getNodes()));
+        assertTrue(compareSets(automaton.getAlphabet(),newAut.getAlphabet()));
+        assertTrue(newAut.getAlphabet().contains(null));
+        assertTrue(newAut.getAlphabet().contains('"'));
 
         for (String node: automaton.getNodes()) {
             try {

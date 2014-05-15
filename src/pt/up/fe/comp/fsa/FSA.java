@@ -920,6 +920,20 @@ public class FSA {
         writer.println("\trankdir=LR;");
 
         writer.println("\tinitialstate=" + _initialState + ";");
+        if (_alphabet.size() > 0) {
+            writer.print("\talphabet=\"");
+            for (Character c: _alphabet) {
+                if (c != null && c != '"')
+                    writer.print(c);
+            }
+            writer.println("\";");
+            if (_alphabet.contains(null)) {
+                writer.println("\talphabethasnull=true;");
+            }
+            if (_alphabet.contains('"')) {
+                writer.println("\talphabethasdoublequote=true;");
+            }
+        }
 
         Set<String> fs = getFinalStates();
         if (!fs.isEmpty()) {

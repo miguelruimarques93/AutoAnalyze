@@ -20,7 +20,21 @@ public class FSABuilder {
             e.printStackTrace();
             return null;
         }
-        
+
+        if (ir.attributes.containsKey("alphabet") && ir.attributes.get("alphabet") != null) {
+            String alph = ir.attributes.get("alphabet");
+            alph = alph.replaceAll("^\"|\"$", "");
+            Set<Character> toAdd = new HashSet<>();
+            if (ir.attributes.get("alphabethasnull") != null && ir.attributes.get("alphabethasnull").equals("true"))
+                toAdd.add(null);
+            if (ir.attributes.get("alphabethasdoublequote") != null && ir.attributes.get("alphabethasdoublequote").equals("true"))
+                toAdd.add('"');
+
+            for (char c : alph.toCharArray())
+                toAdd.add(c);
+
+            fsa.addToAlphabet(toAdd);
+        }
         
         fsa.setFinalStates(getFinalStates(ir));
         

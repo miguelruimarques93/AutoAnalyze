@@ -28,20 +28,20 @@ public class FSABuildTest {
             DotVisitor eval = new DotVisitor();
             DotGraph graph = eval.visit(tree);
             
-            FSA automata = FSABuilder.buildFrom(graph);
+            FSA automaton = FSABuilder.buildFrom(graph);
+
+            assertTrue(automaton.getName().equals(graph.name));
             
-            assertTrue(automata.getName().equals(graph.name));
+            assertTrue(automaton.getFinalStates().contains("LR_0"));
+            assertTrue(automaton.getFinalStates().contains("LR_3"));
+            assertTrue(automaton.getFinalStates().contains("LR_4"));
+            assertTrue(automaton.getFinalStates().contains("LR_8"));
             
-            assertTrue(automata.getFinalStates().contains("LR_0"));
-            assertTrue(automata.getFinalStates().contains("LR_3"));
-            assertTrue(automata.getFinalStates().contains("LR_4"));
-            assertTrue(automata.getFinalStates().contains("LR_8"));
+            assertTrue(automaton.getNodes().containsAll(graph.getNodes()));
             
-            assertTrue(automata.getNodes().containsAll(graph.getNodes()));
+            assertTrue(automaton.getInitialState().equals("LR_0"));
             
-            assertTrue(automata.getInitialState().equals("LR_0"));
-            
-            assertTrue(automata.isDeterministic());
+            assertTrue(automaton.isDeterministic());
             
             
         } catch (Exception e) {
