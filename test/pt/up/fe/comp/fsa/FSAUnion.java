@@ -1,7 +1,6 @@
 package pt.up.fe.comp.fsa;
 
 import org.junit.Test;
-
 import java.util.LinkedHashSet;
 
 import static junit.framework.TestCase.assertFalse;
@@ -11,7 +10,7 @@ import static junit.framework.TestCase.fail;
 public class FSAUnion {
 
     @Test
-    public void TestAcceptAlphabetKleenePlus() {
+    public void TestGenericUnion() {
         try {
             FSA aut1 = new FSA("aut1", "q0", new LinkedHashSet<String>()); //ef
             aut1.addEdge("q0", 'e', "q1");
@@ -54,4 +53,28 @@ public class FSAUnion {
         }
     }
 
+    @Test
+    public void TestUnionWithComplement() {
+        try {
+            FSA aut1 = new FSA("aut1", "q0", new LinkedHashSet<String>());
+            aut1.addEdge("q0", 'e', "q1");
+            aut1.addEdge("q1", 'f', "q2");
+            aut1.addEdge("q2", 'a', "q3");
+            aut1.addEdge("q3", 'c', "q4");
+            aut1.addEdge("q4", 'l', "q5");
+            aut1.addFinalState("q2");
+
+            FSA aut1complement = new FSA(aut1);
+            aut1complement.complement();
+
+            FSA automaton = aut1.union(aut1complement);
+
+            assertTrue(automaton.acceptsAlphabetKleeneStar());
+
+
+        } catch (FSAException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
 }
