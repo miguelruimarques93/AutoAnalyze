@@ -791,10 +791,7 @@ public class FSA {
         removeUselessStates();
     }
 
-    public void writeDot(PrintStream stream) {
-        PrintWriter writer = new PrintWriter(stream);
-
-
+    public void writeDot(PrintStream writer) {
         writer.println("digraph " + getName() + " {");
         writer.println("\trankdir=LR;");
 
@@ -833,12 +830,9 @@ public class FSA {
         }
 
         writer.println("}");
-        writer.close();
     }
 
-    public void write_prolog(String moduleName, PrintStream stream) {
-        PrintWriter writer = new PrintWriter(stream);
-
+    public void write_prolog(String moduleName, PrintStream writer) {
         String m_code_name = "code_"+moduleName+"_";
         String m_trans_name = "transition_"+moduleName;
         String m_ini_name = "initial_state_"+moduleName;
@@ -886,19 +880,15 @@ public class FSA {
                 m_accept_name+"([],State):- "+m_final_name+"(State). %state must be a final state after all of the input has been tested\n" +
                 m_accept_name+"([C|Cs],State):-\n" +
                 "        "+m_trans_name+"(State,C,NextState), "+m_accept_name+"(Cs,NextState).");
-
-        writer.close();
     }
 
-    public void write_haskell(String moduleName, PrintStream stream) {
+    public void write_haskell(String moduleName, PrintStream writer) {
         if (!isDeterministic()) {
             FSA aut = new FSA(this);
             aut.makeDeterministic();
-            aut.write_haskell(moduleName, stream);
+            aut.write_haskell(moduleName, writer);
             return;
         }
-
-        PrintWriter writer = new PrintWriter(stream);
 
         int initialState = -1;
         LinkedList<Integer> finalStates = new LinkedList<>();
@@ -944,8 +934,6 @@ public class FSA {
 
         writer.println("accept::String -> Bool");
         writer.println("accept str = foldl delta initialState str `elem` finalStates");
-
-        writer.close();
     }
 
     public void write_csharp(String moduleName, PrintStream stream) {

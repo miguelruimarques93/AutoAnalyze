@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Operations {
     public static FSA union(FSA... args) {
@@ -192,8 +194,12 @@ public class Operations {
      */
     public static Object write_dot(FSA lhs, String fileName) throws FileNotFoundException {
         PrintStream stream = new PrintStream(fileName);
-
         lhs.writeDot(stream);
+        return null;
+    }
+
+    public static Object print_dot(FSA lhs) {
+        lhs.writeDot(System.out);
         return null;
     }
 
@@ -224,18 +230,38 @@ public class Operations {
             PrintStream stream = new PrintStream(f);
 
             Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class, PrintStream.class);
-            return m.invoke(lhs, moduleName, stream);
+            Object result = m.invoke(lhs, moduleName, stream);
+            stream.close();
+            return result;
         } catch (NoSuchMethodException e) {
             throw new UnsupportedOperationException("No output to language '" + language + "' defined.");
         }
+    }
+
+    public static Object print_code(String language, FSA lhs) throws InvocationTargetException, IllegalAccessException {
+        try {
+            Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class, PrintStream.class);
+            return m.invoke(lhs, "Automaton", System.out);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static Object show(FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    public static Object print(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    public static void nl() {
+        System.out.println();
+    }
+
+    public static void print(Object lhs) {
+        System.out.print(lhs);
+    }
+
+    public static void println(Object lhs) {
+        System.out.println(lhs);
     }
 
     /**
