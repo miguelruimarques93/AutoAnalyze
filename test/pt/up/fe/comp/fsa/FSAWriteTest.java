@@ -78,7 +78,6 @@ public class FSAWriteTest {
                 fail();
             }
         }
-
     }
 
     @Test
@@ -131,7 +130,6 @@ public class FSAWriteTest {
 
         FSA automaton = FSABuilder.buildFrom(graph);
 
-
         try {
             PrintStream stream = new PrintStream("dot_dfa_examples/COMP_HW1_NFA.hs");
             automaton.write_haskell("COMP_HW1_NFA", stream);
@@ -170,6 +168,65 @@ public class FSAWriteTest {
             fail();
         }
         System.out.println("To test this you must run the Prolog code");
+    }
+
+    @Test
+    public void testToCSharp() {
+        ANTLRInputStream input = null;
+        try {
+            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/COMP_HW1.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+        dotLexer lex = new dotLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        dotParser parser = new dotParser(tokens);
+        ParseTree tree = parser.graph();
+
+        DotVisitor eva = new DotVisitor();
+        DotGraph graph = eva.visit(tree);
+
+        FSA automaton = FSABuilder.buildFrom(graph);
+
+        try {
+            PrintStream stream = new PrintStream("dot_dfa_examples/COMP_HW1.cs");
+            automaton.write_csharp("COMP_HW1", stream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fail();
+        }
+        System.out.println(automaton);
+        System.out.println("To test this you must run the C# code");
+    }
+
+    @Test
+    public void testToCSharpNonDeterministic() {
+        ANTLRInputStream input = null;
+        try {
+            input = new ANTLRInputStream(new FileInputStream("dot_dfa_examples/COMP_HW1_NFA.gv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+        dotLexer lex = new dotLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        dotParser parser = new dotParser(tokens);
+        ParseTree tree = parser.graph();
+
+        DotVisitor eva = new DotVisitor();
+        DotGraph graph = eva.visit(tree);
+
+        FSA automaton = FSABuilder.buildFrom(graph);
+
+        try {
+            PrintStream stream = new PrintStream("dot_dfa_examples/COMP_HW1_NFA.cs");
+            automaton.write_csharp("COMP_HW1_NFA", stream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fail();
+        }
+        System.out.println("To test this you must run the C# code");
     }
 
     private static <T> boolean compareSets(Set<T> s1, Set<T> s2){

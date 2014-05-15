@@ -216,6 +216,9 @@ public class Operations {
      */
     public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException, FileNotFoundException {
         try {
+            language.replace("#", "sharp");
+            language.replace("++", "pp");
+
             File f = new File(fileName);
             String moduleName = f.getName().substring(0, f.getName().indexOf('.') > 0 ? f.getName().indexOf('.') : f.getName().length());
             PrintStream stream = new PrintStream(f);

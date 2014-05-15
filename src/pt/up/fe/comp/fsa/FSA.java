@@ -948,6 +948,127 @@ public class FSA {
         writer.close();
     }
 
+    public void write_csharp(String moduleName, PrintStream stream) {
+        if (!isDeterministic()) {
+            FSA aut = new FSA(this);
+            aut.makeDeterministic();
+            aut.write_csharp(moduleName, stream);
+            return;
+        }
+
+        PrintWriter writer = new PrintWriter(stream);
+
+        ArrayList<Character> alphabet = new ArrayList<>(getAlphabet());
+        ArrayList<Boolean> finalStates = new ArrayList<>();
+        Set<String> finalStatesSet = getFinalStates();
+        Set<String> statesSet = getNodes();
+        int[][] transitions = new int[statesSet.size() + 1][alphabet.size() + 1];
+
+        for (String s : statesSet) {
+            finalStates.add(finalStatesSet.contains(s));
+        }
+
+        int initialState = -1;
+
+        LinkedList<String> nodes = new LinkedList<>(statesSet);
+        for (int i = 0; i < nodes.size(); i++) {
+            if (initialState == -1 && nodes.get(i).equals(getInitialState()))
+                initialState = i;
+
+            try {
+                for (int j = 0; j < alphabet.size(); ++j) {
+                    Set<Edge> edges = getNodeEdges(nodes.get(i));
+                    String dest = null;
+                    for (Edge edge : edges) {
+                        if (edge.label() == alphabet.get(j)) {
+                            dest = edge.destination();
+                            break;
+                        }
+                    }
+
+                    int edgesIdx = nodes.indexOf(dest);
+                    transitions[i + 1][j] = edgesIdx + 1;
+                }
+
+                transitions[i + 1][alphabet.size()] = 0;
+            } catch (NoSuchNodeException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int level = 0;
+
+        writer.println(indent(level)    + "using System;");
+        writer.println(indent(level)    + "using System.Linq;");
+        writer.println();
+        writer.println(indent(level)    + "namespace Aut_" + moduleName);
+        writer.println(indent(level++)  + "{");
+        writer.println(indent(level)    + "static class Program");
+        writer.println(indent(level++)  + "{");
+        writer.println(indent(level)    + "static void Main()");
+        writer.println(indent(level++)  + "{");
+        writer.println(indent(level)    + "var edge = new[,]");
+        writer.println(indent(level++)  + "{");
+        for (int i = 0; i < transitions.length; ++i) {
+            writer.print(indent(level) + "{");
+            for (int j = 0; j < transitions[i].length; ++j) {
+                writer.print(transitions[i][j]);
+                if (j != transitions[i].length - 1) {
+                    writer.print(", ");
+                }
+            }
+            writer.print("}");
+            if (i != transitions.length - 1) {
+                writer.print(",");
+            }
+            writer.println();
+        }
+        writer.println(indent(--level)  + "};");
+        writer.println();
+        writer.print(indent(level)      + "var final = new[] {");
+        for (int i = 0, size = finalStates.size(); i < size; ++i) {
+            writer.print(finalStates.get(i) ? "true" : "false");
+            if (i != size - 1) {
+                writer.print(", ");
+            }
+        }
+        writer.println("};");
+        writer.println();
+        writer.println(indent(level)    + "var map = new Func<char, int>(x =>");
+        writer.println(indent(level++)  + "{");
+        writer.println(indent(level)    + "switch (x)");
+        writer.println(indent(level++)  + "{");
+        for (int i = 0, size = getAlphabet().size(); i < size; ++i) {
+            writer.println(indent(level) + "case '" + alphabet.get(i) + "': return " + i + ";");
+        }
+        writer.println(indent(level) + "default : return " + getAlphabet().size() + ";");
+        writer.println(indent(--level)  + "}");
+        writer.println(indent(--level)  + "});");
+        writer.println();
+        writer.println(indent(level)    + "var str = Console.ReadLine();");
+        writer.println();
+        writer.println(indent(level)    + "if (str != null)");
+        writer.println(indent(level++)  + "{");
+        writer.print(indent(level)      + "var state = str.Aggregate(");
+        writer.print(initialState);
+        writer.println(", (current, c) => edge[current, map(c)]);");
+        writer.println(indent(level)    + "Console.WriteLine(final[state] ? \"accept\" : \"reject\");");
+        writer.println(indent(--level)  + "}");
+        writer.println(indent(--level)  + "}");
+        writer.println(indent(--level)  + "}");
+        writer.println(indent(--level)  + "}");
+
+        writer.close();
+    }
+
+    private String indent(int level) {
+        String res = "";
+        for (int i = 0; i < level; ++i) {
+            res += '\t';
+        }
+        return res;
+    }
+
     private boolean _needsDeterminismUpdate = false;
     private Map<Character, Integer> _alphabet = new HashMap<>();
     private String _initialState;
