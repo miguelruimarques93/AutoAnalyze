@@ -7,8 +7,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Operations {
+
+    /**
+     * Computes the union between several automata. (Minimum of two).
+     *
+     * @param args array of automata to unite
+     * @return returns a new eNFA that is the union of all the supplied automata.
+     */
     public static FSA union(FSA... args) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        if (args.length < 2)
+            throw new Error ("Union must have at least 2 arguments.");
+
+        FSA result = new FSA(args[0]);
+        for (int i=1; i < args.length; i++) {
+            result = result.union(args[i]);
+        }
+        return result;
     }
 
     public static FSA intersect(FSA... args) {
@@ -75,6 +89,16 @@ public class Operations {
 
     public static Boolean equals(FSA lhs, FSA rhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    }
+
+    /**
+     * Determines whether an automaton is deterministic or not
+     *
+     * @param lhs automaton to test
+     * @return returns true if automaton is deterministic, false otherwise
+     */
+    public static Boolean is_deterministic(FSA lhs) {
+        return lhs.isDeterministic();
     }
 
     /**
