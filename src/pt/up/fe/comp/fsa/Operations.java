@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Operations {
 
@@ -22,6 +24,12 @@ public class Operations {
         return result;
     }
 
+    /**
+     * Computes the intersection between several automata. (Minimum of two).
+     *
+     * @param args array of automata to intersect
+     * @return returns a new eNFA that is the intersection of all the supplied automata.
+     */
     public static FSA intersect(FSA arg1, FSA arg2, FSA... args) {
         FSA result = new FSA(arg1.intersect(arg2));
         for (FSA automaton: args) {
@@ -34,6 +42,12 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
+    /**
+     * Computes the difference between several automata. (Minimum of two).
+     *
+     * @param args array of automata to operate with
+     * @return returns a new eNFA that is the difference between the automata
+     */
     public static FSA diff(FSA arg1, FSA arg2, FSA... args) {
         FSA result = new FSA(arg1.diff(arg2));
         for (FSA automaton: args) {
@@ -96,7 +110,51 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    //TODO Add alphabet manipulation operations
+    /**
+     * Adds all specified characters to an FSA's alphabet.
+     *
+     * @param lhs automaton to operate on
+     * @param newTokens string of characters to add to alphabet
+     * @return returns a new automaton with modified alphabet
+     */
+    public static FSA add_to_alphabet(FSA lhs, String newTokens) {
+        FSA copy = new FSA(lhs);
+        for (int i=0; i < newTokens.length(); i++) {
+            copy.addToAlphabet(newTokens.charAt(i));
+        }
+        return copy;
+    }
+
+    /**
+     * Removes all specified characters from an FSA's alphabet as long as they are currently not in use.
+     * If any of them are in use, the method fails.
+     *
+     * @param lhs automaton to operate on
+     * @param oldTokens string of characters to remove from alphabet
+     * @return returns a new automaton with modified alphabet
+     */
+    public static FSA remove_from_alphabet(FSA lhs, String oldTokens) {
+        FSA copy = new FSA(lhs);
+        Set<Character> toRemove = new HashSet<>();
+        for (char c : oldTokens.toCharArray())
+            toRemove.add(c);
+        if(copy.removeFromAlphabet(toRemove))
+            return copy;
+        else
+            throw new Error("Cannot remove characters from fsa's alphabet as one or more are currently in use.");
+    }
+
+    /**
+     * Removes all characters from an FSA's alphabet that are currently not in use.
+     *
+     * @param lhs automaton to operate on
+     * @return returns a new automaton with modified alphabet
+     */
+    public static FSA strip_alphabet(FSA lhs) {
+        FSA copy = new FSA(lhs);
+        copy.stripAlphabet();
+        return copy;
+    }
 
     /**
      * Determines whether an automaton's accepted language only contains the empty string.

@@ -109,7 +109,7 @@ public class FSA {
         _alphabet.addAll(chars);
     }
 
-    public boolean removeFromAlphabet(Character c) {
+    /*public boolean removeFromAlphabet(Character c) {
         boolean characterInUse = false;
 
         for (String node : _nodes.keySet()) {
@@ -123,7 +123,7 @@ public class FSA {
             _alphabet.remove(c);
 
         return !characterInUse;
-    }
+    }*/
 
     private Set<Character> getCharactersInUse() {
         Set<Character> res = new HashSet<>();
@@ -155,7 +155,7 @@ public class FSA {
     public void stripAlphabet() {
         Set<Character> charsInUse = getCharactersInUse();
 
-        Set<Character> unused = new HashSet<Character>(_alphabet);
+        Set<Character> unused = new HashSet<>(_alphabet);
         unused.removeAll(charsInUse);
 
         _alphabet.removeAll(unused);
@@ -465,8 +465,6 @@ public class FSA {
                 }
             }
 
-
-
             return res;
         } catch (FSAException e) {
             e.printStackTrace();
@@ -474,7 +472,6 @@ public class FSA {
         }
     }
 
-    // TODO: Unite alphabets and extend alphabets of both fsas
     public FSA intersect(FSA other) {
         FSA temp1 = new FSA(this);
         FSA temp2 = new FSA(other);
