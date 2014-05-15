@@ -374,6 +374,55 @@ public class FSA {
         return false;
     }
 
+    public FSA union(FSA other) {
+        try {
+            FSA res = new FSA(this.getName()+"_"+other.getName(), "q0", new LinkedHashSet<String>());
+
+            Integer counter = 1;
+            Map<String, String> this_newNames = new HashMap<>();
+            Map<String, String> other_newNames = new HashMap<>();
+
+            for (String state : getNodes()) {
+                String newName = "q"+counter;
+                res.addNode(newName);
+                this_newNames.put(state,newName);
+                if (getFinalStates().contains(state))
+                    res.addFinalState(newName);
+                counter++;
+            }
+            for (String state : other.getNodes()) {
+                String newName = "q"+counter;
+                res.addNode(newName);
+                other_newNames.put(state,newName);
+                if (other.getFinalStates().contains(state))
+                    res.addFinalState(newName);
+                counter++;
+            }
+
+            res.addEdge("q0",null,this_newNames.get(getInitialState()));
+            res.addEdge("q0",null,other_newNames.get(other.getInitialState()));
+
+            for (String state : getNodes()) {
+                for (Edge e : getNodeEdges(state)) {
+                    res.addEdge(this_newNames.get(state), e.label(), this_newNames.get(e.destination()));
+                }
+            }
+
+            for (String state : other.getNodes()) {
+                for (Edge e : other.getNodeEdges(state)) {
+                    res.addEdge(other_newNames.get(state), e.label(), other_newNames.get(e.destination()));
+                }
+            }
+
+
+
+            return res;
+        } catch (FSAException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
         return "Initial State: " + _initialState + "\n" + "Final States: " + _finalStates.toString() + "\n" + "Edges: " + _nodes.toString() + "\n";
@@ -874,12 +923,12 @@ public class FSA {
         for (Integer finalState : finalStates) writer.print(m_final_name + "(q" + finalState + "). ");
 
         writer.println();
-        writer.println(m_accept_name+"(String):-\n" +
-                "        "+m_ini_name+"(State), "+m_accept_name+"(String,State).\n" +
+        writer.println(m_accept_name + "(String):-\n" +
+                "        " + m_ini_name + "(State), " + m_accept_name + "(String,State).\n" +
                 "\n" +
-                m_accept_name+"([],State):- "+m_final_name+"(State). %state must be a final state after all of the input has been tested\n" +
-                m_accept_name+"([C|Cs],State):-\n" +
-                "        "+m_trans_name+"(State,C,NextState), "+m_accept_name+"(Cs,NextState).");
+                m_accept_name + "([],State):- " + m_final_name + "(State). %state must be a final state after all of the input has been tested\n" +
+                m_accept_name + "([C|Cs],State):-\n" +
+                "        " + m_trans_name + "(State,C,NextState), " + m_accept_name + "(Cs,NextState).");
     }
 
     public void write_haskell(String moduleName, PrintStream writer) {
@@ -1032,7 +1081,7 @@ public class FSA {
         writer.println();
         writer.println(indent(level)    + "if (str != null)");
         writer.println(indent(level++)  + "{");
-        writer.print(indent(level)      + "var state = str.Aggregate(");
+        writer.print(indent(level) + "var state = str.Aggregate(");
         writer.print(initialState + 1);
         writer.println(", (current, c) => edge[current, map(c)]);");
         writer.println(indent(level)    + "return final[state];");
