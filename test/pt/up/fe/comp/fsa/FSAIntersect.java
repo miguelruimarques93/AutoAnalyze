@@ -22,13 +22,10 @@ public class FSAIntersect {
             FSA aut2 = new FSA("aut1", "q0", new LinkedHashSet<String>()); //(ab)*
             aut2.addEdge("q0", 'a', "q0");
             aut2.addEdge("q0", 'b', "q0");
-            aut2.addEdge("q0", 'c', "q3");
             aut2.addFinalState("q0");
 
             FSA aut3 = new FSA("aut1", "q0", new LinkedHashSet<String>()); //a*
             aut3.addEdge("q0", 'a', "q0");
-            aut3.addEdge("q0", 'b', "q3");
-            aut3.addEdge("q0", 'c', "q3");
             aut3.addFinalState("q0");
 
             FSA automaton = aut1.intersect(aut2).intersect(aut3);

@@ -86,7 +86,7 @@ public class FSA {
         _name = fsa.getName();
         _initialState = fsa.getInitialState();
         _finalStates = new HashSet<>(fsa.getFinalStates());
-        _alphabet = new HashMap<>(fsa._alphabet);
+        _alphabet = new HashSet<>(fsa._alphabet);
 
         for (String node : fsa.getNodes()) {
             _nodes.put(node, new LinkedHashSet<Edge>());
@@ -99,6 +99,67 @@ public class FSA {
         }
 
         _deterministic = fsa.isDeterministic();
+    }
+
+    public void addToAlphabet(Character c) {
+        _alphabet.add(c);
+    }
+
+    public void addToAlphabet(String str) {
+        for (int i=0; i < str.length(); i++)
+            _alphabet.add(str.charAt(i));
+    }
+
+    public boolean removeFromAlphabet(Character c) {
+        boolean characterInUse = false;
+
+        for (String node : _nodes.keySet()) {
+            for (Edge edge : _nodes.get(node)) {
+                if (edge.label() == c)
+                    characterInUse = true;
+            }
+        }
+
+        if (!characterInUse)
+            _alphabet.remove(c);
+
+        return !characterInUse;
+    }
+
+    private Set<Character> getCharactersInUse() {
+        Set<Character> res = new HashSet<>();
+
+        for (String node : _nodes.keySet()) {
+            for (Edge edge : _nodes.get(node)) {
+                res.add(edge.label());
+            }
+        }
+        return res;
+    }
+
+    public boolean removeFromAlphabet(String str) {
+        Set<Character> charsInUse = getCharactersInUse();
+
+        for (int i=0; i < str.length(); i++) {
+            if (charsInUse.contains(str.charAt(i))) {
+                return false;
+            }
+        }
+
+        for (int i=0; i < str.length(); i++) {
+            _alphabet.remove(str.charAt(i));
+        }
+
+        return true;
+    }
+
+    public void stripAlphabet() {
+        Set<Character> charsInUse = getCharactersInUse();
+
+        Set<Character> unused = new HashSet<Character>(_alphabet);
+        unused.removeAll(charsInUse);
+
+        _alphabet.removeAll(unused);
     }
 
     public Set<String> getNodes() {
@@ -146,12 +207,8 @@ public class FSA {
         }
 
         //if the given input is not part of the alphabet, extend it
-        if (!_alphabet.containsKey(input))
-            _alphabet.put(input, 1);
-        else {
-            Integer numU = _alphabet.get(input);
-            _alphabet.put(input, numU + 1);
-        }
+        if (!_alphabet.contains(input))
+            _alphabet.add(input);
 
         nodeEdges.add(newEdge);
     }
@@ -209,14 +266,6 @@ public class FSA {
             throw new NoSuchEdgeException(nodeName + " + " + (input == null ? "nill" : input) + " -> " + destination);
 
         nodeEdges.remove(oldEdge);
-
-        if (_alphabet.containsKey(input)) {
-            Integer numU = _alphabet.get(input) - 1;
-            if (numU > 0)
-                _alphabet.put(input, numU);
-            else
-                _alphabet.remove(input);
-        }
 
         if (!_deterministic) //don't use isDeterministic to prevent check from occurring if another edge had been removed
             _needsDeterminismUpdate = true;
@@ -299,7 +348,7 @@ public class FSA {
     }*/
 
     public Set<Character> getAlphabet() {
-        return _alphabet.keySet();
+        return _alphabet;
     }
 
     public String getInitialState() {
@@ -506,8 +555,9 @@ public class FSA {
             newNodes.put(node, newEdges);
         }
 
-        if(_alphabet.containsKey(null))
+        if(_alphabet.contains(null))
             _alphabet.remove(null);
+
         _nodes = newNodes;
         _needsDeterminismUpdate = true;
     }
@@ -809,7 +859,7 @@ public class FSA {
                 for (int j=0; j < i; j++) { //symmetrical matrix
                     if (matrix[i][j]) continue;
 
-                    for (char c : _alphabet.keySet()) {
+                    for (char c : _alphabet) {
                         String iNode = null;
                         String jNode = null;
                         for (Edge e : _nodes.get(numberToNode.get(i))) {
@@ -910,7 +960,7 @@ public class FSA {
         String m_final_name = "final_state_"+moduleName;
         String m_accept_name = "accept_"+moduleName;
 
-        for (Character c : _alphabet.keySet())
+        for (Character c : _alphabet)
             writer.print(m_code_name+c+"(C):- \""+c+"\" = [C]. ");
 
         writer.println();
@@ -1128,7 +1178,7 @@ public class FSA {
     }
 
     private boolean _needsDeterminismUpdate = false;
-    private Map<Character, Integer> _alphabet = new HashMap<>();
+    private Set<Character> _alphabet = new HashSet<>();
     private String _initialState;
     private Set<String> _finalStates = new HashSet<>();
     private Map<String, Set<Edge>> _nodes = new LinkedHashMap<>(); //for efficient iteration

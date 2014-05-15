@@ -4,21 +4,12 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
-import pt.up.fe.comp.dot.DotVisitor;
-import pt.up.fe.comp.dot.ir.DotGraph;
-import pt.up.fe.comp.dot.parser.dotLexer;
-import pt.up.fe.comp.dot.parser.dotParser;
 
 
 public class FSASimpleTest {

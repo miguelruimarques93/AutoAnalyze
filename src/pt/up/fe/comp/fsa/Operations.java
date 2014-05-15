@@ -96,6 +96,8 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
+    //TODO Add alphabet manipulation operations
+
     /**
      * Determines whether an automaton's accepted language only contains the empty string.
      *
