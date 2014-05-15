@@ -105,9 +105,8 @@ public class FSA {
         _alphabet.add(c);
     }
 
-    public void addToAlphabet(String str) {
-        for (int i=0; i < str.length(); i++)
-            _alphabet.add(str.charAt(i));
+    public void addToAlphabet(Set<Character> chars) {
+        _alphabet.addAll(chars);
     }
 
     public boolean removeFromAlphabet(Character c) {
@@ -137,17 +136,17 @@ public class FSA {
         return res;
     }
 
-    public boolean removeFromAlphabet(String str) {
+    public boolean removeFromAlphabet(Set<Character> str) {
         Set<Character> charsInUse = getCharactersInUse();
 
-        for (int i=0; i < str.length(); i++) {
-            if (charsInUse.contains(str.charAt(i))) {
+        for (Character c : str) {
+            if (charsInUse.contains(c)) {
                 return false;
             }
         }
 
-        for (int i=0; i < str.length(); i++) {
-            _alphabet.remove(str.charAt(i));
+        for (Character c : str) {
+            _alphabet.remove(c);
         }
 
         return true;
@@ -427,6 +426,8 @@ public class FSA {
     public FSA union(FSA other) {
         try {
             FSA res = new FSA(this.getName()+"_"+other.getName(), "q0", new LinkedHashSet<String>());
+            res.addToAlphabet(this.getAlphabet());
+            res.addToAlphabet(other.getAlphabet());
 
             Integer counter = 1;
             Map<String, String> this_newNames = new HashMap<>();
@@ -477,6 +478,8 @@ public class FSA {
     public FSA intersect(FSA other) {
         FSA temp1 = new FSA(this);
         FSA temp2 = new FSA(other);
+        temp1.addToAlphabet(other.getAlphabet());
+        temp2.addToAlphabet(getAlphabet());
 
         temp1.complement();
         temp2.complement();
@@ -487,10 +490,13 @@ public class FSA {
     }
 
     public FSA diff(FSA other) {
-        FSA temp = new FSA(other);
-        temp.complement();
+        FSA temp1 = new FSA(this);
+        FSA temp2 = new FSA(other);
+        temp1.addToAlphabet(other.getAlphabet());
+        temp2.addToAlphabet(getAlphabet());
+        temp2.complement();
 
-        return this.intersect(temp);
+        return temp1.intersect(temp2);
     }
 
 
