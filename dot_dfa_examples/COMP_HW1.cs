@@ -5,42 +5,47 @@ namespace Aut_COMP_HW1
 {
 	static class Program
 	{
-		static void Main()
+		static public bool Accept(string str)
 		{
 			var edge = new[,]
 			{
 				{0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0},
-				{0, 3, 4, 0, 0, 0},
-				{0, 3, 0, 0, 0, 0},
-				{0, 0, 4, 0, 0, 0},
-				{7, 0, 0, 6, 0, 0},
-				{0, 0, 0, 0, 1, 0},
-				{7, 2, 0, 0, 0, 0}
+				{0, 0, 3, 4, 0, 0},
+				{0, 0, 3, 0, 0, 0},
+				{0, 0, 0, 4, 0, 0},
+				{0, 6, 0, 0, 7, 0},
+				{1, 0, 0, 0, 0, 0},
+				{0, 0, 2, 0, 7, 0}
 			};
 
-			var final = new[] {true, true, true, true, false, false, false};
+			var final = new[] {false, true, true, true, true, false, false, false};
 
 			var map = new Func<char, int>(x =>
 			{
 				switch (x)
 				{
-					case 'a': return 0;
-					case 'b': return 1;
-					case 'c': return 2;
-					case 'e': return 3;
-					case 'f': return 4;
+					case 'f': return 0;
+					case 'e': return 1;
+					case 'b': return 2;
+					case 'c': return 3;
+					case 'a': return 4;
 					default : return 5;
 				}
 			});
 
-			var str = Console.ReadLine();
-
 			if (str != null)
 			{
-				var state = str.Aggregate(4, (current, c) => edge[current, map(c)]);
-				Console.WriteLine(final[state] ? "accept" : "reject");
+				var state = str.Aggregate(5, (current, c) => edge[current, map(c)]);
+				return final[state];
 			}
+			return false;
+		}
+		static void Main()
+		{
+			var str = Console.ReadLine();
+			Console.WriteLine(str);
+			Console.WriteLine(Accept(str) ? "accept" : "reject");
 		}
 	}
 }

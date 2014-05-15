@@ -950,16 +950,15 @@ public class FSA {
         Set<String> statesSet = getNodes();
         int[][] transitions = new int[statesSet.size() + 1][alphabet.size() + 1];
 
-        for (String s : statesSet) {
-            finalStates.add(finalStatesSet.contains(s));
-        }
-
         int initialState = -1;
 
         LinkedList<String> nodes = new LinkedList<>(statesSet);
+        finalStates.add(false);
         for (int i = 0; i < nodes.size(); i++) {
             if (initialState == -1 && nodes.get(i).equals(getInitialState()))
                 initialState = i;
+
+            finalStates.add(finalStatesSet.contains(nodes.get(i)));
 
             try {
                 for (int j = 0; j < alphabet.size(); ++j) {
@@ -1034,7 +1033,7 @@ public class FSA {
         writer.println(indent(level)    + "if (str != null)");
         writer.println(indent(level++)  + "{");
         writer.print(indent(level)      + "var state = str.Aggregate(");
-        writer.print(initialState);
+        writer.print(initialState + 1);
         writer.println(", (current, c) => edge[current, map(c)]);");
         writer.println(indent(level)    + "return final[state];");
         writer.println(indent(--level)  + "}");
@@ -1043,7 +1042,6 @@ public class FSA {
         writer.println(indent(level)    + "static void Main()");
         writer.println(indent(level++)  + "{");
         writer.println(indent(level)    + "var str = Console.ReadLine();");
-        writer.println(indent(level)    + "Console.WriteLine(str);");
         writer.println(indent(level)    + "Console.WriteLine(Accept(str) ? \"accept\" : \"reject\");");
         writer.println(indent(--level)  + "}");
         writer.println(indent(--level)  + "}");
