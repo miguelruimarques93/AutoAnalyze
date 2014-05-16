@@ -132,7 +132,7 @@ public class Operations {
      *
      * @param lhs automaton to operate on
      * @param origin origin state of the edge
-     * @param label edge label
+     * @param label edge label, if empty string, an empty transition is added
      * @param destination destination state of the edge
      * @return returns a new automaton with altered edge set
      */
