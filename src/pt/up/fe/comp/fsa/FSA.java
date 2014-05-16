@@ -271,6 +271,9 @@ public class FSA {
     }
 
     public void removeNode(String nodeName) throws NoSuchNodeException {
+        if (_initialState.equals(nodeName))
+            return;
+
         if (!_nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName);
 
@@ -354,11 +357,11 @@ public class FSA {
         return _initialState;
     }
 
-    /*public void setInitialState(String initialState) throws NoSuchNodeException {
+    public void setInitialState(String initialState) throws NoSuchNodeException {
         if (!_nodes.containsKey(initialState))
             throw new NoSuchNodeException(initialState);
         this._initialState = initialState;
-    }*/
+    }
 
     public Set<String> getFinalStates() {
         return _finalStates;
@@ -372,6 +375,10 @@ public class FSA {
         if (!_nodes.containsKey(st))
             _nodes.put(st, new LinkedHashSet<Edge>());
         _finalStates.add(st);
+    }
+
+    public void removeFinalState(String st) {
+        _finalStates.remove(st);
     }
 
     public boolean isDeterministic() {

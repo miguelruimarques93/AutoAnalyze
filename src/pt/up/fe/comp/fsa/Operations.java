@@ -111,6 +111,132 @@ public class Operations {
     }
 
     /**
+     * Adds a state to the automaton as well as all associated edges.
+     *
+     * @param lhs automaton to operate on
+     * @param newNode state to add
+     * @return returns a new automaton with altered node set
+     */
+    public static FSA add_state(FSA lhs, String newNode) {
+        FSA copy = new FSA(lhs);
+        try {
+            copy.addNode(newNode);
+        } catch (DuplicateElementException e) {
+            throw new Error("State already exists in FSA.");
+        }
+        return copy;
+    }
+
+    /**
+     * Adds an edge to the automaton.
+     *
+     * @param lhs automaton to operate on
+     * @param origin origin state of the edge
+     * @param label edge label
+     * @param destination destination state of the edge
+     * @return returns a new automaton with altered edge set
+     */
+    public static FSA add_edge(FSA lhs, String origin, String label, String destination) {
+        FSA copy = new FSA(lhs);
+        try {
+            copy.addEdges(origin, label, destination);
+        } catch (DuplicateElementException e) {
+            throw new Error("Edge already exists in FSA.");
+        } catch (NoSuchNodeException e) {
+            throw new Error("Origin state does not exist in FSA.");
+        }
+        return copy;
+    }
+
+    /**
+     * Changes the initial state of an automaton as long as it exists.
+     *
+     * @param lhs automaton to operate on
+     * @param newInitialState state to be the new initial state
+     * @return returns a new automaton with altered initial state
+     */
+    public static FSA change_initial_state(FSA lhs, String newInitialState) {
+        FSA copy = new FSA(lhs);
+        try {
+            copy.setInitialState(newInitialState);
+        } catch (NoSuchNodeException e) {
+            throw new Error("Specified intial state does not exist in FSA.");
+        }
+        return copy;
+    }
+
+    /**
+     * Removes a state from the automaton as well as all associated edges.
+     *
+     * @param lhs automaton to operate on
+     * @param oldNode state to remove
+     * @return returns a new automaton with altered node set
+     */
+    public static FSA remove_state(FSA lhs, String oldNode) {
+        if (lhs.getInitialState().equals(oldNode)) {
+            throw new Error("Cannot remove initial state.");
+        }
+        FSA copy = new FSA(lhs);
+        try {
+            copy.removeNode(oldNode);
+        } catch (NoSuchNodeException e) {
+            throw new Error("State to remove does not exist in FSA.");
+        }
+        return copy;
+    }
+
+    /**
+     * Removes an edge from the automaton.
+     *
+     * @param lhs automaton to operate on
+     * @param origin origin state of the edge
+     * @param label edge label
+     * @param destination destination state of the edge
+     * @return returns a new automaton with altered edge set
+     */
+    public static FSA remove_edge(FSA lhs, String origin, String label, String destination) {
+        FSA copy = new FSA(lhs);
+        if (label.length() != 1)
+            throw new Error("Edge to remove can only contain one character");
+        try {
+            copy.removeEdge(origin, label.charAt(0), destination);
+        } catch (NoSuchNodeException e) {
+            throw new Error("Origin state does not exist in FSA.");
+        } catch (NoSuchEdgeException e) {
+            throw new Error("Origin state does not have the specified edge.");
+        }
+        return copy;
+    }
+
+    /**
+     * Removes a state from the set of final states of automaton.
+     *
+     * @param lhs automaton to operate on
+     * @param stateName name of state to add to final states set
+     * @return returns a new automaton with altered final states
+     */
+    public static FSA add_final_state(FSA lhs, String stateName) {
+        FSA copy = new FSA(lhs);
+        copy.addFinalState(stateName);
+        return copy;
+    }
+
+    /**
+     * Removes a state from the set of final states of automaton.
+     *
+     * @param lhs automaton to operate on
+     * @param stateName name of state to remove from final states set
+     * @return returns a new automaton with altered final states
+     */
+    public static FSA remove_final_state(FSA lhs, String stateName) {
+        if (!lhs.getFinalStates().contains(stateName))
+            throw new Error("Specified state is not final in FSA.");
+        FSA copy = new FSA(lhs);
+        copy.removeFinalState(stateName);
+        return copy;
+    }
+
+    /**
      * Adds the empty string to the alphabet. (Null character)
      *
      * @param lhs automaton to operate on
