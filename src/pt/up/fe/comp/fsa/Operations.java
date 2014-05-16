@@ -111,6 +111,32 @@ public class Operations {
     }
 
     /**
+     * Adds the empty string to the alphabet. (Null character)
+     *
+     * @param lhs automaton to operate on
+     * @return returns a new automaton with modified alphabet
+     */
+    public static FSA add_empty_to_alphabet(FSA lhs) {
+        FSA copy = new FSA(lhs);
+        Set<Character> c= new HashSet<>();
+
+        copy.addToAlphabet(c);
+        return copy;
+    }
+
+    /**
+     * Adds the double quote character to the alphabet. (Null character)
+     *
+     * @param lhs automaton to operate on
+     * @return returns a new automaton with modified alphabet
+     */
+    public static FSA add_doublequote_to_alphabet(FSA lhs) {
+        FSA copy = new FSA(lhs);
+        copy.addToAlphabet('"');
+        return copy;
+    }
+
+    /**
      * Adds all specified characters to an FSA's alphabet.
      *
      * @param lhs automaton to operate on
