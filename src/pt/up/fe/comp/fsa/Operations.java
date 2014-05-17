@@ -60,11 +60,12 @@ public class Operations {
         try {
             FSA.CartesianType _opType = FSA.CartesianType.valueOf(opType.toUpperCase());
             FSA result = arg1.cartesian(arg2, _opType);
+
             for (FSA automaton: args) {
                 result = result.cartesian(automaton, _opType);
             }
             return result;
-        } catch(Exception e) {
+        } catch(IllegalArgumentException e) {
             throw new Error("No such operation type: " + opType);
         }
     }

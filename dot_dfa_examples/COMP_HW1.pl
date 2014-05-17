@@ -9,6 +9,7 @@ transition_COMP_HW1(q3, C, q3):- code_COMP_HW1_c(C).
 
 transition_COMP_HW1(q4, C, q5):- code_COMP_HW1_e(C).
 transition_COMP_HW1(q4, C, q6):- code_COMP_HW1_a(C).
+transition_COMP_HW1(q4, C, q2):- code_COMP_HW1_b(C).
 
 transition_COMP_HW1(q5, C, q0):- code_COMP_HW1_f(C).
 

@@ -22,8 +22,6 @@ public class FSAMinimizationTest {
 
             newAut.minimize();
 
-            System.out.println(newAut);
-
             assertTrue(newAut.getNodes().containsAll(Arrays.asList("S", "A")));
             assertTrue(newAut.getNodes().size() == 2);
 
@@ -68,9 +66,6 @@ public class FSAMinimizationTest {
             newAut.addFinalState("G");
 
             newAut.minimize();
-
-            System.out.println(newAut);
-
 
             assertTrue(newAut.getNodes().size() == 5);
             assertTrue(newAut.getNodes().contains("A") || newAut.getNodes().contains("B"));
@@ -119,8 +114,6 @@ public class FSAMinimizationTest {
             newAut.addFinalState("E");
 
             newAut.minimize();
-
-            System.out.println(newAut);
 
 
             assertTrue(newAut.getNodes().size() == 4);

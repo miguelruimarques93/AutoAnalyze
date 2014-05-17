@@ -1,0 +1,9 @@
+a = "dot_dfa_examples/COMP_HW1_NFA.gv";
+b = "dot_dfa_examples/COMP_HW1.gv";
+c = cartesian "intersection" a b a;
+if (accepts c "aaaabccc") {
+    println "Yay!";
+}
+else {
+    println "Nay!";
+}

@@ -29,7 +29,7 @@ public class FSAMakeDeterministic {
 
             newAut.removeEmptyTransitions();
 
-            System.out.println(newAut);
+            //System.out.println(newAut);
 
             assertTrue(newAut.getNodes().containsAll(Arrays.asList("P","Q","R","Q1","R1","R2")));
             assertTrue(newAut.getNodes().size() == 6);
@@ -66,7 +66,7 @@ public class FSAMakeDeterministic {
             assert(!automaton.isDeterministic());
 
             automaton.makeDeterministic();
-            System.out.println(automaton);
+            //System.out.println(automaton);
 
             fail("DFA Equivalence not implemented yet.");
 
@@ -92,10 +92,10 @@ public class FSAMakeDeterministic {
 
             assert(!automaton.isDeterministic());
 
-            System.out.println(automaton);
+            //System.out.println(automaton);
 
             automaton.makeDeterministic();
-            System.out.println(automaton);
+            //System.out.println(automaton);
 
             fail("DFA Equivalence not implemented yet.");
 

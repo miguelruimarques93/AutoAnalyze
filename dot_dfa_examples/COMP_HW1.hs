@@ -4,7 +4,7 @@ delta :: Int -> Char -> Int
 delta 1 c	|c=='b' = 2|c=='c' = 3
 delta 2 c	|c=='b' = 2
 delta 3 c	|c=='c' = 3
-delta 4 c	|c=='e' = 5|c=='a' = 6
+delta 4 c	|c=='e' = 5|c=='a' = 6|c=='b' = 2
 delta 5 c	|c=='f' = 0
 delta 6 c	|c=='a' = 6|c=='b' = 1
 delta _ _ = -1

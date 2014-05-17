@@ -28,8 +28,6 @@ public class FSAMakeTotal {
 
             assert(automaton.isTotal());
 
-            System.out.println(automaton);
-
         } catch (FSAException e) {
             e.printStackTrace();
         }
@@ -55,8 +53,6 @@ public class FSAMakeTotal {
             automaton.makeTotal();
 
             assert(automaton.isTotal());
-
-            System.out.println(automaton);
 
         } catch (FSAException e) {
             e.printStackTrace();

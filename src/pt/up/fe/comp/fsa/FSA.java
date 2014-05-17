@@ -78,7 +78,10 @@ public class FSA {
     }
 
     public FSA(String name, String initialState, Collection<String> stateNames) throws DuplicateElementException {
-        _name = name;
+        if (name == null)
+            _name = "";
+        else
+            _name = name;
         _initialState = initialState;
 
         for (String state : stateNames)
@@ -512,8 +515,10 @@ public class FSA {
     public FSA cartesian(FSA other, CartesianType resultType) {
         FSA thisCopy = new FSA(this); thisCopy.addToAlphabet(other.getAlphabet()); thisCopy.makeTotal();
         FSA otherCopy = new FSA(other); otherCopy.addToAlphabet(getAlphabet()); otherCopy.makeTotal();
+
         Table<String, String, String> newNodes = HashBasedTable.create(thisCopy.getNodes().size(), otherCopy.getNodes().size());
         HashMap<String, Integer> numFinalsForNode = new HashMap<>();
+
         Integer counter = 0;
         String initialState = null;
         boolean initialStateFound = false;
@@ -545,15 +550,13 @@ public class FSA {
             FSA result = new FSA("cart_"+resultType.toString().toLowerCase()+"_"+thisCopy.getName()+"_"+otherCopy.getName(), initialState, newNodes.values());
             Set<Character> alphabet = thisCopy.getAlphabet();
             result.addToAlphabet(alphabet);
-
             for (String node : thisCopy.getNodes()) {
                 Set<Edge> thisEdges = thisCopy.getNodeEdges(node);
 
                 for (String oNode : otherCopy.getNodes()) {
                     Set<Edge> otherEdges = otherCopy.getNodeEdges(oNode);
-
                     String newNode = newNodes.get(node, oNode);
-                    for (char c : alphabet) {
+                    for (Character c : alphabet) {
                         Set<String> thisReachable = getDestinationsForInput(thisEdges, c);
                         Set<String> otherReachable = getDestinationsForInput(otherEdges, c);
                         for (String thisDest : thisReachable) {
@@ -565,7 +568,6 @@ public class FSA {
                     }
                 }
             }
-
             int minFinals;
             int maxFinals;
             switch(resultType) {
@@ -593,7 +595,6 @@ public class FSA {
                 default:
                     return null;
             }
-
             for (String newNode : numFinalsForNode.keySet()) {
                 int nf = numFinalsForNode.get(newNode);
                 if (nf >= minFinals && nf <= maxFinals)
@@ -848,6 +849,12 @@ public class FSA {
     }
 
     public void makeTotal() {
+        if (_alphabet.contains(null)) { //special case
+            _deterministic = false;
+            for (String node : getNodes()) {
+                _nodes.get(node).add(new Edge(null, node));
+            }
+        }
         String errorState = "_error";
         Set<Character> alphabet = getAlphabet();
         Map<String, Set<Character>> toAdd = new HashMap<>();
@@ -1091,13 +1098,16 @@ public class FSA {
     }
 
     public void write_prolog(String moduleName, PrintStream writer) {
+        FSA aut = new FSA(this);
+        aut.removeEmptyTransitions();
+
         String m_code_name = "code_"+moduleName+"_";
         String m_trans_name = "transition_"+moduleName;
         String m_ini_name = "initial_state_"+moduleName;
         String m_final_name = "final_state_"+moduleName;
         String m_accept_name = "accept_"+moduleName;
 
-        for (Character c : _alphabet)
+        for (Character c : aut.getAlphabet())
             writer.print(m_code_name+c+"(C):- \""+c+"\" = [C]. ");
 
         writer.println();
@@ -1106,15 +1116,15 @@ public class FSA {
         int initialState = -1;
         LinkedList<Integer> finalStates = new LinkedList<>();
 
-        LinkedList<String> nodes = new LinkedList<>(getNodes());
+        LinkedList<String> nodes = new LinkedList<>(aut.getNodes());
         for (int i = 0; i < nodes.size(); i++) {
-            if (initialState == -1 && nodes.get(i).equals(getInitialState()))
+            if (initialState == -1 && nodes.get(i).equals(aut.getInitialState()))
                 initialState = i;
-            if (getFinalStates().contains(nodes.get(i)))
+            if (aut.getFinalStates().contains(nodes.get(i)))
                 finalStates.add(i);
 
             try {
-                Set<Edge> edges = getNodeEdges(nodes.get(i));
+                Set<Edge> edges = aut.getNodeEdges(nodes.get(i));
                 if (edges != null && !edges.isEmpty()) {
                     for (Edge edge : edges) {
                         writer.println(m_trans_name+"(q"+Integer.toString(i)+", C, q"+nodes.indexOf(edge.destination())+"):- "+m_code_name+edge.label()+"(C).");

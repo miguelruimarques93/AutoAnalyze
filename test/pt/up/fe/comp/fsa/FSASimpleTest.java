@@ -145,7 +145,6 @@ public class FSASimpleTest {
             automaton.removeEdge("q1", 'a', "q2");
             automaton.addEdges("q1", "abc","q2");
             assertTrue(automaton.getNodeEdges("q1").size() == 1);
-            System.out.println(automaton.toString());
             assertTrue(automaton.getNodes().size() == 5);//q1 -> X a -> Y b -> q2 (c)
             assertTrue(automaton.isDeterministic());
             assertTrue(automaton.getNodeEdges("q1").contains(new FSA.Edge('a',"q1_1")));
