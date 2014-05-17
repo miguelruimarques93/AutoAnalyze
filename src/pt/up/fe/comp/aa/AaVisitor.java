@@ -117,7 +117,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                     throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + paramT.getSimpleName());
             }
 
-            if (i < paramTypes.length || j < args.size())
+            if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0))|| j < args.size())
                 throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
 
             Class returnType = op.getReturnType();
@@ -240,9 +240,13 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                 params.add(param);
             }
 
-            if (i < paramTypes.length || j < args.size())
+            if (paramTypes[paramTypes.length - 1].isArray() && params.size() == (paramTypes.length - 1))
+                params.add((Object[]) Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
+
+            if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
                 throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
         }
+
         try {
             return op.invoke(null, params.toArray(new Object[params.size()]));
         } catch (IllegalArgumentException e) {
