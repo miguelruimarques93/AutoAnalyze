@@ -140,7 +140,6 @@ public class FSACartesian {
             FSA b = FSALoader.LoadFromFile("dot_dfa_examples/COMP_HW1_NFA.gv");
 
             FSA automaton = a.cartesian(b, FSA.CartesianType.INTERSECTION);
-            automaton.write_prolog("stff",new PrintStream("testing.hs"));
 
             assertTrue(automaton.accepts("ef"));
             assertTrue(automaton.accepts("abc"));
