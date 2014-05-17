@@ -17,7 +17,7 @@ public class Operations {
      * @return returns a new eNFA that is the union of all the supplied automata.
      */
     public static FSA union(FSA arg1, FSA arg2, FSA... args) {
-        FSA result = new FSA(arg1.union(arg2));
+        FSA result = arg1.union(arg2);
         for (FSA automaton: args) {
             result = result.union(automaton);
         }
@@ -31,15 +31,42 @@ public class Operations {
      * @return returns a new eNFA that is the intersection of all the supplied automata.
      */
     public static FSA intersect(FSA arg1, FSA arg2, FSA... args) {
-        FSA result = new FSA(arg1.intersect(arg2));
+        FSA result = arg1.intersect(arg2);
         for (FSA automaton: args) {
             result = result.intersect(automaton);
         }
         return result;
     }
 
-    public static FSA cartesian(FSA arg1, FSA arg2, FSA... args) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    /**
+     * Computes the cartesian product of the automata (minimum of two).
+     *  The resulting automaton will either have no final states or be the union, intersection, difference or XOR of the automata,
+     *  deppending on the specified type for the operation.
+     *
+     *  After the cartesian product is calculated, the resulting automaton will have a state for every combination of states of the supplied automata.
+     *
+     *  Operation types:
+     *      UNION - Computes the union of the languages accepted by the automata
+     *      INTERSECTION - Computes the intersection of the languages accepted by the automata
+     *      XOR - Computes the exclusive or of the languages accepted by the automata
+     *      DIFF - Computes the difference between the languages accepted by the automata, in the same order as they are supplied
+     *      NONE - Resulting automaton will have no final states
+     *
+     * @param opType indicates the desired operation type and must have one of the following values: "union", "intersection", "xor", "diff", "none".
+     * @param args array of automata to operate with
+     * @return returns a new automaton that is the cartesian product of all the supplied automata
+     */
+    public static FSA cartesian(String opType, FSA arg1, FSA arg2, FSA... args) {
+        try {
+            FSA.CartesianType _opType = FSA.CartesianType.valueOf(opType.toUpperCase());
+            FSA result = arg1.cartesian(arg2, _opType);
+            for (FSA automaton: args) {
+                result = result.cartesian(automaton, _opType);
+            }
+            return result;
+        } catch(Exception e) {
+            throw new Error("No such operation type: " + opType);
+        }
     }
 
     /**
@@ -49,16 +76,17 @@ public class Operations {
      * @return returns a new eNFA that is the difference between the automata
      */
     public static FSA diff(FSA arg1, FSA arg2, FSA... args) {
-        FSA result = new FSA(arg1.diff(arg2));
+        FSA result = arg1.diff(arg2);
         for (FSA automaton: args) {
             result = result.diff(automaton);
         }
         return result;
     }
 
+    /*
     public static FSA closure(FSA arg1, FSA arg2, FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }
+    }*/
 
     /**
      * Creates a new automaton from the given one and complements it.
@@ -173,7 +201,7 @@ public class Operations {
         try {
             copy.setInitialState(newInitialState);
         } catch (NoSuchNodeException e) {
-            throw new Error("Specified intial state does not exist in FSA.");
+            throw new Error("Specified initial state does not exist in FSA: " + newInitialState);
         }
         return copy;
     }
