@@ -111,6 +111,19 @@ public class Operations {
     }
 
     /**
+     * Changes the name of an automaton.
+     *
+     * @param lhs automaton to rename
+     * @param newName new name of the automaton
+     * @return returns a new automaton with altered name
+     */
+    public static FSA change_name(FSA lhs, String newName) {
+        FSA copy = new FSA(lhs);
+        copy.setName(newName);
+        return copy;
+    }
+
+    /**
      * Adds a state to the automaton as well as all associated edges.
      *
      * @param lhs automaton to operate on
@@ -209,7 +222,7 @@ public class Operations {
     }
 
     /**
-     * Removes a state from the set of final states of automaton.
+     * Adds a state to the set of final states of automaton. If it does not exist in the set of ndoes, it is created.
      *
      * @param lhs automaton to operate on
      * @param stateName name of state to add to final states set

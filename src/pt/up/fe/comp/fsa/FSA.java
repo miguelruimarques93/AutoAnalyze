@@ -1,5 +1,7 @@
 package pt.up.fe.comp.fsa;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import org.antlr.v4.runtime.misc.Pair;
 
 import java.io.PrintStream;
@@ -71,7 +73,11 @@ public class FSA {
         private Pair<Character, String> transition;
     }
 
-    public FSA(String name, String initialState, Set<String> stateNames) throws DuplicateElementException {
+    public enum CartesianType {
+        UNION, INTERSECTION, XOR, DIFF, NONE
+    }
+
+    public FSA(String name, String initialState, Collection<String> stateNames) throws DuplicateElementException {
         _name = name;
         _initialState = initialState;
 
@@ -345,9 +351,9 @@ public class FSA {
         return _name;
     }
 
-    /*public void setName(String name) {
+    public void setName(String name) {
         this._name = name;
-    }*/
+    }
 
     public Set<Character> getAlphabet() {
         return _alphabet;
@@ -501,6 +507,113 @@ public class FSA {
         temp2.complement();
 
         return temp1.intersect(temp2);
+    }
+
+    public FSA cartesian(FSA other, CartesianType resultType) {
+        FSA thisCopy = new FSA(this); thisCopy.addToAlphabet(other.getAlphabet()); thisCopy.makeTotal();
+        FSA otherCopy = new FSA(other); otherCopy.addToAlphabet(getAlphabet()); otherCopy.makeTotal();
+        Table<String, String, String> newNodes = HashBasedTable.create(thisCopy.getNodes().size(), otherCopy.getNodes().size());
+        HashMap<String, Integer> numFinalsForNode = new HashMap<>();
+        Integer counter = 0;
+        String initialState = null;
+        boolean initialStateFound = false;
+
+        for (String node : thisCopy.getNodes()) {
+            boolean isInitial = node.equals(thisCopy.getInitialState());
+            int numFinals = thisCopy.getFinalStates().contains(node) ? 1 : 0;
+
+            for (String oNode : otherCopy.getNodes()) {
+                String newName = "q"+counter.toString();
+                newNodes.put(node, oNode, newName);
+                if (!initialStateFound && isInitial && oNode.equals(otherCopy.getInitialState())) {
+                    initialStateFound = true;
+                    initialState = newName;
+                }
+                if (otherCopy.getFinalStates().contains(oNode))
+                    numFinalsForNode.put(newName, numFinals +1);
+                else
+                    numFinalsForNode.put(newName, numFinals);
+                ++counter;
+            }
+        }
+
+        if (!initialStateFound) {
+            return null;
+        }
+
+        try {
+            FSA result = new FSA("cart_"+resultType.toString().toLowerCase()+"_"+thisCopy.getName()+"_"+otherCopy.getName(), initialState, newNodes.values());
+            Set<Character> alphabet = thisCopy.getAlphabet();
+            result.addToAlphabet(alphabet);
+
+            for (String node : thisCopy.getNodes()) {
+                Set<Edge> thisEdges = thisCopy.getNodeEdges(node);
+
+                for (String oNode : otherCopy.getNodes()) {
+                    Set<Edge> otherEdges = otherCopy.getNodeEdges(oNode);
+
+                    String newNode = newNodes.get(node, oNode);
+                    for (char c : alphabet) {
+                        Set<String> thisReachable = getDestinationsForInput(thisEdges, c);
+                        Set<String> otherReachable = getDestinationsForInput(otherEdges, c);
+                        for (String thisDest : thisReachable) {
+                            for (String otherDest : otherReachable) {
+                                String newDest = newNodes.get(thisDest, otherDest);
+                                result.addEdge(newNode, c, newDest);
+                            }
+                        }
+                    }
+                }
+            }
+
+            int minFinals;
+            int maxFinals;
+            switch(resultType) {
+                case UNION:
+                    minFinals = 1; maxFinals = 2;
+                    break;
+                case INTERSECTION:
+                    minFinals = 2; maxFinals = 2;
+                    break;
+                case XOR:
+                    minFinals = 1; maxFinals = 1;
+                    break;
+                case DIFF:
+                    for (String node : thisCopy.getFinalStates()) {
+                        Map<String, String> finalsInRow = newNodes.row(node);
+                        for (String fn : finalsInRow.keySet()) {
+                            if (!otherCopy.getFinalStates().contains(fn)) {
+                                result.addFinalState(finalsInRow.get(fn));
+                            }
+                        }
+                    }
+                    return result;
+                case NONE:
+                    return result;
+                default:
+                    return null;
+            }
+
+            for (String newNode : numFinalsForNode.keySet()) {
+                int nf = numFinalsForNode.get(newNode);
+                if (nf >= minFinals && nf <= maxFinals)
+                    result.addFinalState(newNode);
+            }
+
+            return result;
+        } catch (FSAException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Set<String> getDestinationsForInput(Set<Edge> edges, Character input) {
+        Set<String> destNodes = new HashSet<>();
+        for (Edge e : edges) {
+            if (e.label() == input)
+                destNodes.add(e.destination());
+        }
+        return destNodes;
     }
 
 

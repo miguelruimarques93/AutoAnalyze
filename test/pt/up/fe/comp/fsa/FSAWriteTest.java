@@ -112,8 +112,8 @@ public class FSAWriteTest {
             e.printStackTrace();
             fail();
         }
-        System.out.println(automaton);
-        System.out.println("To test this you must run the Haskell code");
+
+        System.out.println("To test code generation you must run the Haskell code");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class FSAWriteTest {
             e.printStackTrace();
             fail();
         }
-        System.out.println("To test this you must run the Haskell code");
+        System.out.println("To test code generation you must run the Haskell code");
     }
 
     @Test
@@ -172,7 +172,7 @@ public class FSAWriteTest {
             e.printStackTrace();
             fail();
         }
-        System.out.println("To test this you must run the Prolog code");
+        System.out.println("To test code generation you must run the Prolog code");
     }
 
     @Test
@@ -201,8 +201,8 @@ public class FSAWriteTest {
             e.printStackTrace();
             fail();
         }
-        System.out.println(automaton);
-        System.out.println("To test this you must run the C# code");
+
+        System.out.println("To test code generation you must run the C# code");
     }
 
     @Test
@@ -231,7 +231,7 @@ public class FSAWriteTest {
             e.printStackTrace();
             fail();
         }
-        System.out.println("To test this you must run the C# code");
+        System.out.println("To test code generation you must run the C# code");
     }
 
     private static <T> boolean compareSets(Set<T> s1, Set<T> s2){

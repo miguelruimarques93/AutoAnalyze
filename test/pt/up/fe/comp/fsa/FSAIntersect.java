@@ -32,7 +32,6 @@ public class FSAIntersect {
             FSA automaton = aut4.intersect(aut3);
 
             automaton.minimize();
-            System.out.println(automaton);
 
 
             assertTrue(aut1.accepts("a"));
