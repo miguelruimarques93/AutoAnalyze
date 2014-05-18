@@ -131,13 +131,21 @@ public class Operations {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
+    /**
+     * Tests if two automata accept the same language. The automata are not modified by this operation.
+     *
+     * @param lhs automaton to use for comparison
+     * @param rhs automaton to use for comparison
+     * @return returns true if the automata accept the same language, false otherwise
+     */
     public static Boolean equi(FSA lhs, FSA rhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        return lhs.equals(rhs);
     }
 
+    /*
     public static Boolean equals(FSA lhs, FSA rhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }
+    }*/
 
     /**
      * Changes the name of an automaton.
