@@ -617,6 +617,75 @@ public class FSA {
         return destNodes;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof FSA))
+            return false;
+
+        FSA thisCopy = new FSA(this); thisCopy.minimize(); thisCopy.stripAlphabet();
+        FSA otherCopy = new FSA((FSA) obj); otherCopy.minimize(); otherCopy.stripAlphabet();
+
+        if (!thisCopy.getAlphabet().containsAll(otherCopy.getAlphabet()) || !otherCopy.getAlphabet().containsAll(thisCopy.getAlphabet()))
+            return false;
+        if (thisCopy.getNodes().size() != otherCopy.getNodes().size())
+            return false;
+        if (thisCopy.getFinalStates().size() != otherCopy.getFinalStates().size())
+            return false;
+
+        Queue<String> thisToVisit = new LinkedList<>(); thisToVisit.add(thisCopy.getInitialState());
+        Queue<String> otherToVisit = new LinkedList<>(); otherToVisit.add(otherCopy.getInitialState());
+        Set<String> thisVisited = new HashSet<>();
+        Set<String> otherVisited = new HashSet<>();
+        Map<String, String> thisToNew = new HashMap<>();
+        Map<String, String> otherToNew = new HashMap<>();
+
+        Integer counter = 0;
+        try {
+            while (!thisToVisit.isEmpty() && !otherToVisit.isEmpty()) {
+                String thisCur = thisToVisit.remove();
+                String otherCur = otherToVisit.remove();
+                thisVisited.add(thisCur);
+                otherVisited.add(otherCur);
+                String mappedName = "q"+counter;
+                thisToNew.put(thisCur, mappedName);
+                otherToNew.put(otherCur, mappedName);
+                ++counter;
+
+                Set<Edge> thisEdges = thisCopy.getNodeEdges(thisCur);
+                Set<Edge> otherEdges = otherCopy.getNodeEdges(otherCur);
+                if (thisEdges.size() != otherEdges.size())
+                    return false;
+
+                for (Edge e : thisEdges) {
+                    Set<String> otherDests = getDestinationsForInput(otherEdges, e.label());
+                    if (otherDests.size() != 1)
+                        return false;
+
+                    String oDest = otherDests.iterator().next();
+                    if (thisVisited.contains(e.destination()) || otherVisited.contains(oDest)) {
+                        if (!thisVisited.contains(e.destination()) || !otherVisited.contains(oDest))
+                            return false;
+                        if (!thisToNew.get(e.destination()).equals(otherToNew.get(oDest)))
+                            return false;
+                    }
+                    else {
+                        thisToVisit.add(e.destination());
+                        otherToVisit.add(oDest);
+                    }
+                }
+
+            }
+        } catch (FSAException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 
     @Override
     public String toString() {

@@ -2,7 +2,6 @@ package pt.up.fe.comp.fsa;
 
 import org.junit.Test;
 
-import java.io.PrintStream;
 import java.util.LinkedHashSet;
 
 import static junit.framework.TestCase.assertFalse;
