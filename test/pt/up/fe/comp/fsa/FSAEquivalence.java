@@ -15,9 +15,34 @@ public class FSAEquivalence {
             FSA b = FSALoader.LoadFromFile("dot_dfa_examples/COMP_HW1_NFA.gv");
 
             assertTrue(a.equals(b));
-            a.addEdge("q0", null, "qq");
+            a.addEdge("Q0", null, "qq");
             assertTrue(a.equals(b));
             a.addFinalState("qq");
+            assertFalse(a.equals(b));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void TestEquivalenceWithSelf() {
+        try {
+            FSA a = FSALoader.LoadFromFile("dot_dfa_examples/COMP_HW1.gv");
+
+            assertTrue(a.equals(a));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void TestEquivalenceWithComplement() {
+        try {
+            FSA a = FSALoader.LoadFromFile("dot_dfa_examples/COMP_HW1.gv");
+            FSA b = new FSA(a);
+            b.complement();
             assertFalse(a.equals(b));
         } catch (Exception e) {
             e.printStackTrace();

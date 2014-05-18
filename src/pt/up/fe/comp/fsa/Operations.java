@@ -138,7 +138,7 @@ public class Operations {
      * @param rhs automaton to use for comparison
      * @return returns true if the automata accept the same language, false otherwise
      */
-    public static Boolean equi(FSA lhs, FSA rhs) {
+    public static Boolean equivalent(FSA lhs, FSA rhs) {
         return lhs.equals(rhs);
     }
 
