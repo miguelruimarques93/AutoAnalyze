@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused") //methods are used through reflection
 public class Operations {
 
     /**

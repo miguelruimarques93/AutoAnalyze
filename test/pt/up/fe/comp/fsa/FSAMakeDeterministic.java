@@ -67,10 +67,17 @@ public class FSAMakeDeterministic {
 
             assert(!automaton.isDeterministic());
 
-            automaton.makeDeterministic();
-            //System.out.println(automaton);
+            FSA aut2 = new FSA("deterministic", "lol", new HashSet<String>());
+            aut2.addNode("lol1");
+            aut2.addNode("lol2");
+            aut2.addEdge("lol", 'a', "lol1");
+            aut2.addEdge("lol", 'b', "lol2");
+            aut2.addEdge("lol1", 'b', "lol2");
+            aut2.addFinalState("lol1"); aut2.addFinalState("lol2");
 
-            fail("DFA Equivalence not implemented yet.");
+            automaton.makeDeterministic();
+
+            assertTrue(automaton.equals(aut2));
 
         } catch (FSAException e) {
             e.printStackTrace();
@@ -94,12 +101,20 @@ public class FSAMakeDeterministic {
 
             assert(!automaton.isDeterministic());
 
-            //System.out.println(automaton);
-
             automaton.makeDeterministic();
-            //System.out.println(automaton);
 
-            fail("DFA Equivalence not implemented yet.");
+            FSA aut2 = new FSA("S", "S", new HashSet<String>());
+            aut2.addNode("A"); aut2.addNode("B"); aut2.addNode("C");
+
+            aut2.addEdge("S",'a',"A");
+            aut2.addEdge("S",'b',"B");
+            aut2.addEdge("A",'a',"A");
+            aut2.addEdge("B",'b',"C");
+            aut2.addEdge("C",'a',"A");
+            aut2.addEdge("C",'b',"C");
+            aut2.addFinalState("A"); aut2.addFinalState("C");
+
+            assertTrue(automaton.equals(aut2));
 
         } catch (FSAException e) {
             e.printStackTrace();
