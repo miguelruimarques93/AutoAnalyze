@@ -85,11 +85,6 @@ public class Operations {
         return result;
     }
 
-    /*
-    public static FSA closure(FSA arg1, FSA arg2, FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }*/
-
     /**
      * Creates a new automaton from the given one and complements it.
      * I.e. it will accept strings iff they were not accepted by the original automaton.
@@ -128,8 +123,15 @@ public class Operations {
         return result;
     }
 
+    /**
+     * Test if automaton in first argument is equal to or included in automaton passed as second argument.
+     *
+     * @param lhs automaton to operate with
+     * @param rhs automaton to operate with
+     * @return returns true if lhs is equal to or included in rhs, false otherwise
+     */
     public static Boolean in(FSA lhs, FSA rhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        return lhs.isIncludedIn(rhs);
     }
 
     /**
@@ -142,11 +144,6 @@ public class Operations {
     public static Boolean equivalent(FSA lhs, FSA rhs) {
         return lhs.equals(rhs);
     }
-
-    /*
-    public static Boolean equals(FSA lhs, FSA rhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }*/
 
     /**
      * Changes the name of an automaton.
