@@ -1,0 +1,9 @@
+digraph Comp_HW1_regex {
+	rankdir=LR;
+	initialstate=q0;
+	node [shape = doublecircle]; qf1 qf2 qf3;
+	node [shape = circle];
+	q0 -> qf1 [ label = "ef" ; regex = true ];
+	q0 -> qf2 [ label = "a*bb*" ; regex = true ];
+	q0 -> qf3 [ label = "aa*bc*" ; regex = true ];
+}
