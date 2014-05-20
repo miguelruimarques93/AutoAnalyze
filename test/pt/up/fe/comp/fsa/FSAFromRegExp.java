@@ -11,8 +11,6 @@ public class FSAFromRegExp {
         try {
             FSA automaton = new FSA("COMP_HW1", "a*bb*|aa*bc*|ef");
 
-            System.out.print(automaton);
-
             assertTrue(automaton.accepts("ef"));
             assertTrue(automaton.accepts("abc"));
             assertTrue(automaton.accepts("aaabccccc"));

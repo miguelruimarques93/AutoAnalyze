@@ -1,5 +1,7 @@
 package pt.up.fe.comp.fsa;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -10,6 +12,36 @@ import java.util.Set;
 
 @SuppressWarnings("unused") //methods are used through reflection
 public class Operations {
+
+    /**
+     * Creates a new FSA with a single state.
+     *
+     * @param name name of the automaton
+     * @return returns a new automaton with just an initial state.
+     */
+    public static FSA empty_fsa(String name) {
+        try {
+            return new FSA(name, "q0", new HashSet<String>());
+        } catch (FSAException e) {
+            throw new Error(e);
+        }
+    }
+
+    /**
+     * Creates a new FSA from a regex.
+     *
+     * @param name   name of the automaton
+     * @param regExp regular expression that determines the language of the automaton
+     * @return returns a new automaton that accepts the language specified by the regular expression
+     */
+    public static FSA loadr(String name, String regExp) {
+        try {
+            return new FSA(name, regExp);
+
+        } catch (InvalidArgumentException e) {
+            throw new Error(e);
+        }
+    }
 
     /**
      * Computes the union between several automata. (Minimum of two).
@@ -486,9 +518,10 @@ public class Operations {
         return null;
     }
 
+    /* //TODO
     public static Object write_regex(FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }
+    }*/
 
     private static String string_encode(String str) {
         return str.replace("#", "sharp").replace("++", "pp");
@@ -547,6 +580,7 @@ public class Operations {
         return null;
     }
 
+    //TODO
     public static Object show(FSA lhs) {
         throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
     }
