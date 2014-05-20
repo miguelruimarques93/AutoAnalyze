@@ -118,21 +118,9 @@ public class FSA {
         _alphabet.addAll(chars);
     }
 
-    /*public boolean removeFromAlphabet(Character c) {
-        boolean characterInUse = false;
-
-        for (String node : _nodes.keySet()) {
-            for (Edge edge : _nodes.get(node)) {
-                if (edge.label() == c)
-                    characterInUse = true;
-            }
-        }
-
-        if (!characterInUse)
-            _alphabet.remove(c);
-
-        return !characterInUse;
-    }*/
+    public boolean isIncludedIn(FSA other) {
+        return other.intersect(this).equals(this);
+    }
 
     private Set<Character> getCharactersInUse() {
         Set<Character> res = new HashSet<>();
