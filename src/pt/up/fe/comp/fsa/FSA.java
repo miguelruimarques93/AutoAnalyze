@@ -248,7 +248,7 @@ public class FSA {
         if (!_nodes.containsKey(nodeName))
             throw new NoSuchNodeException(nodeName);
         if (!_nodes.containsKey(destination))
-            throw new NoSuchNodeException(destination);
+            _nodes.put(destination, new LinkedHashSet<Edge>());
 
         if (input == null || input.length() == 0) {
             addEdge(nodeName, null, destination);
@@ -281,6 +281,74 @@ public class FSA {
                 nextNode = destination;
 
         }
+    }
+
+    public void insertFSA(String nodeName, FSA other, String destination) throws NoSuchNodeException {
+        if (!_nodes.containsKey(nodeName))
+            throw new NoSuchNodeException(nodeName);
+        if (!_nodes.containsKey(destination))
+            _nodes.put(destination, new LinkedHashSet<Edge>());
+
+        _alphabet.addAll(other.getAlphabet());
+
+        Set<String> otherNames = new HashSet<>(other.getNodes());
+        otherNames.removeAll(getNodes());
+
+        boolean needsRename = !otherNames.containsAll(other.getNodes());
+        Map<String, String> autNewNames = new HashMap<>();
+        if (needsRename) {
+            Integer counter = 0;
+            Map<String, Set<Edge>> newNodes = new LinkedHashMap<>();
+            Set<String> finalNodes = new HashSet<>();
+            Map<String, String> oldNameToNew = new HashMap<>();
+
+            for (String s : _nodes.keySet()) {
+                String newName = "q" + counter.toString();
+                newNodes.put(newName, new LinkedHashSet<Edge>());
+                oldNameToNew.put(s, newName);
+                ++counter;
+            }
+            for (String s : _finalStates) {
+                finalNodes.add(oldNameToNew.get(s));
+            }
+            for (String s : _nodes.keySet()) {
+                for (Edge e : _nodes.get(s)) {
+                    String newName = oldNameToNew.get(s);
+                    newNodes.get(newName).add(new Edge(e.label(), oldNameToNew.get(e.destination())));
+                }
+            }
+
+            _initialState = oldNameToNew.get(_initialState);
+            _nodes = newNodes;
+            _finalStates = finalNodes;
+            nodeName = oldNameToNew.get(nodeName);
+            destination = oldNameToNew.get(destination);
+
+            for (String s : other.getNodes()) {
+                String newName = "q"+counter;
+                ++counter;
+                autNewNames.put(s, newName);
+                _nodes.put(newName, new LinkedHashSet<Edge>());
+            }
+        }
+        else {
+            for (String s : other.getNodes()) {
+                autNewNames.put(s, s);
+                _nodes.put(s, new LinkedHashSet<Edge>());
+            }
+        }
+
+        _nodes.get(nodeName).add(new Edge(null, autNewNames.get(other.getInitialState())));
+        for (String s : other.getNodes()) {
+            for (Edge e: other.getNodeEdges(s)) {
+                _nodes.get(autNewNames.get(s)).add(new Edge(e.label(), autNewNames.get(e.destination())));
+            }
+        }
+        for (String s : other.getFinalStates()) {
+            _nodes.get(autNewNames.get(s)).add(new Edge(null, destination));
+        }
+
+        _deterministic = false;
     }
 
     public void removeEdge(String nodeName, Character input, String destination) throws NoSuchNodeException, NoSuchEdgeException {
@@ -456,6 +524,75 @@ public class FSA {
         }
 
         return false;
+    }
+
+    public void concat(FSA other) {
+        _alphabet.addAll(other.getAlphabet());
+
+        Set<String> otherNames = new HashSet<>(other.getNodes());
+        otherNames.removeAll(getNodes());
+
+        boolean needsRename = !otherNames.containsAll(other.getNodes());
+        Map<String, String> autNewNames = new HashMap<>();
+        if (needsRename) {
+            Integer counter = 0;
+            Map<String, Set<Edge>> newNodes = new LinkedHashMap<>();
+            Set<String> finalNodes = new HashSet<>();
+            Map<String, String> oldNameToNew = new HashMap<>();
+
+            for (String s : _nodes.keySet()) {
+                String newName = "q" + counter.toString();
+                newNodes.put(newName, new LinkedHashSet<Edge>());
+                oldNameToNew.put(s, newName);
+                ++counter;
+            }
+            for (String s : _finalStates) {
+                finalNodes.add(oldNameToNew.get(s));
+            }
+            for (String s : _nodes.keySet()) {
+                for (Edge e : _nodes.get(s)) {
+                    String newName = oldNameToNew.get(s);
+                    newNodes.get(newName).add(new Edge(e.label(), oldNameToNew.get(e.destination())));
+                }
+            }
+
+            _initialState = oldNameToNew.get(_initialState);
+            _nodes = newNodes;
+            _finalStates = finalNodes;
+
+            for (String s : other.getNodes()) {
+                String newName = "q"+counter;
+                ++counter;
+                autNewNames.put(s, newName);
+                _nodes.put(newName, new LinkedHashSet<Edge>());
+            }
+        }
+        else {
+            for (String s : other.getNodes()) {
+                autNewNames.put(s, s);
+                _nodes.put(s, new LinkedHashSet<Edge>());
+            }
+        }
+
+        for (String s : _finalStates)
+            _nodes.get(s).add(new Edge(null, autNewNames.get(other.getInitialState())));
+        _finalStates.clear();
+
+        for (String s : other.getNodes()) {
+            try {
+                for (Edge e : other.getNodeEdges(s)) {
+                    _nodes.get(autNewNames.get(s)).add(new Edge(e.label(), autNewNames.get(e.destination())));
+                }
+            } catch (FSAException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (String s : other.getFinalStates()) {
+            _finalStates.add(autNewNames.get(s));
+        }
+
+        _deterministic = false;
     }
 
     public FSA union(FSA other) {

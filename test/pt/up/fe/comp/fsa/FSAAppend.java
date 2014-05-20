@@ -1,41 +1,18 @@
 package pt.up.fe.comp.fsa;
 
-import static junit.framework.TestCase.*;
 
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
-public class FSAFromRegExp {
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 
+public class FSAAppend {
     @Test
-    public void TestGenericRegExp() {
-        try {
-            FSA automaton = new FSA("COMP_HW1", "a*bb*|aa*bc*|ef");
-
-            assertTrue(automaton.accepts("ef"));
-            assertTrue(automaton.accepts("abc"));
-            assertTrue(automaton.accepts("aaabccccc"));
-            assertTrue(automaton.accepts("aaabbbbbb"));
-            assertTrue(automaton.accepts("abbbb"));
-            assertTrue(automaton.accepts("bbbb"));
-
-            assertFalse(automaton.accepts(""));
-            assertFalse(automaton.accepts("e"));
-            assertFalse(automaton.accepts("eff"));
-            assertFalse(automaton.accepts("abbc"));
-            assertFalse(automaton.accepts("bcccc"));
-            assertFalse(automaton.accepts("sfgddd"));
-            assertFalse(automaton.accepts("aaacccc"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
-
-    @Test
-    public void TestAddAutomatonAsEdge() {
+    public void TestAppend() {
         try {
             FSA automaton = new FSA("aut1", "q0", new LinkedHashSet<String>()); //ef
             automaton.addEdge("q0", 'e', "q1");
@@ -55,16 +32,16 @@ public class FSAFromRegExp {
             aut3.addEdge("q2", 'c', "q2");
             aut3.addFinalState("q2");
 
-            automaton.insertFSA("q0", aut2, "q2");
-            automaton.insertFSA("q0", aut3, "q2");
+            automaton.concat(aut2);
+            automaton.concat(aut3);
 
-            assertTrue(automaton.accepts("ef"));
-            assertTrue(automaton.accepts("abc"));
-            assertTrue(automaton.accepts("aaabccccc"));
-            assertTrue(automaton.accepts("aaabbbbbb"));
-            assertTrue(automaton.accepts("abbbb"));
-            assertTrue(automaton.accepts("bbbb"));
+            assertTrue(automaton.accepts("efabbbbabccc"));
 
+            assertFalse(automaton.accepts("abc"));
+            assertFalse(automaton.accepts("aaabccccc"));
+            assertFalse(automaton.accepts("aaabbbbbb"));
+            assertFalse(automaton.accepts("abbbb"));
+            assertFalse(automaton.accepts("bbbb"));
             assertFalse(automaton.accepts(""));
             assertFalse(automaton.accepts("e"));
             assertFalse(automaton.accepts("eff"));
@@ -80,7 +57,7 @@ public class FSAFromRegExp {
     }
 
     @Test
-    public void TestInsertFSAWithoutRename() {
+    public void TestAppendWithoutRename() {
         try {
             FSA automaton = new FSA("aut1", "q0", new LinkedHashSet<String>()); //ef
             automaton.addEdge("q0", 'e', "q1");
@@ -100,18 +77,19 @@ public class FSAFromRegExp {
             aut3.addEdge("S2", 'c', "S2");
             aut3.addFinalState("S2");
 
-            automaton.insertFSA("q0", aut2, "q2");
-            automaton.insertFSA("q0", aut3, "q2");
+            automaton.concat(aut2);
+            automaton.concat(aut3);
 
             assertTrue(automaton.getNodes().containsAll(Arrays.asList("q0", "q1", "q2", "A", "B", "S", "S1", "S2")));
 
-            assertTrue(automaton.accepts("ef"));
-            assertTrue(automaton.accepts("abc"));
-            assertTrue(automaton.accepts("aaabccccc"));
-            assertTrue(automaton.accepts("aaabbbbbb"));
-            assertTrue(automaton.accepts("abbbb"));
-            assertTrue(automaton.accepts("bbbb"));
+            assertTrue(automaton.accepts("efabbbbabccc"));
 
+            assertFalse(automaton.accepts("ef"));
+            assertFalse(automaton.accepts("abc"));
+            assertFalse(automaton.accepts("aaabccccc"));
+            assertFalse(automaton.accepts("aaabbbbbb"));
+            assertFalse(automaton.accepts("abbbb"));
+            assertFalse(automaton.accepts("bbbb"));
             assertFalse(automaton.accepts(""));
             assertFalse(automaton.accepts("e"));
             assertFalse(automaton.accepts("eff"));
