@@ -8,7 +8,7 @@ package pt.up.fe.comp.aa.parser;
 
 stmt_list       : stmt*
                 ;
-stmt            : (((attribution | operation) SEMICOLON) | control_expr)
+stmt            : (((attribution | operation) (SEMICOLON | EOF)) | control_expr)
                 ;
 attribution     : attribution_lhs EQUAL attribution_rhs
                 ;

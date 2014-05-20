@@ -46,6 +46,9 @@ public class AaVisitor extends aaBaseVisitor<Object> {
     }
     private AaArgumentVisitor _argVisitor = new AaArgumentVisitor();
 
+    public void beginScope() { _symbols.beginScope(); }
+    public void endScope() { _symbols.endScope(); }
+
     private SymbolTable<Object> _symbols = new SymbolTable<>();
 
     @Override

@@ -4,12 +4,18 @@ import java.util.*;
 
 public class SymbolTable<T> {
 
+    public SymbolTable() {
+        beginScope();
+    }
+
     public void beginScope() {
         _scopes.add(new Scope<T>());
     }
 
     public void endScope() {
-        _scopes.pop();
+        // do not delete "global" scope
+        if (_scopes.size() > 1)
+            _scopes.pop();
     }
 
     public void addSymbol(String name, Class type, T value) {

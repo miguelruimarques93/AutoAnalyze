@@ -4,8 +4,7 @@ c = complement a;
 d = union a (diff b c);
 if (equals c d) {
     write_dot d "d.gv";
-}
-else {
+} else {
     write_code Haskell c "c.hs";
 }
 
