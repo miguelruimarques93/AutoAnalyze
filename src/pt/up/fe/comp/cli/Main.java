@@ -77,6 +77,7 @@ public class Main {
 
         } else { // usage
             System.err.println("Usage: java pt.up.fe.comp.cli.Main [file]");
+            System.err.println("If no file is provided, the program will be initiated in REPL mode.");
         }
     }
 }
