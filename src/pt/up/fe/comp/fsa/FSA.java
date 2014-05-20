@@ -211,7 +211,6 @@ public class FSA {
 
     /**
      * Same as addEdge but allows for a chain of inputs and creates intermediate states
-     * TODO allow for regular expressions
      */
     public void addEdges(String nodeName, String input, String destination) throws NoSuchNodeException, DuplicateElementException {
         if (!_nodes.containsKey(nodeName))
@@ -244,7 +243,7 @@ public class FSA {
 
             if (i < input.length() - 2) {
                 nextNode = nodeName + "_" + Integer.toString(i + 2); //starts at "_1"
-                while (_nodes.containsKey(nextNode)) //TODO find a better way to obtain a certainly non existing name
+                while (_nodes.containsKey(nextNode))
                     nextNode += Integer.toString(i + 2);
             } else
                 nextNode = destination;
