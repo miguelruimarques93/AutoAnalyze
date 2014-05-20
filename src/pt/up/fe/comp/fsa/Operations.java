@@ -44,6 +44,21 @@ public class Operations {
     }
 
     /**
+     * Concatenates all the specified automata in the order in which they are supplied to the function.
+     *
+     * @param args array of automata to operate with
+     * @return returns a new eNFA that is the concatenation of all the given automata
+     */
+    public static FSA concat(FSA arg1, FSA arg2, FSA... args) {
+        FSA result = new FSA(arg1);
+        result.concat(arg2);
+        for (FSA automaton : args) {
+            result.concat(automaton);
+        }
+        return result;
+    }
+
+    /**
      * Computes the union between several automata. (Minimum of two).
      *
      * @param args array of automata to unite
@@ -226,6 +241,28 @@ public class Operations {
             throw new Error("Origin state does not exist in FSA.");
         }
         return copy;
+    }
+
+    /**
+     * Inserts an automaton in another automaton.
+     *  i.e. to get from the specified origin state to the destination state must traverse the whole automaton to be inserted.
+     * <p>
+     * Will rename states of the resulting automaton if there is a name conflict between the nodes of both automata.
+     *
+     * @param lhs           original automaton
+     * @param origin        name of the source state
+     * @param transition    automaton that specifies the language for the state transition
+     * @param destination   name of the destination state
+     * @return returns a new automaton with the new transitions
+     */
+    public static FSA insert_automaton(FSA lhs, String origin, FSA transition, String destination) {
+        FSA copy = new FSA(lhs);
+        try {
+            copy.insertFSA(origin, transition, destination);
+            return copy;
+        } catch (NoSuchNodeException e) {
+            throw new Error("Origin state does not exist in FSA.");
+        }
     }
 
     /**
