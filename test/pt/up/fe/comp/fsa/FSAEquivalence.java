@@ -2,9 +2,7 @@ package pt.up.fe.comp.fsa;
 
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static junit.framework.TestCase.*;
 
 public class FSAEquivalence {
 

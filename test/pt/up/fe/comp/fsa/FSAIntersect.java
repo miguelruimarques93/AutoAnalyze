@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.util.LinkedHashSet;
 
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.*;
 
 public class FSAIntersect {

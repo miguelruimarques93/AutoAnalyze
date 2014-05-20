@@ -1,12 +1,8 @@
 package pt.up.fe.comp.fsa;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
-
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-
 import org.junit.Test;
 import pt.up.fe.comp.dot.DotVisitor;
 import pt.up.fe.comp.dot.ir.DotGraph;
@@ -19,6 +15,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.Set;
+
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 
 public class FSAWriteTest {
 
@@ -41,7 +40,7 @@ public class FSAWriteTest {
 
         FSA automaton = FSABuilder.buildFrom(graph);
         automaton.addToAlphabet('"');
-        automaton.addToAlphabet((Character)null);
+        automaton.addToAlphabet((Character) null);
 
         PrintStream stream;
         try {
@@ -70,14 +69,14 @@ public class FSAWriteTest {
         FSA newAut = FSABuilder.buildFrom(newGraph);
 
         assertTrue(compareSets(automaton.getFinalStates(), newAut.getFinalStates()));
-        assertTrue(compareSets(automaton.getNodes(),newAut.getNodes()));
-        assertTrue(compareSets(automaton.getAlphabet(),newAut.getAlphabet()));
+        assertTrue(compareSets(automaton.getNodes(), newAut.getNodes()));
+        assertTrue(compareSets(automaton.getAlphabet(), newAut.getAlphabet()));
         assertTrue(newAut.getAlphabet().contains(null));
         assertTrue(newAut.getAlphabet().contains('"'));
 
-        for (String node: automaton.getNodes()) {
+        for (String node : automaton.getNodes()) {
             try {
-                assertTrue(compareSets(automaton.getNodeEdges(node),newAut.getNodeEdges(node)));
+                assertTrue(compareSets(automaton.getNodeEdges(node), newAut.getNodeEdges(node)));
             } catch (NoSuchNodeException e) {
                 e.printStackTrace();
                 fail();
@@ -234,7 +233,7 @@ public class FSAWriteTest {
         System.out.println("To test code generation you must run the C# code");
     }
 
-    private static <T> boolean compareSets(Set<T> s1, Set<T> s2){
+    private static <T> boolean compareSets(Set<T> s1, Set<T> s2) {
         if (s1.size() != s2.size())
             return false;
 

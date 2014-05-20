@@ -67,32 +67,32 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
 
     @Override
     public DotGraph visitAttr_stmt(@NotNull dotParser.Attr_stmtContext ctx) {
-    	if (ctx.NODE() != null)
-    		_activeAttributes = _attributesVisitor.visit(ctx.attributes);
-    	return _graph;
+        if (ctx.NODE() != null)
+            _activeAttributes = _attributesVisitor.visit(ctx.attributes);
+        return _graph;
     }
-    
+
     @Override
     public DotGraph visitNode_stmt(@NotNull dotParser.Node_stmtContext ctx) {
-    	String node_id = _stringVisitor.visit(ctx.node_id());
-    	
-    	if (!_graph.hasNode(node_id)) {
-    		_graph.addNode(node_id);
-    		if (_activeAttributes != null)
-        		_graph.addNodeAttributes(node_id, _activeAttributes);
-    	}
-    	
-    	return _graph;
+        String node_id = _stringVisitor.visit(ctx.node_id());
+
+        if (!_graph.hasNode(node_id)) {
+            _graph.addNode(node_id);
+            if (_activeAttributes != null)
+                _graph.addNodeAttributes(node_id, _activeAttributes);
+        }
+
+        return _graph;
     }
-    
+
     @Override
     public DotGraph visitAttr1_stmt(@NotNull dotParser.Attr1_stmtContext ctx) {
-    	String lhs = ctx.lhs.getText();
-    	String rhs = ctx.rhs.getText();
+        String lhs = ctx.lhs.getText();
+        String rhs = ctx.rhs.getText();
 
-    	_graph.addAttribute(lhs, rhs);
+        _graph.addAttribute(lhs, rhs);
 
-    	return _graph;
+        return _graph;
     }
 
     @Override
@@ -101,21 +101,21 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
         String rhs_id = _stringVisitor.visit(ctx.rhs);
         Map<String, String> attributes = ctx.attributes == null ? null : _attributesVisitor.visit(ctx.attributes);
 
-        if (! _graph.hasNode(lhs_id)) {
-        	_graph.addNode(lhs_id);
-        	if (_activeAttributes != null)
-        		_graph.addNodeAttributes(lhs_id, _activeAttributes);
+        if (!_graph.hasNode(lhs_id)) {
+            _graph.addNode(lhs_id);
+            if (_activeAttributes != null)
+                _graph.addNodeAttributes(lhs_id, _activeAttributes);
         }
 
-        if (! _graph.hasNode(rhs_id)) {
+        if (!_graph.hasNode(rhs_id)) {
             _graph.addNode(rhs_id);
             if (_activeAttributes != null)
-        		_graph.addNodeAttributes(rhs_id, _activeAttributes);
+                _graph.addNodeAttributes(rhs_id, _activeAttributes);
         }
 
         DotGraph.Edge edge = _graph.addNewEdge(lhs_id);
         edge.destination = rhs_id;
-        if(attributes != null)
+        if (attributes != null)
             edge.attributes.putAll(attributes);
         edge.directed = ctx.op.getType() == dotLexer.DIEDGE_OP;
 
@@ -133,9 +133,9 @@ public class DotVisitor extends dotBaseVisitor<DotGraph> {
 
     public static void main(String[] args) throws IOException {
         String inputFile = "dot_dfa_examples/fsm.gv";
-        if ( args.length>0 ) inputFile = args[0];
+        if (args.length > 0) inputFile = args[0];
         InputStream is = System.in;
-        if ( inputFile!=null ) is = new FileInputStream(inputFile);
+        if (inputFile != null) is = new FileInputStream(inputFile);
         ANTLRInputStream input = new ANTLRInputStream(is);
         dotLexer lexer = new dotLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);

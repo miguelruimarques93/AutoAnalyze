@@ -2,22 +2,19 @@ package pt.up.fe.comp.fsa;
 
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import static junit.framework.TestCase.fail;
+import static junit.framework.TestCase.*;
 
 public class FSAMakeDeterministic {
     private FSA automaton;
 
     @Test
-    public  void TestCollapseEmptyTransitions() {
+    public void TestCollapseEmptyTransitions() {
         try {
-            FSA newAut = new FSA("aut","P", new LinkedHashSet<String>());
+            FSA newAut = new FSA("aut", "P", new LinkedHashSet<String>());
             newAut.addEdge("P", null, "Q");
             newAut.addEdge("P", null, "R");
             newAut.addEdge("Q", 'a', "Q1");
@@ -33,14 +30,14 @@ public class FSAMakeDeterministic {
 
             //System.out.println(newAut);
 
-            assertTrue(newAut.getNodes().containsAll(Arrays.asList("P","Q","R","Q1","R1","R2")));
+            assertTrue(newAut.getNodes().containsAll(Arrays.asList("P", "Q", "R", "Q1", "R1", "R2")));
             assertTrue(newAut.getNodes().size() == 6);
 
-            assertTrue(newAut.getFinalStates().containsAll(Arrays.asList("P","Q","R")));
+            assertTrue(newAut.getFinalStates().containsAll(Arrays.asList("P", "Q", "R")));
             assertTrue(newAut.getFinalStates().size() == 3);
 
-            assertTrue(newAut.getNodeEdges("P").contains(new FSA.Edge('a',"Q1")));
-            assertTrue(newAut.getNodeEdges("P").contains(new FSA.Edge('a',"R1")));
+            assertTrue(newAut.getNodeEdges("P").contains(new FSA.Edge('a', "Q1")));
+            assertTrue(newAut.getNodeEdges("P").contains(new FSA.Edge('a', "R1")));
             assertTrue(newAut.getNodeEdges("P").size() == 2);
 
             assertTrue(newAut.getInitialState().equals("P"));
@@ -65,7 +62,7 @@ public class FSAMakeDeterministic {
 
             automaton.addFinalState("lol2");
 
-            assert(!automaton.isDeterministic());
+            assert (!automaton.isDeterministic());
 
             FSA aut2 = new FSA("deterministic", "lol", new HashSet<String>());
             aut2.addNode("lol1");
@@ -73,7 +70,8 @@ public class FSAMakeDeterministic {
             aut2.addEdge("lol", 'a', "lol1");
             aut2.addEdge("lol", 'b', "lol2");
             aut2.addEdge("lol1", 'b', "lol2");
-            aut2.addFinalState("lol1"); aut2.addFinalState("lol2");
+            aut2.addFinalState("lol1");
+            aut2.addFinalState("lol2");
 
             automaton.makeDeterministic();
 
@@ -99,20 +97,23 @@ public class FSAMakeDeterministic {
 
             automaton.addFinalState("A");
 
-            assert(!automaton.isDeterministic());
+            assert (!automaton.isDeterministic());
 
             automaton.makeDeterministic();
 
             FSA aut2 = new FSA("S", "S", new HashSet<String>());
-            aut2.addNode("A"); aut2.addNode("B"); aut2.addNode("C");
+            aut2.addNode("A");
+            aut2.addNode("B");
+            aut2.addNode("C");
 
-            aut2.addEdge("S",'a',"A");
-            aut2.addEdge("S",'b',"B");
-            aut2.addEdge("A",'a',"A");
-            aut2.addEdge("B",'b',"C");
-            aut2.addEdge("C",'a',"A");
-            aut2.addEdge("C",'b',"C");
-            aut2.addFinalState("A"); aut2.addFinalState("C");
+            aut2.addEdge("S", 'a', "A");
+            aut2.addEdge("S", 'b', "B");
+            aut2.addEdge("A", 'a', "A");
+            aut2.addEdge("B", 'b', "C");
+            aut2.addEdge("C", 'a', "A");
+            aut2.addEdge("C", 'b', "C");
+            aut2.addFinalState("A");
+            aut2.addFinalState("C");
 
             assertTrue(automaton.equals(aut2));
 

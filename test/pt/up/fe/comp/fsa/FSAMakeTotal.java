@@ -22,11 +22,11 @@ public class FSAMakeTotal {
 
             automaton.addFinalState("lol2");
 
-            assert(!automaton.isTotal());
+            assert (!automaton.isTotal());
 
             automaton.makeTotal();
 
-            assert(automaton.isTotal());
+            assert (automaton.isTotal());
 
         } catch (FSAException e) {
             e.printStackTrace();
@@ -48,11 +48,11 @@ public class FSAMakeTotal {
 
             automaton.addFinalState("A");
 
-            assert(!automaton.isTotal());
+            assert (!automaton.isTotal());
 
             automaton.makeTotal();
 
-            assert(automaton.isTotal());
+            assert (automaton.isTotal());
 
         } catch (FSAException e) {
             e.printStackTrace();

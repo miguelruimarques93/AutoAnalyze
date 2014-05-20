@@ -9,18 +9,18 @@ import java.util.*;
 
 /**
  * This class defines a Finite State Automata, containing all necessary information to describe one, namely:
- * <p/>
+ * <p>
  * - The alphabet;
- * <p/>
+ * <p>
  * - The set of states (can NOT be empty);
- * <p/>
+ * <p>
  * - The initial state;
- * <p/>
+ * <p>
  * - The set of final states (can be empty);
- * <p/>
+ * <p>
  * - The set of edges / transition function.
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * It also contains several methods to allow for the manipulation of the automata and a boolean to indicate if it is
  * deterministic or not.
  */
@@ -28,7 +28,7 @@ public class FSA {
 
     /**
      * This class is essentially a wrapper for a Pair<Character, String> already defined in the ANTLR4 libraries.
-     * <p/>
+     * <p>
      * If the Character (input) is null it symbolizes an empty transition
      *
      * @see "https://github.com/antlr/antlr4/blob/master/runtime/Java/src/org/antlr/v4/runtime/misc/Pair.java"
@@ -391,7 +391,7 @@ public class FSA {
     }
 
     public boolean isDeterministic() {
-        if (_needsDeterminismUpdate){
+        if (_needsDeterminismUpdate) {
             _needsDeterminismUpdate = false;
             checkDeterminism();
         }
@@ -441,7 +441,7 @@ public class FSA {
 
     public FSA union(FSA other) {
         try {
-            FSA res = new FSA(this.getName()+"_"+other.getName(), "q0", new LinkedHashSet<String>());
+            FSA res = new FSA(this.getName() + "_" + other.getName(), "q0", new LinkedHashSet<String>());
             res.addToAlphabet(this.getAlphabet());
             res.addToAlphabet(other.getAlphabet());
 
@@ -450,24 +450,24 @@ public class FSA {
             Map<String, String> other_newNames = new HashMap<>();
 
             for (String state : getNodes()) {
-                String newName = "q"+counter;
+                String newName = "q" + counter;
                 res.addNode(newName);
-                this_newNames.put(state,newName);
+                this_newNames.put(state, newName);
                 if (getFinalStates().contains(state))
                     res.addFinalState(newName);
                 counter++;
             }
             for (String state : other.getNodes()) {
-                String newName = "q"+counter;
+                String newName = "q" + counter;
                 res.addNode(newName);
-                other_newNames.put(state,newName);
+                other_newNames.put(state, newName);
                 if (other.getFinalStates().contains(state))
                     res.addFinalState(newName);
                 counter++;
             }
 
-            res.addEdge("q0",null,this_newNames.get(getInitialState()));
-            res.addEdge("q0",null,other_newNames.get(other.getInitialState()));
+            res.addEdge("q0", null, this_newNames.get(getInitialState()));
+            res.addEdge("q0", null, other_newNames.get(other.getInitialState()));
 
             for (String state : getNodes()) {
                 for (Edge e : getNodeEdges(state)) {
@@ -497,7 +497,8 @@ public class FSA {
         temp1.complement();
         temp2.complement();
 
-        FSA united = temp1.union(temp2); united.complement();
+        FSA united = temp1.union(temp2);
+        united.complement();
 
         return united;
     }
@@ -513,8 +514,12 @@ public class FSA {
     }
 
     public FSA cartesian(FSA other, CartesianType resultType) {
-        FSA thisCopy = new FSA(this); thisCopy.addToAlphabet(other.getAlphabet()); thisCopy.makeTotal();
-        FSA otherCopy = new FSA(other); otherCopy.addToAlphabet(getAlphabet()); otherCopy.makeTotal();
+        FSA thisCopy = new FSA(this);
+        thisCopy.addToAlphabet(other.getAlphabet());
+        thisCopy.makeTotal();
+        FSA otherCopy = new FSA(other);
+        otherCopy.addToAlphabet(getAlphabet());
+        otherCopy.makeTotal();
 
         Table<String, String, String> newNodes = HashBasedTable.create(thisCopy.getNodes().size(), otherCopy.getNodes().size());
         HashMap<String, Integer> numFinalsForNode = new HashMap<>();
@@ -528,14 +533,14 @@ public class FSA {
             int numFinals = thisCopy.getFinalStates().contains(node) ? 1 : 0;
 
             for (String oNode : otherCopy.getNodes()) {
-                String newName = "q"+counter.toString();
+                String newName = "q" + counter.toString();
                 newNodes.put(node, oNode, newName);
                 if (!initialStateFound && isInitial && oNode.equals(otherCopy.getInitialState())) {
                     initialStateFound = true;
                     initialState = newName;
                 }
                 if (otherCopy.getFinalStates().contains(oNode))
-                    numFinalsForNode.put(newName, numFinals +1);
+                    numFinalsForNode.put(newName, numFinals + 1);
                 else
                     numFinalsForNode.put(newName, numFinals);
                 ++counter;
@@ -547,7 +552,7 @@ public class FSA {
         }
 
         try {
-            FSA result = new FSA("cart_"+resultType.toString().toLowerCase()+"_"+thisCopy.getName()+"_"+otherCopy.getName(), initialState, newNodes.values());
+            FSA result = new FSA("cart_" + resultType.toString().toLowerCase() + "_" + thisCopy.getName() + "_" + otherCopy.getName(), initialState, newNodes.values());
             Set<Character> alphabet = thisCopy.getAlphabet();
             result.addToAlphabet(alphabet);
             for (String node : thisCopy.getNodes()) {
@@ -570,15 +575,18 @@ public class FSA {
             }
             int minFinals;
             int maxFinals;
-            switch(resultType) {
+            switch (resultType) {
                 case UNION:
-                    minFinals = 1; maxFinals = 2;
+                    minFinals = 1;
+                    maxFinals = 2;
                     break;
                 case INTERSECTION:
-                    minFinals = 2; maxFinals = 2;
+                    minFinals = 2;
+                    maxFinals = 2;
                     break;
                 case XOR:
-                    minFinals = 1; maxFinals = 1;
+                    minFinals = 1;
+                    maxFinals = 1;
                     break;
                 case DIFF:
                     for (String node : thisCopy.getFinalStates()) {
@@ -626,8 +634,12 @@ public class FSA {
         if (!(obj instanceof FSA))
             return false;
 
-        FSA thisCopy = new FSA(this); thisCopy.minimize(); thisCopy.stripAlphabet();
-        FSA otherCopy = new FSA((FSA) obj); otherCopy.minimize(); otherCopy.stripAlphabet();
+        FSA thisCopy = new FSA(this);
+        thisCopy.minimize();
+        thisCopy.stripAlphabet();
+        FSA otherCopy = new FSA((FSA) obj);
+        otherCopy.minimize();
+        otherCopy.stripAlphabet();
 
         if (!thisCopy.getAlphabet().containsAll(otherCopy.getAlphabet()) || !otherCopy.getAlphabet().containsAll(thisCopy.getAlphabet()))
             return false;
@@ -636,8 +648,10 @@ public class FSA {
         if (thisCopy.getFinalStates().size() != otherCopy.getFinalStates().size())
             return false;
 
-        Queue<String> thisToVisit = new LinkedList<>(); thisToVisit.add(thisCopy.getInitialState());
-        Queue<String> otherToVisit = new LinkedList<>(); otherToVisit.add(otherCopy.getInitialState());
+        Queue<String> thisToVisit = new LinkedList<>();
+        thisToVisit.add(thisCopy.getInitialState());
+        Queue<String> otherToVisit = new LinkedList<>();
+        otherToVisit.add(otherCopy.getInitialState());
         Set<String> thisVisited = new HashSet<>();
         Set<String> otherVisited = new HashSet<>();
         Map<String, String> thisToNew = new HashMap<>();
@@ -650,7 +664,7 @@ public class FSA {
                 String otherCur = otherToVisit.remove();
                 thisVisited.add(thisCur);
                 otherVisited.add(otherCur);
-                String mappedName = "q"+counter;
+                String mappedName = "q" + counter;
                 thisToNew.put(thisCur, mappedName);
                 otherToNew.put(otherCur, mappedName);
                 ++counter;
@@ -679,8 +693,7 @@ public class FSA {
                             System.out.println("fail4");
                             return false;
                         }
-                    }
-                    else {
+                    } else {
                         thisToVisit.add(e.destination());
                         otherToVisit.add(oDest);
                     }
@@ -706,7 +719,7 @@ public class FSA {
         nodes.add(nodename);
         toExpand.add(nodename);
 
-        while(!toExpand.isEmpty()) {
+        while (!toExpand.isEmpty()) {
             String curNode = toExpand.removeFirst();
             try {
                 for (Edge edge : getNodeEdges(curNode)) {
@@ -756,7 +769,7 @@ public class FSA {
             newNodes.put(node, newEdges);
         }
 
-        if(_alphabet.contains(null))
+        if (_alphabet.contains(null))
             _alphabet.remove(null);
 
         _nodes = newNodes;
@@ -843,7 +856,7 @@ public class FSA {
 
             reachableStates.addAll(temp);
             done = temp.isEmpty();
-        } while(!done);
+        } while (!done);
 
         LinkedList<String> toRemove = new LinkedList<>();
         for (String node : getNodes()) {
@@ -863,7 +876,7 @@ public class FSA {
     private HashSet<String> getNewNodesWithTransitionsTo(Set<String> nodenames) {
         HashSet<String> nodes = new HashSet<>();
 
-        for (String node: getNodes()) {
+        for (String node : getNodes()) {
             for (Edge e : _nodes.get(node)) {
                 if (nodenames.contains(e.destination()) && !nodenames.contains(node)) {
                     nodes.add(node);
@@ -881,7 +894,7 @@ public class FSA {
             HashSet<String> newStates = getNewNodesWithTransitionsTo(usefulStates);
             usefulStates.addAll(newStates);
             done = newStates.isEmpty();
-        } while(!done);
+        } while (!done);
 
         LinkedList<String> toRemove = new LinkedList<>();
         for (String node : getNodes()) {
@@ -908,11 +921,11 @@ public class FSA {
     public boolean isTotal() {
         Set<Character> alphabet = getAlphabet();
 
-        for (Map.Entry<String, Set<Edge>> node: _nodes.entrySet()) {
+        for (Map.Entry<String, Set<Edge>> node : _nodes.entrySet()) {
             Set<Edge> nodeEdges = node.getValue();
             Set<Character> edgesCharacters = new HashSet<>();
 
-            for (Edge e: nodeEdges)
+            for (Edge e : nodeEdges)
                 edgesCharacters.add(e.label());
 
             Set<Character> nonExistent = new HashSet<>(alphabet);
@@ -936,11 +949,11 @@ public class FSA {
         Set<Character> alphabet = getAlphabet();
         Map<String, Set<Character>> toAdd = new HashMap<>();
 
-        for (Map.Entry<String, Set<Edge>> node: _nodes.entrySet()) {
+        for (Map.Entry<String, Set<Edge>> node : _nodes.entrySet()) {
             Set<Edge> nodeEdges = node.getValue();
             Set<Character> edgesCharacters = new HashSet<>();
 
-            for (Edge e: nodeEdges)
+            for (Edge e : nodeEdges)
                 edgesCharacters.add(e.label());
 
             Set<Character> nonExistent = new HashSet<>(alphabet);
@@ -961,7 +974,7 @@ public class FSA {
 
             for (Map.Entry<String, Set<Character>> node : toAdd.entrySet()) {
                 String nodeLabel = node.getKey();
-                for (Character c: node.getValue()) {
+                for (Character c : node.getValue()) {
                     try {
                         addEdge(nodeLabel, c, errorState);
                     } catch (FSAException e) {
@@ -1019,7 +1032,7 @@ public class FSA {
             e.printStackTrace();
             return false;
         }
-        return (nodeEdges.isEmpty() || (nodeEdges.size()==1 && nodeEdges.contains(new Edge(null, copy.getInitialState()))));
+        return (nodeEdges.isEmpty() || (nodeEdges.size() == 1 && nodeEdges.contains(new Edge(null, copy.getInitialState()))));
     }
 
     public void complement() {
@@ -1052,18 +1065,18 @@ public class FSA {
         boolean[][] matrix = new boolean[nodeToNumber.size()][nodeToNumber.size()];
 
         //Compute D(0)
-        for (int i=0; i < matrix.length; i++) {
-            for (int j=0; j < i; j++) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < i; j++) {
                 matrix[i][j] = (_finalStates.contains(numberToNode.get(i)) && !_finalStates.contains(numberToNode.get(j))) ||
                         (!_finalStates.contains(numberToNode.get(i)) && _finalStates.contains(numberToNode.get(j)));
             }
         }
 
         boolean changed = true;
-        while(changed) {
+        while (changed) {
             changed = false;
-            for (int i=0; i < matrix.length; i++) {
-                for (int j=0; j < i; j++) { //symmetrical matrix
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < i; j++) { //symmetrical matrix
                     if (matrix[i][j]) continue;
 
                     for (char c : _alphabet) {
@@ -1092,9 +1105,9 @@ public class FSA {
             }
         }
 
-        for (int i=matrix.length-1; i > -1; i--) { //start from largest nodes and merge progressively
+        for (int i = matrix.length - 1; i > -1; i--) { //start from largest nodes and merge progressively
             boolean toRemove = false;
-            for (int j=i-1; j > -1; j--) {
+            for (int j = i - 1; j > -1; j--) {
                 if (matrix[i][j]) continue;
                 toRemove = true;
                 for (String node : _nodes.keySet()) {
@@ -1108,7 +1121,7 @@ public class FSA {
                     _nodes.get(numberToNode.get(j)).add(e);
 
             }
-            if(toRemove) {
+            if (toRemove) {
                 try {
                     removeNode(numberToNode.get(i));
                 } catch (NoSuchNodeException e) {
@@ -1126,7 +1139,7 @@ public class FSA {
         writer.println("\tinitialstate=" + _initialState + ";");
         if (_alphabet.size() > 0) {
             writer.print("\talphabet=\"");
-            for (Character c: _alphabet) {
+            for (Character c : _alphabet) {
                 if (c != null && c != '"')
                     writer.print(c);
             }
@@ -1149,7 +1162,7 @@ public class FSA {
         }
 
         Set<String> nds = getNodes();
-        if(!nds.isEmpty()){
+        if (!nds.isEmpty()) {
             writer.println("\tnode [shape = circle];");
             for (String node : nds) {
                 try {
@@ -1178,14 +1191,14 @@ public class FSA {
         FSA aut = new FSA(this);
         aut.removeEmptyTransitions();
 
-        String m_code_name = "code_"+moduleName+"_";
-        String m_trans_name = "transition_"+moduleName;
-        String m_ini_name = "initial_state_"+moduleName;
-        String m_final_name = "final_state_"+moduleName;
-        String m_accept_name = "accept_"+moduleName;
+        String m_code_name = "code_" + moduleName + "_";
+        String m_trans_name = "transition_" + moduleName;
+        String m_ini_name = "initial_state_" + moduleName;
+        String m_final_name = "final_state_" + moduleName;
+        String m_accept_name = "accept_" + moduleName;
 
         for (Character c : aut.getAlphabet())
-            writer.print(m_code_name+c+"(C):- \""+c+"\" = [C]. ");
+            writer.print(m_code_name + c + "(C):- \"" + c + "\" = [C]. ");
 
         writer.println();
         writer.println();
@@ -1204,7 +1217,7 @@ public class FSA {
                 Set<Edge> edges = aut.getNodeEdges(nodes.get(i));
                 if (edges != null && !edges.isEmpty()) {
                     for (Edge edge : edges) {
-                        writer.println(m_trans_name+"(q"+Integer.toString(i)+", C, q"+nodes.indexOf(edge.destination())+"):- "+m_code_name+edge.label()+"(C).");
+                        writer.println(m_trans_name + "(q" + Integer.toString(i) + ", C, q" + nodes.indexOf(edge.destination()) + "):- " + m_code_name + edge.label() + "(C).");
                     }
                     writer.println();
                 }
@@ -1214,7 +1227,7 @@ public class FSA {
             }
         }
         writer.println();
-        writer.println(m_ini_name+"(q"+Integer.toString(initialState)+").");
+        writer.println(m_ini_name + "(q" + Integer.toString(initialState) + ").");
         writer.println();
         for (Integer finalState : finalStates) writer.print(m_final_name + "(q" + finalState + "). ");
 
@@ -1254,7 +1267,7 @@ public class FSA {
                 if (edges != null && !edges.isEmpty()) {
                     writer.print("delta " + Integer.toString(i) + " c\t");
                     for (Edge edge : edges) {
-                        writer.print("|c=='"+edge.label()+"' = "+nodes.indexOf(edge.destination()));
+                        writer.print("|c=='" + edge.label() + "' = " + nodes.indexOf(edge.destination()));
                     }
                     writer.println();
                 }
@@ -1265,13 +1278,13 @@ public class FSA {
         }
         writer.println("delta _ _ = -1");
         writer.println();
-        writer.println("initialState::Int\ninitialState = "+Integer.toString(initialState));
+        writer.println("initialState::Int\ninitialState = " + Integer.toString(initialState));
         writer.println();
         writer.println("finalStates::[Int]");
         writer.print("finalStates = [");
-        for (int i=0; i < finalStates.size(); i++) {
+        for (int i = 0; i < finalStates.size(); i++) {
             writer.print(finalStates.get(i));
-            if (i < finalStates.size()-1)
+            if (i < finalStates.size() - 1)
                 writer.print(",");
         }
         writer.println("]");
@@ -1328,17 +1341,17 @@ public class FSA {
 
         int level = 0;
 
-        writer.println(indent(level)    + "using System;");
-        writer.println(indent(level)    + "using System.Linq;");
+        writer.println(indent(level) + "using System;");
+        writer.println(indent(level) + "using System.Linq;");
         writer.println();
-        writer.println(indent(level)    + "namespace Aut_" + moduleName);
-        writer.println(indent(level++)  + "{");
-        writer.println(indent(level)    + "static class Program");
-        writer.println(indent(level++)  + "{");
-        writer.println(indent(level)    + "static public bool Accept(string str)");
-        writer.println(indent(level++)  + "{");
-        writer.println(indent(level)    + "var edge = new[,]");
-        writer.println(indent(level++)  + "{");
+        writer.println(indent(level) + "namespace Aut_" + moduleName);
+        writer.println(indent(level++) + "{");
+        writer.println(indent(level) + "static class Program");
+        writer.println(indent(level++) + "{");
+        writer.println(indent(level) + "static public bool Accept(string str)");
+        writer.println(indent(level++) + "{");
+        writer.println(indent(level) + "var edge = new[,]");
+        writer.println(indent(level++) + "{");
         for (int i = 0; i < transitions.length; ++i) {
             writer.print(indent(level) + "{");
             for (int j = 0; j < transitions[i].length; ++j) {
@@ -1353,9 +1366,9 @@ public class FSA {
             }
             writer.println();
         }
-        writer.println(indent(--level)  + "};");
+        writer.println(indent(--level) + "};");
         writer.println();
-        writer.print(indent(level)      + "var final = new[] {");
+        writer.print(indent(level) + "var final = new[] {");
         for (int i = 0, size = finalStates.size(); i < size; ++i) {
             writer.print(finalStates.get(i) ? "true" : "false");
             if (i != size - 1) {
@@ -1364,33 +1377,33 @@ public class FSA {
         }
         writer.println("};");
         writer.println();
-        writer.println(indent(level)    + "var map = new Func<char, int>(x =>");
-        writer.println(indent(level++)  + "{");
-        writer.println(indent(level)    + "switch (x)");
-        writer.println(indent(level++)  + "{");
+        writer.println(indent(level) + "var map = new Func<char, int>(x =>");
+        writer.println(indent(level++) + "{");
+        writer.println(indent(level) + "switch (x)");
+        writer.println(indent(level++) + "{");
         for (int i = 0, size = getAlphabet().size(); i < size; ++i) {
             writer.println(indent(level) + "case '" + alphabet.get(i) + "': return " + i + ";");
         }
         writer.println(indent(level) + "default : return " + getAlphabet().size() + ";");
-        writer.println(indent(--level)  + "}");
-        writer.println(indent(--level)  + "});");
+        writer.println(indent(--level) + "}");
+        writer.println(indent(--level) + "});");
         writer.println();
-        writer.println(indent(level)    + "if (str != null)");
-        writer.println(indent(level++)  + "{");
+        writer.println(indent(level) + "if (str != null)");
+        writer.println(indent(level++) + "{");
         writer.print(indent(level) + "var state = str.Aggregate(");
         writer.print(initialState + 1);
         writer.println(", (current, c) => edge[current, map(c)]);");
-        writer.println(indent(level)    + "return final[state];");
-        writer.println(indent(--level)  + "}");
-        writer.println(indent(level)    + "return false;");
-        writer.println(indent(--level)  + "}");
-        writer.println(indent(level)    + "static void Main()");
-        writer.println(indent(level++)  + "{");
-        writer.println(indent(level)    + "var str = Console.ReadLine();");
-        writer.println(indent(level)    + "Console.WriteLine(Accept(str) ? \"accept\" : \"reject\");");
-        writer.println(indent(--level)  + "}");
-        writer.println(indent(--level)  + "}");
-        writer.println(indent(--level)  + "}");
+        writer.println(indent(level) + "return final[state];");
+        writer.println(indent(--level) + "}");
+        writer.println(indent(level) + "return false;");
+        writer.println(indent(--level) + "}");
+        writer.println(indent(level) + "static void Main()");
+        writer.println(indent(level++) + "{");
+        writer.println(indent(level) + "var str = Console.ReadLine();");
+        writer.println(indent(level) + "Console.WriteLine(Accept(str) ? \"accept\" : \"reject\");");
+        writer.println(indent(--level) + "}");
+        writer.println(indent(--level) + "}");
+        writer.println(indent(--level) + "}");
     }
 
     private String indent(int level) {

@@ -1,19 +1,17 @@
 package pt.up.fe.comp.fsa;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.fail;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
-import org.junit.Test;
+import static junit.framework.TestCase.*;
 
 public class FSAMinimizationTest {
     @Test
     public void MinimizationTest() {
         try {
-            FSA newAut = new FSA("aut","S", new LinkedHashSet<String>());
+            FSA newAut = new FSA("aut", "S", new LinkedHashSet<String>());
             newAut.addEdge("S", 'a', "A");
             newAut.addEdge("A", 'b', "B");
             newAut.addEdge("B", 'a', "A");
@@ -25,11 +23,11 @@ public class FSAMinimizationTest {
             assertTrue(newAut.getNodes().containsAll(Arrays.asList("S", "A")));
             assertTrue(newAut.getNodes().size() == 2);
 
-            assertTrue(newAut.getNodeEdges("S").size()==1);
-            assertTrue(newAut.getNodeEdges("A").size()==1);
+            assertTrue(newAut.getNodeEdges("S").size() == 1);
+            assertTrue(newAut.getNodeEdges("A").size() == 1);
 
-            assertTrue(newAut.getNodeEdges("S").contains(new FSA.Edge('a',"A")));
-            assertTrue(newAut.getNodeEdges("A").contains(new FSA.Edge('b',"S")));
+            assertTrue(newAut.getNodeEdges("S").contains(new FSA.Edge('a', "A")));
+            assertTrue(newAut.getNodeEdges("A").contains(new FSA.Edge('b', "S")));
 
         } catch (FSAException e) {
             e.printStackTrace();
@@ -43,7 +41,7 @@ public class FSAMinimizationTest {
     @Test
     public void MinimizationTest2() {
         try {
-            FSA newAut = new FSA("aut","A", new LinkedHashSet<String>());
+            FSA newAut = new FSA("aut", "A", new LinkedHashSet<String>());
             newAut.addEdge("A", '1', "B");
             newAut.addEdge("A", '0', "H");
             newAut.addEdge("B", '1', "A");
@@ -78,16 +76,16 @@ public class FSAMinimizationTest {
             assertTrue(newAut.getNodes().contains("E"));
 
 
-            assertTrue(newAut.getNodeEdges("A").containsAll(Arrays.asList(new FSA.Edge('0',"H"), new FSA.Edge('1',"A"))));
-            assertTrue(newAut.getNodeEdges("A").size()==2);
-            assertTrue(newAut.getNodeEdges("H").containsAll(Arrays.asList(new FSA.Edge('1',"C"), new FSA.Edge('0',"C"))));
-            assertTrue(newAut.getNodeEdges("H").size()==2);
-            assertTrue(newAut.getNodeEdges("C").containsAll(Arrays.asList(new FSA.Edge('0',"E"), new FSA.Edge('1',"F"))));
-            assertTrue(newAut.getNodeEdges("C").size()==2);
-            assertTrue(newAut.getNodeEdges("E").containsAll(Arrays.asList(new FSA.Edge('0',"F"), new FSA.Edge('1',"F"))));
-            assertTrue(newAut.getNodeEdges("E").size()==2);
-            assertTrue(newAut.getNodeEdges("F").containsAll(Arrays.asList(new FSA.Edge('0',"F"), new FSA.Edge('1',"F"))));
-            assertTrue(newAut.getNodeEdges("F").size()==2);
+            assertTrue(newAut.getNodeEdges("A").containsAll(Arrays.asList(new FSA.Edge('0', "H"), new FSA.Edge('1', "A"))));
+            assertTrue(newAut.getNodeEdges("A").size() == 2);
+            assertTrue(newAut.getNodeEdges("H").containsAll(Arrays.asList(new FSA.Edge('1', "C"), new FSA.Edge('0', "C"))));
+            assertTrue(newAut.getNodeEdges("H").size() == 2);
+            assertTrue(newAut.getNodeEdges("C").containsAll(Arrays.asList(new FSA.Edge('0', "E"), new FSA.Edge('1', "F"))));
+            assertTrue(newAut.getNodeEdges("C").size() == 2);
+            assertTrue(newAut.getNodeEdges("E").containsAll(Arrays.asList(new FSA.Edge('0', "F"), new FSA.Edge('1', "F"))));
+            assertTrue(newAut.getNodeEdges("E").size() == 2);
+            assertTrue(newAut.getNodeEdges("F").containsAll(Arrays.asList(new FSA.Edge('0', "F"), new FSA.Edge('1', "F"))));
+            assertTrue(newAut.getNodeEdges("F").size() == 2);
 
         } catch (FSAException e) {
             e.printStackTrace();
@@ -101,7 +99,7 @@ public class FSAMinimizationTest {
     @Test
     public void MinimizationTest3() {
         try {
-            FSA newAut = new FSA("aut","A", new LinkedHashSet<String>());
+            FSA newAut = new FSA("aut", "A", new LinkedHashSet<String>());
             newAut.addEdge("A", '0', "B");
             newAut.addEdge("A", '1', "C");
             newAut.addEdge("B", '0', "D");
@@ -124,12 +122,12 @@ public class FSAMinimizationTest {
             assertTrue(newAut.getNodes().contains("E"));
 
 
-            assertTrue(newAut.getNodeEdges("A").containsAll(Arrays.asList(new FSA.Edge('0',"B"), new FSA.Edge('1',"B"))));
-            assertTrue(newAut.getNodeEdges("A").size()==2);
-            assertTrue(newAut.getNodeEdges("B").containsAll(Arrays.asList(new FSA.Edge('0',"D"), new FSA.Edge('1',"D"))));
-            assertTrue(newAut.getNodeEdges("B").size()==2);
-            assertTrue(newAut.getNodeEdges("D").containsAll(Arrays.asList(new FSA.Edge('0',"E"), new FSA.Edge('1',"E"))));
-            assertTrue(newAut.getNodeEdges("D").size()==2);
+            assertTrue(newAut.getNodeEdges("A").containsAll(Arrays.asList(new FSA.Edge('0', "B"), new FSA.Edge('1', "B"))));
+            assertTrue(newAut.getNodeEdges("A").size() == 2);
+            assertTrue(newAut.getNodeEdges("B").containsAll(Arrays.asList(new FSA.Edge('0', "D"), new FSA.Edge('1', "D"))));
+            assertTrue(newAut.getNodeEdges("B").size() == 2);
+            assertTrue(newAut.getNodeEdges("D").containsAll(Arrays.asList(new FSA.Edge('0', "E"), new FSA.Edge('1', "E"))));
+            assertTrue(newAut.getNodeEdges("D").size() == 2);
             assertTrue(newAut.getNodeEdges("E").isEmpty());
 
         } catch (FSAException e) {

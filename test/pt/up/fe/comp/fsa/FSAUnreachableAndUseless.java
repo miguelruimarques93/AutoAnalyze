@@ -2,13 +2,10 @@ package pt.up.fe.comp.fsa;
 
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
-import static junit.framework.TestCase.fail;
+import static junit.framework.TestCase.*;
 
 public class FSAUnreachableAndUseless {
 
@@ -65,8 +62,10 @@ public class FSAUnreachableAndUseless {
             FSA a = FSALoader.LoadFromFile("dot_dfa_examples/COMP_HW1.gv");
             FSA automaton = FSALoader.LoadFromFile("dot_dfa_examples/COMP_HW1_NFA.gv");
 
-            a.removeUnreachableStates(); a.removeUselessStates();
-            automaton.removeUnreachableStates(); automaton.removeUselessStates();
+            a.removeUnreachableStates();
+            a.removeUselessStates();
+            automaton.removeUnreachableStates();
+            automaton.removeUselessStates();
 
             assertTrue(a.accepts("ef"));
             assertTrue(a.accepts("abc"));

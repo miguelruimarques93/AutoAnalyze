@@ -19,7 +19,7 @@ public class Operations {
      */
     public static FSA union(FSA arg1, FSA arg2, FSA... args) {
         FSA result = arg1.union(arg2);
-        for (FSA automaton: args) {
+        for (FSA automaton : args) {
             result = result.union(automaton);
         }
         return result;
@@ -33,7 +33,7 @@ public class Operations {
      */
     public static FSA intersect(FSA arg1, FSA arg2, FSA... args) {
         FSA result = arg1.intersect(arg2);
-        for (FSA automaton: args) {
+        for (FSA automaton : args) {
             result = result.intersect(automaton);
         }
         return result;
@@ -41,20 +41,20 @@ public class Operations {
 
     /**
      * Computes the cartesian product of the automata (minimum of two).
-     *  The resulting automaton will either have no final states or be the union, intersection, difference or XOR of the automata,
-     *  deppending on the specified type for the operation.
-     *
-     *  After the cartesian product is calculated, the resulting automaton will have a state for every combination of states of the supplied automata.
-     *
-     *  Operation types:
-     *      UNION - Computes the union of the languages accepted by the automata
-     *      INTERSECTION - Computes the intersection of the languages accepted by the automata
-     *      XOR - Computes the exclusive or of the languages accepted by the automata
-     *      DIFF - Computes the difference between the languages accepted by the automata, in the same order as they are supplied
-     *      NONE - Resulting automaton will have no final states
+     * The resulting automaton will either have no final states or be the union, intersection, difference or XOR of the automata,
+     * deppending on the specified type for the operation.
+     * <p>
+     * After the cartesian product is calculated, the resulting automaton will have a state for every combination of states of the supplied automata.
+     * <p>
+     * Operation types:
+     * UNION - Computes the union of the languages accepted by the automata
+     * INTERSECTION - Computes the intersection of the languages accepted by the automata
+     * XOR - Computes the exclusive or of the languages accepted by the automata
+     * DIFF - Computes the difference between the languages accepted by the automata, in the same order as they are supplied
+     * NONE - Resulting automaton will have no final states
      *
      * @param opType indicates the desired operation type and must have one of the following values: "union", "intersection", "xor", "diff", "none".
-     * @param args array of automata to operate with
+     * @param args   array of automata to operate with
      * @return returns a new automaton that is the cartesian product of all the supplied automata
      */
     public static FSA cartesian(String opType, FSA arg1, FSA arg2, FSA... args) {
@@ -62,11 +62,11 @@ public class Operations {
             FSA.CartesianType _opType = FSA.CartesianType.valueOf(opType.toUpperCase());
             FSA result = arg1.cartesian(arg2, _opType);
 
-            for (FSA automaton: args) {
+            for (FSA automaton : args) {
                 result = result.cartesian(automaton, _opType);
             }
             return result;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new Error("No such operation type: " + opType);
         }
     }
@@ -79,7 +79,7 @@ public class Operations {
      */
     public static FSA diff(FSA arg1, FSA arg2, FSA... args) {
         FSA result = arg1.diff(arg2);
-        for (FSA automaton: args) {
+        for (FSA automaton : args) {
             result = result.diff(automaton);
         }
         return result;
@@ -92,7 +92,7 @@ public class Operations {
 
     /**
      * Creates a new automaton from the given one and complements it.
-     *  I.e. it will accept strings iff they were not accepted by the original automaton.
+     * I.e. it will accept strings iff they were not accepted by the original automaton.
      *
      * @param lhs FSA to complement
      * @return returns a new automaton that is the complement of lhs
@@ -105,7 +105,7 @@ public class Operations {
 
     /**
      * Creates a new automaton from the given one and makes it minimal.
-     *  If automaton is not deterministic, it will be determinized first.
+     * If automaton is not deterministic, it will be determinized first.
      *
      * @param lhs FSA to minimize
      * @return returns a new deterministic automaton equivalent to lhs but minimal
@@ -151,7 +151,7 @@ public class Operations {
     /**
      * Changes the name of an automaton.
      *
-     * @param lhs automaton to rename
+     * @param lhs     automaton to rename
      * @param newName new name of the automaton
      * @return returns a new automaton with altered name
      */
@@ -164,7 +164,7 @@ public class Operations {
     /**
      * Adds a state to the automaton as well as all associated edges.
      *
-     * @param lhs automaton to operate on
+     * @param lhs     automaton to operate on
      * @param newNode state to add
      * @return returns a new automaton with altered node set
      */
@@ -181,9 +181,9 @@ public class Operations {
     /**
      * Adds an edge to the automaton.
      *
-     * @param lhs automaton to operate on
-     * @param origin origin state of the edge
-     * @param label edge label, if empty string, an empty transition is added
+     * @param lhs         automaton to operate on
+     * @param origin      origin state of the edge
+     * @param label       edge label, if empty string, an empty transition is added
      * @param destination destination state of the edge
      * @return returns a new automaton with altered edge set
      */
@@ -202,7 +202,7 @@ public class Operations {
     /**
      * Changes the initial state of an automaton as long as it exists.
      *
-     * @param lhs automaton to operate on
+     * @param lhs             automaton to operate on
      * @param newInitialState state to be the new initial state
      * @return returns a new automaton with altered initial state
      */
@@ -219,7 +219,7 @@ public class Operations {
     /**
      * Removes a state from the automaton as well as all associated edges.
      *
-     * @param lhs automaton to operate on
+     * @param lhs     automaton to operate on
      * @param oldNode state to remove
      * @return returns a new automaton with altered node set
      */
@@ -239,9 +239,9 @@ public class Operations {
     /**
      * Removes an edge from the automaton.
      *
-     * @param lhs automaton to operate on
-     * @param origin origin state of the edge
-     * @param label edge label
+     * @param lhs         automaton to operate on
+     * @param origin      origin state of the edge
+     * @param label       edge label
      * @param destination destination state of the edge
      * @return returns a new automaton with altered edge set
      */
@@ -262,7 +262,7 @@ public class Operations {
     /**
      * Adds a state to the set of final states of automaton. If it does not exist in the set of ndoes, it is created.
      *
-     * @param lhs automaton to operate on
+     * @param lhs       automaton to operate on
      * @param stateName name of state to add to final states set
      * @return returns a new automaton with altered final states
      */
@@ -275,7 +275,7 @@ public class Operations {
     /**
      * Removes a state from the set of final states of automaton.
      *
-     * @param lhs automaton to operate on
+     * @param lhs       automaton to operate on
      * @param stateName name of state to remove from final states set
      * @return returns a new automaton with altered final states
      */
@@ -295,7 +295,7 @@ public class Operations {
      */
     public static FSA add_empty_to_alphabet(FSA lhs) {
         FSA copy = new FSA(lhs);
-        Set<Character> c= new HashSet<>();
+        Set<Character> c = new HashSet<>();
 
         copy.addToAlphabet(c);
         return copy;
@@ -316,13 +316,13 @@ public class Operations {
     /**
      * Adds all specified characters to an FSA's alphabet.
      *
-     * @param lhs automaton to operate on
+     * @param lhs       automaton to operate on
      * @param newTokens string of characters to add to alphabet
      * @return returns a new automaton with modified alphabet
      */
     public static FSA add_to_alphabet(FSA lhs, String newTokens) {
         FSA copy = new FSA(lhs);
-        for (int i=0; i < newTokens.length(); i++) {
+        for (int i = 0; i < newTokens.length(); i++) {
             copy.addToAlphabet(newTokens.charAt(i));
         }
         return copy;
@@ -332,7 +332,7 @@ public class Operations {
      * Removes all specified characters from an FSA's alphabet as long as they are currently not in use.
      * If any of them are in use, the method fails.
      *
-     * @param lhs automaton to operate on
+     * @param lhs       automaton to operate on
      * @param oldTokens string of characters to remove from alphabet
      * @return returns a new automaton with modified alphabet
      */
@@ -341,7 +341,7 @@ public class Operations {
         Set<Character> toRemove = new HashSet<>();
         for (char c : oldTokens.toCharArray())
             toRemove.add(c);
-        if(copy.removeFromAlphabet(toRemove))
+        if (copy.removeFromAlphabet(toRemove))
             return copy;
         else
             throw new Error("Cannot remove characters from fsa's alphabet as one or more are currently in use.");
@@ -424,9 +424,9 @@ public class Operations {
 
     /**
      * Creates a new automaton from the given one and makes it total.
-     *
-     *  I.e. Every state will have at least one transition for every character in the automaton's alphabet.
-     *   Previously undefined transitions will lead to a new trap state.
+     * <p>
+     * I.e. Every state will have at least one transition for every character in the automaton's alphabet.
+     * Previously undefined transitions will lead to a new trap state.
      *
      * @param lhs FSA to totalize
      * @return returns a new automaton equivalent to lhs but total
@@ -451,9 +451,9 @@ public class Operations {
 
     /**
      * Creates a new automaton from the given one and removes all it's useless states.
-     *  A state is useless if it is a trap state (cannot reach a final state).
-     *
-     *  However, the initial state is always kept.
+     * A state is useless if it is a trap state (cannot reach a final state).
+     * <p>
+     * However, the initial state is always kept.
      *
      * @param lhs FSA to convert
      * @return returns a new automaton equivalent to lhs but without useless states
@@ -467,7 +467,7 @@ public class Operations {
     /**
      * Generates and writes dot output for a given automaton.
      *
-     * @param lhs automaton to write as dot
+     * @param lhs      automaton to write as dot
      * @param fileName path where to write the output
      * @return always returns null
      * @throws FileNotFoundException if it fails to open a PrintStream for fileName
@@ -499,15 +499,15 @@ public class Operations {
 
     /**
      * Generates and writes code output for the implementation of a given automaton in the specified language.
-     *  The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
+     * The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
      *
      * @param language language in which to generate the code
-     * @param lhs automaton for which to generate code implementation
+     * @param lhs      automaton for which to generate code implementation
      * @param fileName path where to write the output
      * @return returns an invocation for the write method associated with the specified language
-     * @throws InvocationTargetException if the underlying method throws an exception
-     * @throws IllegalAccessException if this Method object is enforcing Java language access control and the underlying method is inaccessible
-     * @throws FileNotFoundException if it fails to open a PrintStream for fileName
+     * @throws InvocationTargetException     if the underlying method throws an exception
+     * @throws IllegalAccessException        if this Method object is enforcing Java language access control and the underlying method is inaccessible
+     * @throws FileNotFoundException         if it fails to open a PrintStream for fileName
      * @throws UnsupportedOperationException if there is no method to generate the implementation in the specified language
      */
     public static Object write_code(String language, FSA lhs, String fileName) throws InvocationTargetException, IllegalAccessException, FileNotFoundException {
@@ -529,13 +529,13 @@ public class Operations {
 
     /**
      * Generates and prints code output for the implementation of a given automaton in the specified language to System.out.
-     *  The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
+     * The generated code exports an acceptance method which allows to test whether a given string is accepted by the automaton or not.
      *
      * @param language language in which to generate the code
-     * @param lhs automaton for which to generate code implementation
+     * @param lhs      automaton for which to generate code implementation
      * @return returns an invocation for the write method associated with the specified language
-     * @throws InvocationTargetException if the underlying method throws an exception
-     * @throws IllegalAccessException if this Method object is enforcing Java language access control and the underlying method is inaccessible
+     * @throws InvocationTargetException     if the underlying method throws an exception
+     * @throws IllegalAccessException        if this Method object is enforcing Java language access control and the underlying method is inaccessible
      * @throws UnsupportedOperationException if there is no method to generate the implementation in the specified language
      */
     public static Object print_code(String language, FSA lhs) throws InvocationTargetException, IllegalAccessException {
@@ -563,6 +563,7 @@ public class Operations {
 
     /**
      * Prints an object to System.out.
+     *
      * @param lhs object to print
      */
     public static void print(Object lhs) {
@@ -571,6 +572,7 @@ public class Operations {
 
     /**
      * Prints an object to System.out, followed by a newline.
+     *
      * @param lhs object to print
      */
     public static void println(Object lhs) {

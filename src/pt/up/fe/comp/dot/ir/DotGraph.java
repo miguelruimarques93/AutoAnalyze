@@ -29,9 +29,9 @@ public class DotGraph {
         sb.append(String.format("Name: %s\nStrict: %s\nBidirectional: %s\n", this.name, this.strict, this.bidirectional));
         sb.append(this.attributes.toString()).append("\n");
         for (Map.Entry<String, List<Edge>> node : nodes.entrySet()) {
-        	sb.append(String.format("  %s %s -> %s\n",
-        			node.getKey(), nodesAttributes.get(node.getKey()).toString(),
-        			node.getValue().toString()));
+            sb.append(String.format("  %s %s -> %s\n",
+                    node.getKey(), nodesAttributes.get(node.getKey()).toString(),
+                    node.getValue().toString()));
         }
 
         return sb.toString();
@@ -40,20 +40,20 @@ public class DotGraph {
     public void addNode(String node) {
         if (!nodes.containsKey(node))
             nodes.put(node, new ArrayList<Edge>());
-        
+
         if (!nodesAttributes.containsKey(node))
-        	nodesAttributes.put(node, new HashMap<String, String>());
+            nodesAttributes.put(node, new HashMap<String, String>());
     }
-    
+
     public void addNodeAttributes(String node, Map<String, String> attributes) {
-    	if (nodesAttributes.containsKey(node))
-    		nodesAttributes.get(node).putAll(attributes);
-    	else
-    		nodesAttributes.put(node, attributes);
+        if (nodesAttributes.containsKey(node))
+            nodesAttributes.get(node).putAll(attributes);
+        else
+            nodesAttributes.put(node, attributes);
     }
-    
+
     public void addAttribute(String attr, String value) {
-    	attributes.put(attr, value);
+        attributes.put(attr, value);
     }
 
     public Set<String> getNodes() {
@@ -63,13 +63,13 @@ public class DotGraph {
     public boolean hasNode(String node) {
         return nodes.containsKey(node);
     }
-    
+
     public Map<String, String> getNodeAttributes(String node) {
-    	return nodesAttributes.get(node);
+        return nodesAttributes.get(node);
     }
-    
+
     public String getAttribute(String attr) {
-    	return attributes.get(attr);
+        return attributes.get(attr);
     }
 
     public Edge addNewEdge(String node) {

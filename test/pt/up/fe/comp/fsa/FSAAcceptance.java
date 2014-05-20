@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static junit.framework.TestCase.*;
 
 public class FSAAcceptance {
 
@@ -59,7 +57,7 @@ public class FSAAcceptance {
     public void TestOnlyEmptyString() {
         try {
             FSA newAut = new FSA("aut", "I", new LinkedHashSet<String>());
-            newAut.addEdge("I",'a',"S");
+            newAut.addEdge("I", 'a', "S");
             newAut.addEdge("S", 'a', "A");
             newAut.addEdge("A", 'a', "S");
             newAut.addEdge("A", 'b', "B");
@@ -77,7 +75,7 @@ public class FSAAcceptance {
             assertTrue(newAut.onlyAcceptsEmptyString());
 
             FSA copy = new FSA(newAut);
-            copy.addEdge("S",null,"I");
+            copy.addEdge("S", null, "I");
 
             newAut.addFinalState("B");
             assertFalse(copy.onlyAcceptsEmptyString());

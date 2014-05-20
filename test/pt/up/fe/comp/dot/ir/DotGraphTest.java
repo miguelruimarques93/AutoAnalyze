@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 
 public class DotGraphTest {
@@ -21,7 +19,7 @@ public class DotGraphTest {
     }
 
     @Test
-    public void addNodeTest(){
+    public void addNodeTest() {
         dg.addNode("q1");
         Set<String> nodes = dg.getNodes();
         assertTrue("NodeSet doesn't contain added node.", nodes.contains("q1"));
@@ -46,7 +44,7 @@ public class DotGraphTest {
         List<DotGraph.Edge> edges = dg.getNodeEdges("q1");
 
         int count = 0;
-        for(DotGraph.Edge e : edges) {
+        for (DotGraph.Edge e : edges) {
             if (e == edge) count++;
         }
 

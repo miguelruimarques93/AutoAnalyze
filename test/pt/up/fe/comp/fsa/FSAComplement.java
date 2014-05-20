@@ -1,9 +1,10 @@
 package pt.up.fe.comp.fsa;
 
-import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.HashSet;
+
+import static org.junit.Assert.assertTrue;
 
 public class FSAComplement {
     private FSA automaton;
@@ -45,7 +46,7 @@ public class FSAComplement {
             automaton.addEdge("A", 'a', "A");
 
             automaton.addFinalState("A");
-            FSA copy = new FSA (automaton);
+            FSA copy = new FSA(automaton);
             automaton.complement();
             assertTrue(automaton.intersect(copy).doesNotAcceptAnything());
             assertTrue(automaton.union(copy).acceptsAlphabetKleenePlus());

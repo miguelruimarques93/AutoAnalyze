@@ -1,13 +1,8 @@
 package pt.up.fe.comp.aa;
 
-import org.antlr.v4.runtime.misc.Pair;
-import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.misc.Pair;
 import pt.up.fe.comp.aa.parser.aaBaseVisitor;
-import pt.up.fe.comp.aa.parser.aaLexer;
 import pt.up.fe.comp.aa.parser.aaParser;
 import pt.up.fe.comp.fsa.FSA;
 import pt.up.fe.comp.fsa.FSALoader;
@@ -40,14 +35,11 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                 return AaVisitor.this.visit(ctx.operation());
             }
 
-            assert(false);
             return null;
         }
     }
-    private AaArgumentVisitor _argVisitor = new AaArgumentVisitor();
 
-    public void beginScope() { _symbols.beginScope(); }
-    public void endScope() { _symbols.endScope(); }
+    private AaArgumentVisitor _argVisitor = new AaArgumentVisitor();
 
     private SymbolTable<Object> _symbols = new SymbolTable<>();
 
@@ -63,7 +55,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
     @Override
     public Object visitStmt(@NotNull aaParser.StmtContext ctx) {
-        assert(ctx.getChildCount() == 1);
+        assert (ctx.getChildCount() == 1);
         return visitChildren(ctx);
     }
 
@@ -76,7 +68,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             return metaVisitOperation(ctx.operation()).a;
         }
 
-        assert(false);
         return null;
     }
 
@@ -85,7 +76,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         Class operations = Operations.class;
         List<Method> methods = Arrays.asList(operations.getMethods());
         Method op = null;
-        for (Method m: methods) {
+        for (Method m : methods) {
             if (m.getName().equals(operation)) {
                 op = m;
                 break;
@@ -96,7 +87,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             throw new Error("No such operator: " + operation);
 
         Class[] paramTypes = op.getParameterTypes();
-        List<Object> params = new ArrayList<>();
         aaParser.Arg_listContext argumentListContext = ctx.arg_list();
         List<aaParser.ArgContext> args = argumentListContext.arg();
 
@@ -110,7 +100,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                 Class paramT = getArgType(args.get(j));
                 if (paramTypes[i].isArray()) {
                     Class paramType = paramTypes[i].getComponentType();
-                    List<Class> array = new ArrayList<>();
                     while (j < args.size() && paramType.equals(paramT)) {
                         ++j;
                         if (j == args.size()) break;
@@ -120,7 +109,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                     throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + paramT.getSimpleName());
             }
 
-            if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0))|| j < args.size())
+            if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
                 throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
 
             Class returnType = op.getReturnType();
@@ -138,8 +127,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         String name = ctx.attribution_lhs().IDENTIFIER().getText();
         aaParser.Attribution_rhsContext rhs = ctx.attribution_rhs();
 
-        Object value = null;
-        Class type = null;
         if (rhs.operation() != null) {
             Pair<Class, Producer<Object>> classProducerPair = metaVisitOperation(rhs.operation());
             _symbols.addSymbol(name, classProducerPair.a, classProducerPair.b);
@@ -177,10 +164,6 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             return null;
         }
 
-
-        if (value != null)
-            _symbols.addSymbol(name, type, value);
-
         return null;
     }
 
@@ -204,7 +187,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         Class operations = Operations.class;
         List<Method> methods = Arrays.asList(operations.getMethods());
         Method op = null;
-        for (Method m: methods) {
+        for (Method m : methods) {
             if (m.getName().equals(operation)) {
                 op = m;
                 break;
@@ -244,7 +227,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             }
 
             if (paramTypes[paramTypes.length - 1].isArray() && params.size() == (paramTypes.length - 1))
-                params.add((Object[]) Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
+                params.add(Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
 
             if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
                 throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
@@ -260,20 +243,5 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         } catch (InvocationTargetException e) {
             throw new Error(e.getCause().getMessage() + " on line " + ctx.getStart().getLine());
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        String fileName = "dot_dfa_examples/ex4.aa";
-
-        ANTLRInputStream input = new ANTLRFileStream(fileName);
-        aaLexer lexer = new aaLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        aaParser parser = new aaParser(tokens);
-        ParseTree tree = parser.stmt_list(); // parse
-
-        AaVisitor eval = new AaVisitor();
-
-        eval.visit(tree);
-
     }
 }
