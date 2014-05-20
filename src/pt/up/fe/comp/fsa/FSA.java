@@ -2,7 +2,12 @@ package pt.up.fe.comp.fsa;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import dk.brics.automaton.Automaton;
+import dk.brics.automaton.State;
+import dk.brics.automaton.Transition;
 import org.antlr.v4.runtime.misc.Pair;
+import dk.brics.automaton.RegExp;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -108,6 +113,33 @@ public class FSA {
         }
 
         _deterministic = fsa.isDeterministic();
+    }
+
+    public FSA(String name, String regexp) throws InvalidArgumentException {
+        RegExp reg = new RegExp(regexp);
+        Automaton bricsAut = reg.toAutomaton();
+
+        _name = name;
+        Integer counter=0;
+        Map<Integer, String> bricsToName = new HashMap<>();
+        Set<State> bricsStates = bricsAut.getStates();
+        for (State s : bricsStates) {
+            String newName = "q"+counter;
+            _nodes.put(newName, new LinkedHashSet<Edge>());
+            bricsToName.put(s.hashCode(), newName);
+            counter++;
+        }
+
+        _initialState = bricsToName.get(bricsAut.getInitialState().hashCode());
+        for (State s : bricsAut.getAcceptStates())
+            _finalStates.add(bricsToName.get(s.hashCode()));
+
+        for (State s : bricsStates) {
+            for (Transition t : s.getTransitions()) {
+                for (char c = t.getMin(); c <= t.getMax(); c++)
+                    _nodes.get(bricsToName.get(s.hashCode())).add(new Edge(c, bricsToName.get(t.getDest().hashCode())));
+            }
+        }
     }
 
     public void addToAlphabet(Character c) {
