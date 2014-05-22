@@ -190,7 +190,7 @@ public class FSAMinimizationTest {
 
             a.minimize();
 
-           assertTrue(a.equals(a2));
+            assertTrue(a.equals(a2));
         } catch (Exception e) {
             e.printStackTrace();
             fail();

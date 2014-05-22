@@ -14,18 +14,18 @@ import java.util.*;
 
 /**
  * This class defines a Finite State Automata, containing all necessary information to describe one, namely:
- * <p>
+ * <p/>
  * - The alphabet;
- * <p>
+ * <p/>
  * - The set of states (can NOT be empty);
- * <p>
+ * <p/>
  * - The initial state;
- * <p>
+ * <p/>
  * - The set of final states (can be empty);
- * <p>
+ * <p/>
  * - The set of edges / transition function.
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * It also contains several methods to allow for the manipulation of the automata and a boolean to indicate if it is
  * deterministic or not.
  */
@@ -33,7 +33,7 @@ public class FSA {
 
     /**
      * This class is essentially a wrapper for a Pair<Character, String> already defined in the ANTLR4 libraries.
-     * <p>
+     * <p/>
      * If the Character (input) is null it symbolizes an empty transition
      *
      * @see "https://github.com/antlr/antlr4/blob/master/runtime/Java/src/org/antlr/v4/runtime/misc/Pair.java"
@@ -88,12 +88,12 @@ public class FSA {
         else
             _name = name;
         _initialState = initialState;
+        addNode(_initialState);
 
-        for (String state : stateNames)
-            addNode(state);
-
-        if (!_nodes.containsKey(_initialState))
-            addNode(_initialState);
+        for (String state : stateNames) {
+            if (!state.equals(_initialState))
+                addNode(state);
+        }
     }
 
     public FSA(FSA fsa) {
@@ -120,11 +120,11 @@ public class FSA {
         Automaton bricsAut = reg.toAutomaton();
 
         _name = name;
-        Integer counter=0;
+        Integer counter = 0;
         Map<Integer, String> bricsToName = new HashMap<>();
         Set<State> bricsStates = bricsAut.getStates();
         for (State s : bricsStates) {
-            String newName = "q"+counter;
+            String newName = "q" + counter;
             _nodes.put(newName, new LinkedHashSet<Edge>());
             bricsToName.put(s.hashCode(), newName);
             counter++;
@@ -327,13 +327,12 @@ public class FSA {
             destination = oldNameToNew.get(destination);
 
             for (String s : other.getNodes()) {
-                String newName = "q"+counter;
+                String newName = "q" + counter;
                 ++counter;
                 autNewNames.put(s, newName);
                 _nodes.put(newName, new LinkedHashSet<Edge>());
             }
-        }
-        else {
+        } else {
             for (String s : other.getNodes()) {
                 autNewNames.put(s, s);
                 _nodes.put(s, new LinkedHashSet<Edge>());
@@ -342,7 +341,7 @@ public class FSA {
 
         _nodes.get(nodeName).add(new Edge(null, autNewNames.get(other.getInitialState())));
         for (String s : other.getNodes()) {
-            for (Edge e: other.getNodeEdges(s)) {
+            for (Edge e : other.getNodeEdges(s)) {
                 _nodes.get(autNewNames.get(s)).add(new Edge(e.label(), autNewNames.get(e.destination())));
             }
         }
@@ -563,13 +562,12 @@ public class FSA {
             _finalStates = finalNodes;
 
             for (String s : other.getNodes()) {
-                String newName = "q"+counter;
+                String newName = "q" + counter;
                 ++counter;
                 autNewNames.put(s, newName);
                 _nodes.put(newName, new LinkedHashSet<Edge>());
             }
-        }
-        else {
+        } else {
             for (String s : other.getNodes()) {
                 autNewNames.put(s, s);
                 _nodes.put(s, new LinkedHashSet<Edge>());
@@ -1283,6 +1281,116 @@ public class FSA {
             }
         }
         removeUselessStates();
+    }
+
+    public String toRegex() {
+        if (getFinalStates().isEmpty())
+            return "";
+        FSA copy = new FSA(this);
+        copy.removeUnreachableStates();
+        copy.removeUselessStates();
+
+        if (copy.getFinalStates().isEmpty())
+            return "";
+        Table<String, String, String> t = HashBasedTable.create(copy.getNodes().size(), copy.getNodes().size());
+        Map<Integer, String> numberToNode = new HashMap<>();
+        //compute T(0)
+        int counter = 1;
+        for (String n1 : copy.getNodes()) {
+            numberToNode.put(counter, n1);
+            ++counter;
+            for (String n2 : copy.getNodes()) {
+                String exp = "";
+                if (n1.equals(n2)) {
+                    exp += "()";
+                }
+                for (Edge e : copy._nodes.get(n1)) {
+                    if (e.destination().equals(n2)) {
+                        if (e.label() != null) {
+                            if (exp.length() > 0)
+                                exp += "|";
+                            exp += e.label();
+                        } else if (!exp.contains("()")) {
+                            if (exp.length() > 0)
+                                exp += "|";
+                            exp += "()";
+                        }
+                    }
+                }
+                t.put(n1, n2, exp);
+            }
+        }
+        //System.out.println(t.toString().replace("},", "}\n"));
+        //System.out.println("------------------------------------------------------------------------");
+
+        for (int i = 1; i <= copy.getNodes().size(); i++) {
+            Table<String, String, String> newT = HashBasedTable.create(copy.getNodes().size(), copy.getNodes().size());
+            for (String n1 : copy.getNodes()) {
+                for (String n2 : copy.getNodes()) {
+                    String newExp = "";
+                    String orig = t.get(n1, n2);
+                    newExp += ((orig.length() <= 1 || (orig.charAt(0) == '(' && orig.charAt(orig.length()-1) == ')')) ?
+                            t.get(n1, n2) : ("(" + t.get(n1, n2) + ")"));
+                    String first = t.get(n1, numberToNode.get(i));
+                    if (first.isEmpty()) {
+                        newT.put(n1, n2, t.get(n1, n2));
+                        continue;
+                    }
+                    if (!first.equals("()") && first.length() > 1) {
+                        first = "(" + first + ")";
+                    }
+                    String second = t.get(numberToNode.get(i), numberToNode.get(i));
+
+                    if (!second.equals("()") && second.length() > 1) {
+                        second = "(" + second + ")";
+                    }
+                    String third = t.get(numberToNode.get(i), n2);
+                    if (third.isEmpty()) {
+                        newT.put(n1, n2, t.get(n1, n2));
+                        continue;
+                    }
+                    if (!third.equals("()") && third.length() > 1) {
+                        third = "(" + third + ")";
+                    }
+
+                    String toAdd =
+                            (first.equals("()") ? "" : first) +
+                            ((second.length() > 0 && !second.equals("()")) ? (second + "*") : "") +
+                            (third.equals("()") ? "" : third);
+                    if (!toAdd.equals("()") && toAdd.length() > 1 && newExp.length() > 0)
+                        toAdd = "(" + toAdd + ")";
+
+
+                    if (!toAdd.isEmpty() && (!toAdd.equals(newExp) || toAdd.substring(1).equals(newExp))) {
+                        if (newExp.length() > 0)
+                            newExp += "|" + toAdd;
+                        else
+                            newExp += toAdd;
+                    }
+                    newT.put(n1, n2, newExp);
+                }
+            }
+            t = newT;
+        }
+
+        ArrayList<String> exprs = new ArrayList<>();
+        for (String n : t.row(copy.getInitialState()).keySet()) {
+            if (copy.getFinalStates().contains(n)) {
+                exprs.add(t.get(copy.getInitialState(), n));
+            }
+        }
+
+        if (exprs.size() == 0)
+            return "";
+        else if (exprs.size() == 1)
+            return exprs.get(0);
+        else {
+            String result = "(" + exprs.get(0) + ")";
+            for (int i = 1; i < exprs.size(); i++) {
+                result += "|" + "(" + exprs.get(1) + ")";
+            }
+            return result;
+        }
     }
 
     public void writeDot(PrintStream writer) {
