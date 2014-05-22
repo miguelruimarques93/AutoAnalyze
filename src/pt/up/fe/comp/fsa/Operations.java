@@ -2,11 +2,10 @@ package pt.up.fe.comp.fsa;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -152,7 +151,7 @@ public class Operations {
      * @param lhs FSA to minimize
      * @return returns a new deterministic automaton equivalent to lhs but minimal
      */
-    public static FSA min(FSA lhs) {
+    public static FSA minimize(FSA lhs) {
         FSA result = new FSA(lhs);
         result.minimize();
         return result;
@@ -612,14 +611,64 @@ public class Operations {
             Method m = FSA.class.getMethod("write_" + language.toLowerCase(), String.class, PrintStream.class);
             return m.invoke(lhs, "Automaton", System.out);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            throw new UnsupportedOperationException("No output to language '" + language + "' defined.");
         }
-        return null;
     }
 
-    //TODO
-    public static Object show(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+    /**
+     * Creates a temporary dot file for the automaton and uses ZGRViewer to visualize it.
+     *  Must have Graphviz installed.
+     * <p>
+     * Additionally, it supports the command line options for ZGRViewer, which can be of types:
+     *   opengl                    ZVTM will run in OpenGL accelerated mode");
+     *                              (requires JDK 1.5 or later)\n");
+     *   Pxxx                      where xxx={dot, neato, svg} to specify what program");
+     *                              to use to compute the [file]'s layout\n");
+     *   pluginDir=<path>          where <path> is the relative of full path to");
+     *                              the directory where to look for plugins");
+     *   pluginList=<paths>        where <path> is a list of comma-separated relative");
+     *                              to the JAR files that contain plugins");
+     *   pluginList                takes precedence over -pluginDir\n");
+     *   pluginMode=<PluginClass>  plugin mode enabled by default in tool palette\n");
+     *
+     * @param lhs automaton to visualize
+     * @param options options for ZGRViewer, must be enclosed by double quotes (see description)
+     * @return returns null
+     */
+    public static Object show(FSA lhs, String... options) {
+        try {
+            final File temp = File.createTempFile("dlmr", ".dot");
+            PrintStream stream = new PrintStream(temp);
+            lhs.writeDot(stream);
+            stream.close();
+
+            final String[] ops = options;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        String cmd = "java -jar deps/zgrviewer-target/zgrviewer-0.9.0.jar";
+                        for (String o: ops)
+                            cmd += " -" + o;
+                        cmd += " \"" + temp.getAbsolutePath() + "\"";
+                        Process proc = Runtime.getRuntime().exec(cmd);
+                        proc.waitFor();
+                    } catch (InterruptedException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (!temp.delete())
+                        temp.deleteOnExit();
+
+                }
+            }).start();
+
+
+        } catch (IOException e) {
+            throw new Error("Could not run ZGRViewer.");
+        }
+
+        return null;
     }
 
     /**
