@@ -828,25 +828,21 @@ public class FSA {
                 Set<Edge> thisEdges = thisCopy.getNodeEdges(thisCur);
                 Set<Edge> otherEdges = otherCopy.getNodeEdges(otherCur);
                 if (thisEdges.size() != otherEdges.size()) {
-                    System.out.println("fail1");
                     return false;
                 }
 
                 for (Edge e : thisEdges) {
                     Set<String> otherDests = getDestinationsForInput(otherEdges, e.label());
                     if (otherDests.size() != 1) {
-                        System.out.println("fail2");
                         return false;
                     }
 
                     String oDest = otherDests.iterator().next();
                     if (thisVisited.contains(e.destination()) || otherVisited.contains(oDest)) {
                         if (!thisVisited.contains(e.destination()) || !otherVisited.contains(oDest)) {
-                            System.out.println("fail3");
                             return false;
                         }
                         if (!thisToNew.get(e.destination()).equals(otherToNew.get(oDest))) {
-                            System.out.println("fail4");
                             return false;
                         }
                     } else {
