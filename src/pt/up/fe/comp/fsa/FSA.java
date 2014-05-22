@@ -136,8 +136,10 @@ public class FSA {
 
         for (State s : bricsStates) {
             for (Transition t : s.getTransitions()) {
-                for (char c = t.getMin(); c <= t.getMax(); c++)
+                for (char c = t.getMin(); c <= t.getMax(); c++) {
+                    _alphabet.add(c);
                     _nodes.get(bricsToName.get(s.hashCode())).add(new Edge(c, bricsToName.get(t.getDest().hashCode())));
+                }
             }
         }
     }
@@ -1230,7 +1232,6 @@ public class FSA {
             for (int i = 0; i < matrix.length; i++) {
                 for (int j = 0; j < i; j++) { //symmetrical matrix
                     if (matrix[i][j]) continue;
-
                     for (char c : _alphabet) {
                         String iNode = null;
                         String jNode = null;

@@ -181,4 +181,19 @@ public class FSAMinimizationTest {
             fail();
         }
     }
+
+    @Test
+    public void TestMaintainLanguage2() {
+        try {
+            FSA a = new FSA("aut", "a{20}");
+            FSA a2 = new FSA("aut", "a{20}");
+
+            a.minimize();
+
+           assertTrue(a.equals(a2));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
 }
