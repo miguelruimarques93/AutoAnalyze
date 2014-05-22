@@ -1320,8 +1320,7 @@ public class FSA {
                 t.put(n1, n2, exp);
             }
         }
-        //System.out.println(t.toString().replace("},", "}\n"));
-        //System.out.println("------------------------------------------------------------------------");
+
 
         for (int i = 1; i <= copy.getNodes().size(); i++) {
             Table<String, String, String> newT = HashBasedTable.create(copy.getNodes().size(), copy.getNodes().size());
@@ -1387,7 +1386,7 @@ public class FSA {
         else {
             String result = "(" + exprs.get(0) + ")";
             for (int i = 1; i < exprs.size(); i++) {
-                result += "|" + "(" + exprs.get(1) + ")";
+                result += "|" + "(" + exprs.get(i) + ")";
             }
             return result;
         }
