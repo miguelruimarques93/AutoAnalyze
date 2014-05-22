@@ -554,10 +554,16 @@ public class Operations {
         return null;
     }
 
-    /* //TODO
-    public static Object write_regex(FSA lhs) {
-        throw new UnsupportedOperationException("Not Yet Implemented: " + Thread.currentThread().getStackTrace()[1].getMethodName());
-    }*/
+
+    /**
+     * Computes a regex from the given automaton. Empty parenthesis (i.e. "()") indicade empty strings (from epsilon transitions and such).
+     *
+     * @param lhs automaton to convert to regex
+     * @return returns a string containing the regex for the given automaton
+     */
+    public static String to_regex(FSA lhs) {
+        return lhs.toRegex();
+    }
 
     private static String string_encode(String str) {
         return str.replace("#", "sharp").replace("++", "pp");
