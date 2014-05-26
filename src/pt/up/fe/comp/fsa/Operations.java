@@ -2,10 +2,12 @@ package pt.up.fe.comp.fsa;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -129,6 +131,18 @@ public class Operations {
             result = result.diff(automaton);
         }
         return result;
+    }
+
+    public static FSA loadf(String fileName) {
+        File f = new File(fileName);
+        if (!f.exists())
+            throw new Error(new FileNotFoundException(f.getAbsolutePath()));
+
+        try {
+            return FSALoader.LoadFromFile(fileName);
+        } catch (IOException e) {
+            throw new Error(e);
+        }
     }
 
     /**

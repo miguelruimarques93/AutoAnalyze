@@ -1,4 +1,4 @@
-a = "dot_dfa_examples/COMP_HW1_NFA.gv";
-b = "dot_dfa_examples/dfa.gv";
+a = loadf "dot_dfa_examples/COMP_HW1_NFA.gv";
+b = loadf "dot_dfa_examples/dfa.gv";
 c = in a b;
 print_code "c#" b;

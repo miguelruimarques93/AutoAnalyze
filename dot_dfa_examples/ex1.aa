@@ -1,5 +1,5 @@
-a = "dot_dfa_examples/COMP_HW1.gv";
-b = "dot_dfa_examples/dfa.gv";
+a = loadf "dot_dfa_examples/COMP_HW1.gv";
+b = loadf "dot_dfa_examples/dfa.gv";
 c = complement a;
 d = union a (diff b c);
 if (equals c d) {

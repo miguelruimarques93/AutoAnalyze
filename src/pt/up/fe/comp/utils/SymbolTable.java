@@ -4,18 +4,26 @@ import java.util.Stack;
 
 public class SymbolTable<T> {
 
-    public SymbolTable() {
+    public SymbolTable(boolean lazy) {
+        _lazy = lazy;
         beginScope();
     }
 
     public void beginScope() {
-        _scopes.add(new Scope<T>());
+        _scopes.add(new Scope<T>(_lazy));
     }
 
     public void endScope() {
         // do not delete "global" scope
         if (_scopes.size() > 1)
             _scopes.pop();
+    }
+
+    public void setLazy(boolean value) {
+        _lazy = value;
+        for (Scope<T> scp : _scopes) {
+            scp.setLazy(value);
+        }
     }
 
     public void addSymbol(String name, Class type, Producer<T> init) {
@@ -45,4 +53,5 @@ public class SymbolTable<T> {
     }
 
     private Stack<Scope<T>> _scopes = new Stack<>();
+    private boolean _lazy;
 }

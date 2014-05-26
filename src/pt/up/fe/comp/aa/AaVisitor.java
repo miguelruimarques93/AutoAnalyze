@@ -22,6 +22,14 @@ import java.util.List;
 
 public class AaVisitor extends aaBaseVisitor<Object> {
 
+    public AaVisitor() {
+        _symbols = new SymbolTable<>(true);
+    }
+
+    public AaVisitor(boolean lazy) {
+        _symbols = new SymbolTable<>(lazy);
+    }
+
     private class AaArgumentVisitor extends aaBaseVisitor<Object> {
         @Override
         public Object visitArg(@NotNull aaParser.ArgContext ctx) {
@@ -41,7 +49,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
     private AaArgumentVisitor _argVisitor = new AaArgumentVisitor();
 
-    private SymbolTable<Object> _symbols = new SymbolTable<>();
+    private SymbolTable<Object> _symbols;
 
     @Override
     public Object visitStmt_list(@NotNull aaParser.Stmt_listContext ctx) {
@@ -143,21 +151,13 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             });
 
         } else if (rhs.STRING() != null) {
-            String fileName = rhs.STRING().getText();
-            fileName = fileName.substring(1, fileName.length() - 1);
-            File f = new File(fileName);
-            if (!f.exists())
-                throw new Error(new FileNotFoundException(f.getAbsolutePath()));
-
-            final String finalFileName = fileName;
-            _symbols.addSymbol(name, FSA.class, new Producer<Object>() {
+            String string = rhs.STRING().getText();
+            string = string.substring(1, string.length() - 1);
+            final String finalString = string;
+            _symbols.addSymbol(name, String.class, new Producer<Object>() {
                 @Override
                 public Object produce() {
-                    try {
-                        return FSALoader.LoadFromFile(finalFileName);
-                    } catch (IOException e) {
-                        throw new Error(e.getMessage());
-                    }
+                    return finalString;
                 }
             });
 
@@ -202,35 +202,38 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         aaParser.Arg_listContext argumentListContext = ctx.arg_list();
         List<aaParser.ArgContext> args = argumentListContext.arg();
 
-
-        if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
-            throw new Error("No operator '" + operation + "' with " + Integer.toString(paramTypes.length));
-        }
-        {
-            int i = 0, j = 0;
-            for (; i < paramTypes.length && j < args.size(); ++i, ++j) {
-                Object param = _argVisitor.visit(args.get(j));
-                if (paramTypes[i].isArray()) {
-                    Class paramType = paramTypes[i].getComponentType();
-                    List<Object> array = new ArrayList<>();
-                    while (param != null && j < args.size() && paramType.isInstance(param)) {
-                        array.add(param);
-                        ++j;
-                        if (j == args.size()) break;
-                        param = _argVisitor.visit(args.get(j));
-                    }
-                    param = array.toArray((Object[]) Array.newInstance(paramType, array.size()));
-                } else if (!paramTypes[i].isInstance(param))
-                    throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + param.getClass().getSimpleName());
-
-                params.add(param);
+        if (paramTypes.length != 0) {
+            if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
+                throw new Error("No operator '" + operation + "' with " + Integer.toString(paramTypes.length));
             }
+            {
+                int i = 0, j = 0;
+                for (; i < paramTypes.length && j < args.size(); ++i, ++j) {
+                    Object param = _argVisitor.visit(args.get(j));
+                    if (paramTypes[i].isArray()) {
+                        Class paramType = paramTypes[i].getComponentType();
+                        List<Object> array = new ArrayList<>();
+                        while (param != null && j < args.size() && paramType.isInstance(param)) {
+                            array.add(param);
+                            ++j;
+                            if (j == args.size()) break;
+                            param = _argVisitor.visit(args.get(j));
+                        }
+                        param = array.toArray((Object[]) Array.newInstance(paramType, array.size()));
+                    } else if (!paramTypes[i].isInstance(param))
+                        throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + param.getClass().getSimpleName());
 
-            if (paramTypes[paramTypes.length - 1].isArray() && params.size() == (paramTypes.length - 1))
-                params.add(Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
+                    params.add(param);
+                }
 
-            if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
-                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
+                if (paramTypes[paramTypes.length - 1].isArray() && params.size() == (paramTypes.length - 1))
+                    params.add(Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
+
+                if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
+                    throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
+            }
+        } else if (args.size() != 0) {
+            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
         }
 
         try {

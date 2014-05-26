@@ -1,6 +1,8 @@
 package pt.up.fe.comp.cli;
 
+import org.antlr.runtime.MissingTokenException;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 import pt.up.fe.comp.aa.AaVisitor;
@@ -8,6 +10,7 @@ import pt.up.fe.comp.aa.parser.aaLexer;
 import pt.up.fe.comp.aa.parser.aaParser;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
@@ -35,18 +38,47 @@ public class Main {
                 public void reportError(@NotNull Parser recognizer, @NotNull RecognitionException e) {
                     throw e;
                 }
+
+                @Override
+                protected void reportMissingToken(@NotNull Parser recognizer) {
+                    if (inErrorRecoveryMode(recognizer)) {
+                        return;
+                    }
+
+                    beginErrorCondition(recognizer);
+
+                    Token t = recognizer.getCurrentToken();
+                    IntervalSet expecting = getExpectedTokens(recognizer);
+
+                    throw new InputMismatchException(recognizer);
+                }
             });
 
-            AaVisitor eval = new AaVisitor();
+            AaVisitor eval = new AaVisitor(false);
             String input = "";
             while (true) {
                 if (input.isEmpty())
                     System.out.print("\naa> ");
                 else
                     System.out.print("  | ");
-                input += keyboard.nextLine();
+
+                String line;
+
+                try {
+                     line = keyboard.nextLine();
+                } catch (NoSuchElementException e) {
+                    System.out.println("\nAborted...");
+                    break;
+                }
+
+                if (line == null) continue;
+
+                input += line.trim();
+
                 if (input.equals(":quit")) {
                     break;
+                } else if ((!line.isEmpty() && !input.endsWith(";")) || input.isEmpty()) {
+                    continue;
                 }
 
                 ANTLRInputStream in = new ANTLRInputStream(input);
