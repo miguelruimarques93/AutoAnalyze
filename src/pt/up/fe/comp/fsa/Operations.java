@@ -134,6 +134,12 @@ public class Operations {
         return result;
     }
 
+    /**
+     * Loads an automatons from dot file.
+     *
+     * @param fileName path to the dot file
+     * @return returns a new automaton built from the information in the dot file
+     */
     public static FSA loadf(String fileName) {
         File f = new File(fileName);
         if (!f.exists())
