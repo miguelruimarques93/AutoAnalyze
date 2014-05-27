@@ -21,20 +21,28 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AaVisitor extends aaBaseVisitor<Object> {
-
     public AaVisitor() {
         _symbols = new SymbolTable<>(true);
     }
 
     public AaVisitor(boolean lazy) {
         _symbols = new SymbolTable<>(lazy);
+        _createScopes = true;
+    }
+
+    public AaVisitor(boolean lazy, boolean createScopes) {
+        _symbols = new SymbolTable<>(lazy);
+        _createScopes = createScopes;
     }
 
     private class AaArgumentVisitor extends aaBaseVisitor<Object> {
         @Override
         public Object visitArg(@NotNull aaParser.ArgContext ctx) {
             if (ctx.IDENTIFIER() != null) {
-                return _symbols.get(ctx.IDENTIFIER().toString());
+                Object res =  _symbols.get(ctx.IDENTIFIER().toString());
+
+                if (res == null) throw new Error("Invalid identifier '" + ctx.IDENTIFIER().getText() + "' on line " + ctx.getStart().getLine());
+                return res;
             } else if (ctx.STRING() != null) {
                 String str = ctx.STRING().getText();
                 str = str.substring(1, str.length() - 1);
@@ -43,21 +51,21 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                 return AaVisitor.this.visit(ctx.operation());
             }
 
-            return null;
+            throw new Error(new IllegalArgumentException());
         }
     }
 
     private AaArgumentVisitor _argVisitor = new AaArgumentVisitor();
-
+    private boolean _createScopes;
     private SymbolTable<Object> _symbols;
 
     @Override
     public Object visitStmt_list(@NotNull aaParser.Stmt_listContext ctx) {
-        _symbols.beginScope();
+        if (_createScopes) _symbols.beginScope();
         Object result = null;
         for (aaParser.StmtContext stmt : ctx.stmt())
             result = visit(stmt);
-        _symbols.endScope();
+        if (_createScopes) _symbols.endScope();
         return result;
     }
 

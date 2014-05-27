@@ -8,8 +8,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import pt.up.fe.comp.aa.AaVisitor;
 import pt.up.fe.comp.aa.parser.aaLexer;
 import pt.up.fe.comp.aa.parser.aaParser;
+import pt.up.fe.comp.fsa.Operations;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -54,7 +58,7 @@ public class Main {
                 }
             });
 
-            AaVisitor eval = new AaVisitor(false);
+            AaVisitor eval = new AaVisitor(false, false);
             String input = "";
             while (true) {
                 if (input.isEmpty())
@@ -87,7 +91,7 @@ public class Main {
                 parser.setTokenStream(tokens);
 
                 try {
-                    ParseTree tree = parser.stmt();
+                    ParseTree tree = parser.stmt_list();
                     eval.visit(tree);
                 } catch (InputMismatchException e) {
                     if (e.getOffendingToken().getType() != Token.EOF) {
@@ -97,11 +101,9 @@ public class Main {
                         continue;
                     }
                 } catch (Error e) {
-                    System.err.println("2: " + e);
-                    System.err.println(e.getMessage());
+                    System.err.println("2: " + e.getMessage());
                 } catch (Exception e) {
-                    System.err.println("3: " + e);
-                    System.err.println(e.getMessage());
+                    System.err.println("3: " + e.getMessage());
                 }
 
                 input = "";
