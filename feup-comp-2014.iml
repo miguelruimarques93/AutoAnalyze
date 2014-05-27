@@ -24,7 +24,9 @@
           <root url="jar://$MODULE_DIR$/deps/antlr-4.2-complete.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/deps/antlr4-4.2-complete-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">

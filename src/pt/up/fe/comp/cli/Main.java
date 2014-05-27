@@ -1,6 +1,5 @@
 package pt.up.fe.comp.cli;
 
-import org.antlr.runtime.MissingTokenException;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -8,12 +7,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import pt.up.fe.comp.aa.AaVisitor;
 import pt.up.fe.comp.aa.parser.aaLexer;
 import pt.up.fe.comp.aa.parser.aaParser;
-import pt.up.fe.comp.fsa.Operations;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -50,9 +45,6 @@ public class Main {
                     }
 
                     beginErrorCondition(recognizer);
-
-                    Token t = recognizer.getCurrentToken();
-                    IntervalSet expecting = getExpectedTokens(recognizer);
 
                     throw new InputMismatchException(recognizer);
                 }
@@ -100,10 +92,8 @@ public class Main {
                     } else {
                         continue;
                     }
-                } catch (Error e) {
-                    System.err.println("2: " + e.getMessage());
                 } catch (Exception e) {
-                    System.err.println("3: " + e.getMessage());
+                    System.err.println(e.getMessage());
                 }
 
                 input = "";

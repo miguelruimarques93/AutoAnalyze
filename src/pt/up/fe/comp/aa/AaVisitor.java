@@ -4,15 +4,10 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.misc.Pair;
 import pt.up.fe.comp.aa.parser.aaBaseVisitor;
 import pt.up.fe.comp.aa.parser.aaParser;
-import pt.up.fe.comp.fsa.FSA;
-import pt.up.fe.comp.fsa.FSALoader;
 import pt.up.fe.comp.fsa.Operations;
 import pt.up.fe.comp.utils.Producer;
 import pt.up.fe.comp.utils.SymbolTable;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,11 +18,6 @@ import java.util.List;
 public class AaVisitor extends aaBaseVisitor<Object> {
     public AaVisitor() {
         _symbols = new SymbolTable<>(true);
-    }
-
-    public AaVisitor(boolean lazy) {
-        _symbols = new SymbolTable<>(lazy);
-        _createScopes = true;
     }
 
     public AaVisitor(boolean lazy, boolean createScopes) {
@@ -108,7 +98,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
 
         if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
-            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()));
+            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
         }
         {
             int i = 0, j = 0;
@@ -126,7 +116,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             }
 
             if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
-                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
+                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
 
             Class returnType = op.getReturnType();
             return new Pair<Class, Producer<Object>>(returnType, new Producer<Object>() {
@@ -212,7 +202,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
         if (paramTypes.length != 0) {
             if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
-                throw new Error("No operator '" + operation + "' with " + Integer.toString(paramTypes.length));
+                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
             }
             {
                 int i = 0, j = 0;
@@ -238,10 +228,10 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                     params.add(Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
 
                 if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
-                    throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
+                    throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
             }
         } else if (args.size() != 0) {
-            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined.");
+            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
         }
 
         try {
