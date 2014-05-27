@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -668,11 +669,15 @@ public class Operations {
                 public void run() {
 
                     try {
-                        String cmd = "java -jar deps/zgrviewer-target/zgrviewer-0.9.0.jar";
+                        ArrayList<String> cmdArray = new ArrayList<>();
+                        cmdArray.add("java");
+                        cmdArray.add("-jar");
+                        cmdArray.add("deps/zgrviewer-target/zgrviewer-0.9.0.jar");
                         for (String o: ops)
-                            cmd += " -" + o;
-                        cmd += " \"" + temp.getAbsolutePath() + "\"";
-                        Process proc = Runtime.getRuntime().exec(cmd);
+                            cmdArray.add(" -" + o);
+                        String absPath = temp.getAbsolutePath().replace(" ", "\\ ");
+                        cmdArray.add(temp.getAbsolutePath());
+                        Process proc = Runtime.getRuntime().exec(cmdArray.toArray(new String[cmdArray.size()]));
                         proc.waitFor();
                     } catch (InterruptedException | IOException e) {
                         e.printStackTrace();
