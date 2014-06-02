@@ -446,6 +446,16 @@ public class Operations {
     }
 
     /**
+     * Tests if a given automaton is deterministic
+     *
+     * @param lhs automaton to test
+     * @return returns true if lhs is deterministic, false otherwise
+     */
+    public static Boolean is_deterministic(FSA lhs) {
+        return lhs.isDeterministic();
+    }
+
+    /**
      * Determines whether an automaton's accepted language only contains the empty string.
      *
      * @param lhs automaton to test
