@@ -38,7 +38,7 @@ public class FSABuilder {
         fsa.setFinalStates(getFinalStates(ir));
 
         Map<String, String> newNames = new LinkedHashMap<>();
-        for (String state : ir.getNodes())
+        for (String state : fsa.getNodes())
             newNames.put(state, state);
 
         for (String state : ir.getNodes()) {

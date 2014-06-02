@@ -34,7 +34,7 @@ arg             : IDENTIFIER
                 ;
 
 IDENTIFIER      : [_a-zA-Z][_a-zA-Z0-9-]*;
-STRING          : '"' .+? '"';
+STRING          : '"' .*? '"';
 OPEN_PR         : '(';
 CLOSE_PR        : ')';
 OPEN_BR         : '{';
