@@ -768,4 +768,20 @@ public class Operations {
 
         return res;
     }
+
+    /**
+     * 'XOR' operator, used to check if all arguments evaluate to true.
+     *
+     * @param vals values to check
+     * @return returns true if all arguments are true, false otherwise
+     */
+    public static Boolean xor(Boolean val1, Boolean val2, Boolean... vals) {
+        int res = (val1 ? 1 : 0) + (val2 ? 1 : 0);
+
+        for (int i=0; i < vals.length; i++) {
+            res += vals[i] ? 1 : 0;
+        }
+
+        return res % 2 == 1;
+    }
 }
