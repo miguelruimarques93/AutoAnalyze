@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Aut_COMP_HW1
+namespace Aut_example3
 {
 	static class Program
 	{
@@ -10,16 +10,16 @@ namespace Aut_COMP_HW1
 			var edge = new[,]
 			{
 				{0, 0, 0, 0, 0, 0},
-				{0, 6, 4, 0, 7, 0},
+				{0, 2, 3, 0, 4, 0},
+				{5, 0, 0, 0, 0, 0},
+				{0, 0, 3, 0, 0, 0},
+				{0, 0, 6, 0, 4, 0},
 				{0, 0, 0, 0, 0, 0},
-				{0, 0, 4, 5, 0, 0},
-				{0, 0, 4, 0, 0, 0},
-				{0, 0, 0, 5, 0, 0},
-				{2, 0, 0, 0, 0, 0},
-				{0, 0, 3, 0, 7, 0}
+				{0, 0, 3, 7, 0, 0},
+				{0, 0, 0, 7, 0, 0}
 			};
 
-			var final = new[] {false, false, true, true, true, true, false, false};
+			var final = new[] {false, false, false, true, false, true, true, true};
 
 			var map = new Func<char, int>(x =>
 			{
