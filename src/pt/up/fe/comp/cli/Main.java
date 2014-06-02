@@ -1,7 +1,6 @@
 package pt.up.fe.comp.cli;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 import pt.up.fe.comp.aa.AaVisitor;
@@ -15,19 +14,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        if (args.length == 1) { // read & process file
-            String fileName = args[0];
-
-            ANTLRInputStream input = new ANTLRFileStream(fileName);
-            aaLexer lexer = new aaLexer(input);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            aaParser parser = new aaParser(tokens);
-            ParseTree tree = parser.stmt_list(); // parse
-
-            AaVisitor eval = new AaVisitor();
-
-            eval.visit(tree);
-        } else if (args.length == 0) { // repl mode
+        if (args.length == 1 && args[0].equals("-repl")) { // repl mode
 
             Scanner keyboard = new Scanner(System.in);
             aaParser parser = new aaParser(null);
@@ -87,7 +74,6 @@ public class Main {
                     eval.visit(tree);
                 } catch (InputMismatchException e) {
                     if (e.getOffendingToken().getType() != Token.EOF) {
-                        System.err.println("1: " + e);
                         System.err.println(e.getMessage());
                     } else {
                         continue;
@@ -99,9 +85,21 @@ public class Main {
                 input = "";
             }
 
+        } else if (args.length == 1) { // read & process file
+            String fileName = args[0];
+
+            ANTLRInputStream input = new ANTLRFileStream(fileName);
+            aaLexer lexer = new aaLexer(input);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            aaParser parser = new aaParser(tokens);
+            ParseTree tree = parser.stmt_list(); // parse
+
+            AaVisitor eval = new AaVisitor();
+
+            eval.visit(tree);
         } else { // usage
-            System.err.println("Usage: java pt.up.fe.comp.cli.Main [file]");
-            System.err.println("If no file is provided, the program will be initiated in REPL mode.");
+            System.err.println("Usage: java pt.up.fe.comp.cli.Main (-repl | file)");
+            System.err.println("-repl : ");
         }
     }
 }
