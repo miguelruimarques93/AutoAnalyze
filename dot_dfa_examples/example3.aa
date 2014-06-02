@@ -11,3 +11,4 @@ else {
 write_code "Haskell" b "dot_dfa_examples/example3.hs";
 write_code "Prolog" b "dot_dfa_examples/example3.pl";
 write_code "c#" b "dot_dfa_examples/example3.cs";
+write_dot b "dot_dfa_examples/example3.gv";
