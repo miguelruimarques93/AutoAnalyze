@@ -1,6 +1,5 @@
 package pt.up.fe.comp.fsa;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import pt.up.fe.comp.dot.ir.DotGraph;
 
 import java.util.*;
@@ -72,7 +71,7 @@ public class FSABuilder {
                                 newNames = _newNames;
                             }
 
-                        } catch (InvalidArgumentException e) {
+                        } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                             throw new Error("Invalid regex: " + edge.attributes.get("regex"));
                         }

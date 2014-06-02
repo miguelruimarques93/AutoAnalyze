@@ -2,7 +2,6 @@ package pt.up.fe.comp.fsa;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
@@ -115,7 +114,7 @@ public class FSA {
         _deterministic = fsa.isDeterministic();
     }
 
-    public FSA(String name, String regexp) throws InvalidArgumentException {
+    public FSA(String name, String regexp) throws IllegalArgumentException {
         RegExp reg = new RegExp(regexp);
         Automaton bricsAut = reg.toAutomaton();
 

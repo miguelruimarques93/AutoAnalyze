@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import pt.up.fe.comp.aa.AaVisitor;
 import pt.up.fe.comp.aa.parser.aaLexer;
 import pt.up.fe.comp.aa.parser.aaParser;
+import pt.up.fe.comp.utils.CounterErrorListener;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -66,19 +67,22 @@ public class Main {
 
                 ANTLRInputStream in = new ANTLRInputStream(input);
                 aaLexer lexer = new aaLexer(in);
+                CounterErrorListener cel = new CounterErrorListener();
+                lexer.addErrorListener(cel);
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 parser.setTokenStream(tokens);
 
                 try {
                     ParseTree tree = parser.stmt_list();
-                    eval.visit(tree);
+                    if (cel.getNumErrors() == 0 && parser.getNumberOfSyntaxErrors() == 0)
+                        eval.visit(tree);
                 } catch (InputMismatchException e) {
                     if (e.getOffendingToken().getType() != Token.EOF) {
                         System.err.println(e.getMessage());
                     } else {
                         continue;
                     }
-                } catch (Exception e) {
+                } catch (Exception | Error e) {
                     System.err.println(e.getMessage());
                 }
 
@@ -91,12 +95,18 @@ public class Main {
             ANTLRInputStream input = new ANTLRFileStream(fileName);
             aaLexer lexer = new aaLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
+            CounterErrorListener cel = new CounterErrorListener();
+
+            lexer.addErrorListener(cel);
+
             aaParser parser = new aaParser(tokens);
             ParseTree tree = parser.stmt_list(); // parse
 
-            AaVisitor eval = new AaVisitor();
+            if (parser.getNumberOfSyntaxErrors() == 0 && cel.getNumErrors() == 0) {
+                AaVisitor eval = new AaVisitor();
+                eval.visit(tree);
+            }
 
-            eval.visit(tree);
         } else { // usage
             System.err.println("Usage: java pt.up.fe.comp.cli.Main (-repl | file)");
             System.err.println("-repl : Start repl mode");

@@ -1,7 +1,5 @@
 package pt.up.fe.comp.fsa;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,7 +38,7 @@ public class Operations {
         try {
             return new FSA(name, regExp);
 
-        } catch (InvalidArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new Error(e);
         }
     }
@@ -687,14 +685,29 @@ public class Operations {
                     try {
                         ArrayList<String> cmdArray = new ArrayList<>();
                         cmdArray.add("java");
-                        cmdArray.add("-jar");
-                        cmdArray.add("deps/zgrviewer-target/zgrviewer-0.9.0.jar");
+
+
+                        String path = Operations.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+
+                        if (path.endsWith(".jar")) {
+                            cmdArray.add("-cp");
+                            cmdArray.add(path);
+                            cmdArray.add("net.claribole.zgrviewer.ZGRViewer");
+                            // path = path.substring(0, path.lastIndexOf(File.separator));
+                        } else {
+                            cmdArray.add("-jar");
+                            cmdArray.add("deps/zgrviewer-target/zgrviewer-0.9.0.jar");
+                        }
+
                         for (String o: ops)
                             cmdArray.add(" -" + o);
                         String absPath = temp.getAbsolutePath().replace(" ", "\\ ");
                         cmdArray.add(temp.getAbsolutePath());
+
+                        System.out.println(cmdArray.toString());
+
                         Process proc = Runtime.getRuntime().exec(cmdArray.toArray(new String[cmdArray.size()]));
-                        proc.waitFor();
+                        System.out.println("Exited with: " + proc.waitFor());
                     } catch (InterruptedException | IOException e) {
                         e.printStackTrace();
                     }
