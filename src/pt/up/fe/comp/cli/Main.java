@@ -99,7 +99,8 @@ public class Main {
             eval.visit(tree);
         } else { // usage
             System.err.println("Usage: java pt.up.fe.comp.cli.Main (-repl | file)");
-            System.err.println("-repl : ");
+            System.err.println("-repl : Start repl mode");
+            System.err.println("file : File to execute");
         }
     }
 }
