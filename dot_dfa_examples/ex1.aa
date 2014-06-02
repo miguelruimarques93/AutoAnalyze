@@ -5,6 +5,6 @@ d = union a (diff b c);
 if (equals c d) {
     write_dot d "d.gv";
 } else {
-    write_code Haskell c "c.hs";
+    write_code "Haskell" c "c.hs";
 }
 

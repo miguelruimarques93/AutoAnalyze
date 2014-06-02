@@ -1,0 +1,20 @@
+a = loadf "dot_dfa_examples/COMP_HW1.gv";
+b = loadf "dot_dfa_examples/COMP_HW1_NFA.gv";
+c = intersect a b;
+d = union a b;
+
+if (and (equivalent a b) (equivalent a c) (equivalent a d) (equivalent b c) (equivalent b d) (equivalent c d)) {
+    println "Passed Test 1";
+}
+else {
+    println "Failed Test 1";
+}
+
+e = concat c d;
+
+if (or (equivalent e a) (equivalent e b) (equivalent e c) (equivalent e d)) {
+    println "Failed Test 2";
+}
+else {
+    println "Passed Test 2";
+}

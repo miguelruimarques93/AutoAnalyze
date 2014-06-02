@@ -1,0 +1,25 @@
+a = loadr "aut1" "ef|a*bb*|aa*bc*";
+part1 = loadr "aut2" "ef";
+part2 = loadr "aut3" "a*bb*";
+part3 = loadr "aut4" "aa*bc*";
+
+if (equivalent a (union part1 part2 part3)) {
+    println "Passed Test 1";
+}
+else {
+    println "Failed Test 1";
+}
+
+if (and (accepts a "ef") (accepts a "abc") (accepts a "aaabccccc") (accepts a "aaabbbbbb") (accepts a "abbbb") (accepts a "bbbb")){
+    println "Passed Test 2";
+}
+else {
+    println "Failed Test 2";
+}
+
+if (or (accepts a "") (accepts a "e") (accepts a "eff") (accepts a "abbc") (accepts a "bcccc") (accepts a "sfgddd") (accepts a "aaacccc")) {
+    println "Failed Test 3";
+}
+else {
+    println "Passed Test 3";
+}

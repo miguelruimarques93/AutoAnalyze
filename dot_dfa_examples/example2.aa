@@ -1,0 +1,10 @@
+a = loadf "dot_dfa_examples/COMP_HW1.gv";
+b = union a (complement a);
+c = intersect a (complement a);
+
+if (and (accepts_alphabet_star_closure b) (empty_language c)) {
+    println "Passed Test";
+}
+else {
+    println "Failed Test";
+}
