@@ -736,4 +736,36 @@ public class Operations {
     public static Boolean not(Boolean val) {
         return !val;
     }
+
+    /**
+     * 'AND' operator, used to check if all arguments evaluate to true.
+     *
+     * @param vals values to check
+     * @return returns true if all arguments are true, false otherwise
+     */
+    public static Boolean and(Boolean val1, Boolean val2, Boolean... vals) {
+        Boolean res = val1 && val2;
+
+        for (int i=0; i < vals.length && res; i++) {
+            res = vals[i];
+        }
+
+        return res;
+    }
+
+    /**
+     * 'OR' operator, used to check if all arguments evaluate to true.
+     *
+     * @param vals values to check
+     * @return returns true if all arguments are true, false otherwise
+     */
+    public static Boolean or(Boolean val1, Boolean val2, Boolean... vals) {
+        Boolean res = val1 || val2;
+
+        for (int i=0; i < vals.length && !res; i++) {
+            res = vals[i];
+        }
+
+        return res;
+    }
 }
