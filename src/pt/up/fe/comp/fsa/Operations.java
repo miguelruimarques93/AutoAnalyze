@@ -704,10 +704,8 @@ public class Operations {
                         String absPath = temp.getAbsolutePath().replace(" ", "\\ ");
                         cmdArray.add(temp.getAbsolutePath());
 
-                        System.out.println(cmdArray.toString());
-
                         Process proc = Runtime.getRuntime().exec(cmdArray.toArray(new String[cmdArray.size()]));
-                        System.out.println("Exited with: " + proc.waitFor());
+                        proc.waitFor();
                     } catch (InterruptedException | IOException e) {
                         e.printStackTrace();
                     }
