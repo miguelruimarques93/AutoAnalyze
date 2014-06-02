@@ -27,7 +27,9 @@ public class SymbolTable<T> {
     }
 
     public void addSymbol(String name, Class type, Producer<T> init) {
-        _scopes.peek().addSymbol(name, type, init);
+        if (!contains(name))
+            _scopes.peek().addSymbol(name, type, init);
+        else throw new Error(name + " is already declared.");
     }
 
     public boolean contains(String name) {
