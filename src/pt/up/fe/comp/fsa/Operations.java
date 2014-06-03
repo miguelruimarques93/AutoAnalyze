@@ -141,7 +141,7 @@ public class Operations {
     public static FSA loadf(String fileName) {
         File f = new File(fileName);
         if (!f.exists())
-            throw new Error(new FileNotFoundException(f.getAbsolutePath()));
+            throw new Error("No such file '"  + f.getAbsolutePath() + "'");
 
         try {
             return FSALoader.LoadFromFile(fileName);
