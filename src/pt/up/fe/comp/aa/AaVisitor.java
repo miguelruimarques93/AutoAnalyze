@@ -6,6 +6,7 @@ import pt.up.fe.comp.aa.parser.aaBaseVisitor;
 import pt.up.fe.comp.aa.parser.aaParser;
 import pt.up.fe.comp.fsa.Operations;
 import pt.up.fe.comp.utils.Producer;
+import pt.up.fe.comp.utils.SemanticError;
 import pt.up.fe.comp.utils.SymbolTable;
 
 import java.lang.reflect.Array;
@@ -31,7 +32,9 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             if (ctx.IDENTIFIER() != null) {
                 Object res =  _symbols.get(ctx.IDENTIFIER().toString());
 
-                if (res == null) throw new Error("Invalid identifier '" + ctx.IDENTIFIER().getText() + "' on line " + ctx.getStart().getLine());
+                if (res == null)
+                    throw new SemanticError(ctx, "Invalid identifier '" + ctx.IDENTIFIER().getText() + "'");
+
                 return res;
             } else if (ctx.STRING() != null) {
                 String str = ctx.STRING().getText();
@@ -41,7 +44,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                 return AaVisitor.this.visit(ctx.operation());
             }
 
-            throw new Error(new IllegalArgumentException());
+            throw new SemanticError(ctx, new IllegalArgumentException());
         }
     }
 
@@ -90,7 +93,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         }
 
         if (op == null)
-            throw new Error("No such operator: " + operation);
+            throw new SemanticError(ctx, "No such operation '" + operation + "'");
 
         Class[] paramTypes = op.getParameterTypes();
         aaParser.Arg_listContext argumentListContext = ctx.arg_list();
@@ -98,7 +101,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
 
         if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
-            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
+            throw new SemanticError(ctx, "No operation '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined");
         }
         {
             int i = 0, j = 0;
@@ -112,11 +115,11 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                         paramT = getArgType(args.get(j));
                     }
                 } else if (!paramTypes[i].equals(paramT))
-                    throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + paramT.getSimpleName());
+                    throw new SemanticError(ctx, "No operation '" + operation + "' with argument " + Integer.toString(i) + " of type " + paramT.getSimpleName());
             }
 
             if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
-                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
+                throw new SemanticError(ctx, "No operation '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined");
 
             Class returnType = op.getReturnType();
             return new Pair<Class, Producer<Object>>(returnType, new Producer<Object>() {
@@ -140,7 +143,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
             final String id = rhs.IDENTIFIER().getText();
 
             if (!_symbols.contains(id))
-                throw new Error("Identifier " + id + " is not declared in the current scope.");
+                throw new SemanticError(ctx, "Identifier " + id + " is not declared in the current scope");
             _symbols.addSymbol(name, _symbols.getType(rhs.IDENTIFIER().getText()), new Producer<Object>() {
                 @Override
                 public Object produce() {
@@ -169,7 +172,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
     public Object visitControl_expr(@NotNull aaParser.Control_exprContext ctx) {
         Object predEval = visit(ctx.predicate);
         if (!(predEval instanceof Boolean))
-            throw new Error("Invalid Predicate");
+            throw new SemanticError(ctx, ctx.predicate.getText() + " is not a predicate");
 
         if ((Boolean) predEval) {
             return visit(ctx.trueCase);
@@ -193,7 +196,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
         }
 
         if (op == null)
-            throw new Error("No such operator: " + operation);
+            throw new SemanticError(ctx, "No such operation '" + operation + "'");
 
         Class[] paramTypes = op.getParameterTypes();
         List<Object> params = new ArrayList<>();
@@ -202,7 +205,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
 
         if (paramTypes.length != 0) {
             if (args.size() != paramTypes.length && !paramTypes[paramTypes.length - 1].isArray()) {
-                throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
+                throw new SemanticError(ctx, "No operation '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined");
             }
             {
                 int i = 0, j = 0;
@@ -219,7 +222,7 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                         }
                         param = array.toArray((Object[]) Array.newInstance(paramType, array.size()));
                     } else if (!paramTypes[i].isInstance(param))
-                        throw new Error("No operator '" + operation + "' with argument " + Integer.toString(i) + " of type " + param.getClass().getSimpleName());
+                        throw new SemanticError(ctx, "No operation '" + operation + "' with argument " + Integer.toString(i) + " of type " + (param != null ? param.getClass().getSimpleName() : "void"));
 
                     params.add(param);
                 }
@@ -228,21 +231,18 @@ public class AaVisitor extends aaBaseVisitor<Object> {
                     params.add(Array.newInstance(paramTypes[paramTypes.length - 1].getComponentType(), 0));
 
                 if (i < (paramTypes.length - (paramTypes[paramTypes.length - 1].isArray() ? 1 : 0)) || j < args.size())
-                    throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
+                    throw new SemanticError(ctx, "No operation '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined");
             }
         } else if (args.size() != 0) {
-            throw new Error("No operator '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined on line " + Integer.toString(ctx.getStart().getLine()) + ".");
+            throw new SemanticError(ctx, "No operation '" + operation + "' with " + Integer.toString(args.size()) + " parameters defined");
         }
 
         try {
             return op.invoke(null, params.toArray(new Object[params.size()]));
-        } catch (IllegalArgumentException e) {
-            throw new Error(e.getMessage() + " on line " + ctx.getStart().getLine());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            throw new Error();
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new SemanticError(ctx, e);
         } catch (InvocationTargetException e) {
-            throw new Error(e.getCause().getMessage() + " on line " + ctx.getStart().getLine());
+            throw new SemanticError(ctx, e.getCause() != null ? e.getCause() : e);
         }
     }
 }
