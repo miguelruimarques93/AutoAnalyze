@@ -104,7 +104,12 @@ public class Main {
 
             if (parser.getNumberOfSyntaxErrors() == 0 && cel.getNumErrors() == 0) {
                 AaVisitor eval = new AaVisitor();
-                eval.visit(tree);
+                try {
+                    eval.visit(tree);
+                } catch (Error e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
+                }
             }
 
         } else { // usage
