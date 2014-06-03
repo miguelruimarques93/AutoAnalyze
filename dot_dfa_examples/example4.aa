@@ -1,4 +1,5 @@
-a = loadr "aut1" "ef|a*bb*|aa*bc*";
+name = "aut";
+a = loadr name "ef|a*bb*|aa*bc*";
 part1 = loadr "aut2" "ef";
 part2 = loadr "aut3" "a*bb*";
 part3 = loadr "aut4" "aa*bc*";
