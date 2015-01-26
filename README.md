@@ -4,12 +4,7 @@ feup-comp-2014
 AutoAnalyze
 ==============
 
-**IMPORTANT**:
-To visualize automata you must have the "deps" folder in the same directory as the jar (or working directory).
-
-SUMMARY
-==============
-The project parses dot files and generates automata from the parsed data. It then allows for several operations and analysis with the automata.
+This project parses dot files and generates automata from the parsed data. It then allows for several operations and analysis with the automata.
 
 To specify what operations/analysis should be executed we created the AutoScript language with haskell-like syntax. This languages allows creation of variables, control expressions (with inner scopes) and several operations. Additionally, the program can be run as a REPL without needing to specify a script file.
 
@@ -67,6 +62,9 @@ Example of a .aa script:
 For a complete list of the implemented operations see the documentation of the operations class in the folder "operations_doc". Functions are called with the same names as the methods and the arguments are separated by spaces (as shown in the example above).
 
 Additionally, to quit the REPL mode you should use the command ":quit".
+
+**IMPORTANT**:
+To visualize automata you must have the "deps" folder in the same directory as the jar (or working directory).
  
 DEALING WITH SYNTACTIC ERRORS
 ==============
