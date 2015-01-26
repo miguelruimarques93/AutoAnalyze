@@ -1,6 +1,9 @@
 feup-comp-2014
 ==============
 
+A tool able to read automata (NFA, DFA) from dotty files and able to perform a number of analyzes. For example, it is able to report if the input automata represent the same language, if they accept all words of a given alphabet, and if they accept only the empty string or the empty set. The tool is also able to perform some operations with the automata, such as cartesian product, intersection, complement and minimization. It is able to output resulting automata to dotty files. The operations to be performed were specified using a simple language developed during the project. Additionally, this tool can parse/generate regexp to/from automata and also allows their graphic visualization.
+
+
 AutoAnalyze
 ==============
 
