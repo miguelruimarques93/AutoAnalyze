@@ -62,12 +62,11 @@ Example of a .aa script:
     show a;
     show (minimize a) "Pneato";
         
-For a complete list of the implemented operations see the documentation of the operations class in the folder "operations_doc". Functions are called with the same names as the methods and the arguments are separated by spaces (as shown in the example above).
+**NOTE**: For a complete list of the implemented operations see the documentation of the operations class in the folder "operations_doc". Functions are called with the same names as the methods and the arguments are separated by spaces (as shown in the example above).
 
 Additionally, to quit the REPL mode you should use the command ":quit".
 
-**IMPORTANT**:
-To visualize automata you must have the "deps" folder in the same directory as the jar (or working directory).
+**IMPORTANT**: To visualize automata you must have the "deps" folder in the same directory as the jar (or working directory).
  
 DEALING WITH SYNTACTIC ERRORS
 ==============
